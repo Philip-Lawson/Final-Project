@@ -1,0 +1,7 @@
+package finalproject.poc.classsending;
+
+import java.io.Serializable;
+
+public interface Calculator extends Serializable {
+	public void execute();
+}

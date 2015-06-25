@@ -1,0 +1,12 @@
+package finalproject.poc.classloading;
+
+public class AbstractCalculator implements Calculator {
+
+	@Override
+	public void execute() {
+		// TODO Auto-generated method stub
+		System.out.println("Execute");
+
+	}
+
+}

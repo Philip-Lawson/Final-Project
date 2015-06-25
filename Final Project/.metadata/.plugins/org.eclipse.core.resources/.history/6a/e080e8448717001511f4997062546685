@@ -1,0 +1,15 @@
+package com.firsttry.testdevice;
+
+public class ThreadToUse implements Runnable {
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		for(int count=0; count<100; count++){
+			System.out.println(count);
+			
+		}
+
+	}
+
+}

@@ -1,0 +1,9 @@
+package finalproject.poc.sendingclasses;
+
+public class CalculatorClass implements Calculator {
+	
+	public void execute(){
+		System.out.println("Calculator class loaded");
+	}
+
+}

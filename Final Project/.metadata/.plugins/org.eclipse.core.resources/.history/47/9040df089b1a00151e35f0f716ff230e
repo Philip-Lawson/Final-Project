@@ -1,0 +1,25 @@
+package finalproject.poc.classloading;
+
+public class AppClassLoader extends ClassLoader {
+	
+	@SuppressWarnings("deprecation")
+	public Class<?> getClass(byte[] classBytes){
+		Class<?> c = null;		
+		
+		System.out.println(classBytes.length);
+		
+		try {			
+			c = defineClass( classBytes, 0, classBytes.length);
+			
+			System.out.println("Class defined");
+		} catch (ClassFormatError e) {
+			// TODO Auto-generated catch block
+			System.out.println("Problem defining class");
+		}
+		
+		c = null;
+		return c;
+	}
+	
+	
+}

@@ -1,0 +1,18 @@
+package finalproject.poc.classloading;
+
+public class AppClassLoader extends ClassLoader {
+	
+	public Class<?> getClass(byte[] classBytes){
+		Class<?> c = null;		
+		
+		try {
+			c = defineClass(null, classBytes, 0, classBytes.length);
+		} catch (ClassFormatError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return c;
+	}
+
+}

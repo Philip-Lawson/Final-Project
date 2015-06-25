@@ -1,0 +1,13 @@
+package finalproject.poc.classloading;
+
+public class Starter {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		System.out.println("Starting Server");
+		Thread serverThread = new Thread(new SimpleServer());
+		serverThread.start();
+
+	}
+
+}

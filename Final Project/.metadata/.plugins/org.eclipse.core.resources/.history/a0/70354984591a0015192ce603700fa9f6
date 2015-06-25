@@ -1,0 +1,12 @@
+/**
+ * 
+ */
+package finalproject.poc.classloading;
+
+/**
+ * @author Phil
+ *
+ */
+public abstract class AbstractServerRequestHandler {
+
+}

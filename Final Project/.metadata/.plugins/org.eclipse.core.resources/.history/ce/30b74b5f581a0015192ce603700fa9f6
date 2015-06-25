@@ -1,0 +1,5 @@
+package finalproject.poc.classloading;
+
+public enum ClassRequest {
+
+}

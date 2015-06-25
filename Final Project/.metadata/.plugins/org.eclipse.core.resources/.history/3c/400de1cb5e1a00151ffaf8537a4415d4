@@ -1,0 +1,14 @@
+package finalproject.poc.classloading;
+
+public class SimpleServer implements Runnable {
+	
+	private Server
+	
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

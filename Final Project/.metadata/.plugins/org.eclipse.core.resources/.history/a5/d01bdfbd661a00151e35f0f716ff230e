@@ -1,0 +1,23 @@
+package finalproject.poc.sendingclasses;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+
+public class SimpleServer implements Runnable {
+	
+	private ServerSocket server;
+	
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		try {
+			server = new ServerSocket(12345);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+}

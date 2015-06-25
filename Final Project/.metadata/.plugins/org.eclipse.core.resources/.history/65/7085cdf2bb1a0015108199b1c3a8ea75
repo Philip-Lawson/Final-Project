@@ -1,0 +1,55 @@
+package finalproject.poc.classloading;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
+public class AppClassLoader extends ClassLoader {
+	
+	private ObjectInputStream input;
+	
+	public AppClassLoader(ObjectInputStream input){
+		super();
+		this.input = input;
+	}
+	
+	public Class<?> findClass(String name){
+		byte[] b = loadClassData(name);
+		return defineClass(name, b, 0, b.length);
+	}
+	
+	private byte[] loadClassData(String name){
+		byte[] classData = null;
+		
+		try {
+			classData = (byte[]) input.readObject();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return classData;
+	}
+	
+	public Class<?> getClass(byte[] classBytes){
+		Class<?> c = null;		
+		
+		System.out.println(classBytes.length);
+		
+		try {			
+			c = defineClass(null, classBytes, 0, classBytes.length);
+						
+			System.out.println("Class defined");
+		} catch (ClassFormatError e) {
+			// TODO Auto-generated catch block
+			System.out.println("Problem defining class");
+		}
+		
+		
+		return c;
+	}
+	
+	
+}

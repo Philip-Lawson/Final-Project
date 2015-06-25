@@ -1,0 +1,58 @@
+package finalproject.poc.classloading;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
+public class LoadCalculationClassRequestHandler extends
+		AbstractServerRequestHandler {
+
+	private static ServerRequest serverRequest = ServerRequest.LOAD_CALCULATOR_CLASS;
+	private AppClassLoader classLoader = new AppClassLoader();
+
+	public LoadCalculationClassRequestHandler() {
+		setServerRequest(serverRequest);
+	}
+
+	@Override
+	protected void handleHere(ObjectInputStream input) {
+		// TODO Auto-generated method stub		
+		byte[] classData = null;
+		Class<?> c = null;
+	
+		
+		try {
+			classData = (byte[]) input.readObject();
+			 c = classLoader.getClass(classData);
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}	
+
+	
+
+		try {
+			if (c != null) {
+				Calculator calc = (Calculator) c.newInstance();
+				calc.execute();
+			} else {
+				System.out.println("Null class");
+			}
+			
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
+
+	@Override
+	protected void delegate(int requestNum, ObjectInputStream input) {
+
+	}
+
+}

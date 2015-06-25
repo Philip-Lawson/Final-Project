@@ -1,0 +1,17 @@
+package finalproject.poc.classloading;
+
+public enum CopyOfServerRequest {
+	NEW_CALCULATION(0), LOAD_CALCULATOR_CLASS(1), LOAD_WORK_PACKET_CLASS(2), 
+		LOAD_RESULT_PACKET_CLASS(3);
+
+	private int requestNum;
+
+	private CopyOfServerRequest(int requestNum) {
+		this.requestNum = requestNum;
+	}
+
+	public int getRequestNum() {
+		return requestNum;
+	}
+
+}

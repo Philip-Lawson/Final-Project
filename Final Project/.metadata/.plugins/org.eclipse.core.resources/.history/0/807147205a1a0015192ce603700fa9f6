@@ -1,0 +1,37 @@
+/**
+ * 
+ */
+package finalproject.poc.classloading;
+
+/**
+ * @author Phil
+ *
+ */
+public abstract class AbstractServerRequestHandler {
+	
+	private final ServerRequest request;
+	private AbstractServerRequestHandler nextHandler;
+	
+	public AbstractServerRequestHandler(){
+		
+	}
+		
+	protected abstract void handleHere();
+	
+	public void processRequest(int requestNum){
+		if (requestNum == request.getRequestNum()){
+			handleHere();
+		} else {
+			delegate(requestNum);
+		}
+	}
+	
+	public void delegate(int requestNum){
+		nextHandler.processRequest(requestNum);
+	}
+	
+	public void setNextHandler(AbstractServerRequestHandler nextHandler){
+		this.nextHandler = nextHandler;
+	}
+
+}

@@ -1,0 +1,19 @@
+/**
+ * 
+ */
+package finalproject.poc.classloading;
+
+/**
+ * @author Phil
+ *
+ */
+public abstract class AbstractServerRequestHandler {
+	
+	private ServerRequest request;
+	private AbstractServerRequestHandler nextHandler;
+	
+	protected abstract void handleHere();
+	
+	public void processRequest()
+
+}

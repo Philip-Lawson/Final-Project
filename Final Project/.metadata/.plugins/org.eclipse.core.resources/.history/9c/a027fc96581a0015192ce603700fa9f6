@@ -1,0 +1,6 @@
+package finalproject.poc.classloading;
+
+public enum ClassRequest {
+	LOAD_CALCULATOR_CLASS, LOAD_WORK_PACKET_CLASS, LOAD_RESULT_PACKET_CLASS;
+
+}
