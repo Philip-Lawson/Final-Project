@@ -1,7 +1,7 @@
 /**
  * 
  */
-package finalproject.poc.classloading;
+package finalproject.poc.appserver;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,19 +10,18 @@ import java.io.ObjectOutputStream;
  * @author Phil
  *
  */
-public abstract class AbstractServerRequestHandler {
+public abstract class AbstractClientRequestHandler {
 	
-	private ServerRequest request;
-	private AbstractServerRequestHandler nextHandler;
+	private ClientRequest request;
+	private AbstractClientRequestHandler nextHandler;
 	
-	public AbstractServerRequestHandler(){
+	public AbstractClientRequestHandler(){
 		
 	}
 		
 	protected abstract void handleHere(ObjectInputStream input, ObjectOutputStream output);
 	
 	public void processRequest(int requestNum, ObjectInputStream input, ObjectOutputStream output){
-		System.out.println("Handling request");
 		if (requestNum == request.getRequestNum()){
 			handleHere(input, output);
 		} else {
@@ -34,11 +33,11 @@ public abstract class AbstractServerRequestHandler {
 		nextHandler.processRequest(requestNum, input, output);
 	}
 	
-	public void setNextHandler(AbstractServerRequestHandler nextHandler){
+	public void setNextHandler(AbstractClientRequestHandler nextHandler){
 		this.nextHandler = nextHandler;
 	}
 	
-	protected void setServerRequest(ServerRequest request){
+	protected void setClientRequest(ClientRequest request){
 		this.request = request;
 	}
 

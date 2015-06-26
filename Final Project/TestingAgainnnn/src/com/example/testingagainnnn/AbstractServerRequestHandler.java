@@ -1,7 +1,7 @@
 /**
  * 
  */
-package finalproject.poc.classloading;
+package com.example.testingagainnnn;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -22,7 +22,6 @@ public abstract class AbstractServerRequestHandler {
 	protected abstract void handleHere(ObjectInputStream input, ObjectOutputStream output);
 	
 	public void processRequest(int requestNum, ObjectInputStream input, ObjectOutputStream output){
-		System.out.println("Handling request");
 		if (requestNum == request.getRequestNum()){
 			handleHere(input, output);
 		} else {

@@ -2,10 +2,10 @@ package finalproject.poc.classloading;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLClassLoader;
+
 
 public class LoadCalculationClassRequestHandler extends
 		AbstractServerRequestHandler {
@@ -17,7 +17,7 @@ public class LoadCalculationClassRequestHandler extends
 	}
 
 	@Override
-	protected void handleHere(ObjectInputStream input) {
+	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
 		// TODO Auto-generated method stub
 		ClassLoader classLoader = new AppClassLoader(input);
 		Class<?> c = null;
@@ -59,7 +59,7 @@ public class LoadCalculationClassRequestHandler extends
 	}
 
 	@Override
-	protected void delegate(int requestNum, ObjectInputStream input) {
+	protected void delegate(int requestNum, ObjectInputStream input, ObjectOutputStream output) {
 
 	}
 

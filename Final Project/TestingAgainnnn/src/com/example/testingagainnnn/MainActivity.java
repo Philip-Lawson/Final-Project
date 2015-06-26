@@ -1,6 +1,20 @@
 package com.example.testingagainnnn;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,11 +29,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-@SuppressWarnings("deprecation")
-public class MainActivity extends ActionBarActivity implements OnClickListener {
+public class MainActivity extends Activity implements OnClickListener {
+
+	
 
 	private EditText textBox;
 	private Button button;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +54,12 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		Toast.makeText(getApplicationContext(), textBox.getText(),
-				Toast.LENGTH_LONG).show();
-		textBox.getText().clear();
-		;
+		/*
+		 * Toast.makeText(getApplicationContext(), textBox.getText(),
+		 * Toast.LENGTH_LONG).show(); textBox.getText().clear();
+		 */
+		Thread clientThread = new Thread(new ClientThread());
+		clientThread.start();
 	}
 
 	@Override
@@ -62,4 +80,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
+	
+		
 }
