@@ -22,6 +22,8 @@ public abstract class AbstractClientRequestHandler {
 	protected abstract void handleHere(ObjectInputStream input, ObjectOutputStream output);
 	
 	public void processRequest(int requestNum, ObjectInputStream input, ObjectOutputStream output){
+	System.out.println("Processing request");
+		
 		if (requestNum == request.getRequestNum()){
 			handleHere(input, output);
 		} else {

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package finalproject.poc.classloading;
+package finalproject.poc.calculationclasses;
 
 import java.io.Serializable;
 

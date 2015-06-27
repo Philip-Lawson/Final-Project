@@ -3,14 +3,26 @@ package finalproject.poc.appserver;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import finalproject.poc.calculationclasses.IResultsPacket;
+import finalproject.poc.calculationclasses.IWorkPacket;
+import finalproject.poc.calculationclasses.WorkPacket;
 
 public class ProcessResultHandler extends AbstractClientRequestHandler {
+
+	public static LinkedList<Integer> numList = new LinkedList<Integer>();
 
 	public ProcessResultHandler() {
 		super();
 		setClientRequest(ClientRequest.PROCESS_RESULT);
+		for (int count = 0; count < 10; count++) {
+			numList.add(count);
+		}
+
 	}
 
 	@Override
@@ -20,7 +32,25 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 			IResultsPacket result = (IResultsPacket) input.readObject();
 			System.out.println("ID: " + result.getPacketId());
 			System.out.println("Result: " + result.getResult());
-		} catch (ClassNotFoundException | IOException e) {
+
+			if (!numList.isEmpty()) {
+				Integer num = numList.removeFirst();
+				System.out.println("Number sent: " + num);
+				IWorkPacket workPacket = new WorkPacket("DummyID", num);
+
+				output.reset();
+				output.writeInt(ServerRequest.NEW_CALCULATION.getRequestNum());
+				output.writeObject(workPacket);
+				output.flush();
+				System.out.println("Work packet sent");
+			} else {
+				output.reset();
+				output.writeInt(ServerRequest.BECOME_DORMANT.getRequestNum());
+				output.flush();
+				System.out.println("Client connection closed");
+			}
+
+		} catch (IOException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

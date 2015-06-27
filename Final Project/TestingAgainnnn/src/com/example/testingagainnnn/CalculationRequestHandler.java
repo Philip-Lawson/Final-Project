@@ -5,6 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 
+import finalproject.poc.calculationclasses.DummyProcessor;
+import finalproject.poc.calculationclasses.IResultsPacket;
+import finalproject.poc.calculationclasses.IWorkPacket;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.support.v4.app.NotificationCompat;
@@ -20,7 +23,7 @@ public class CalculationRequestHandler extends AbstractServerRequestHandler {
 	}
 
 	@Override
-	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
+	protected void handleHere(ObjectInputStream input, ObjectOutputStream output, Client client) {
 		// TODO Auto-generated method stub
 		
 		try {
@@ -30,6 +33,7 @@ public class CalculationRequestHandler extends AbstractServerRequestHandler {
 			output.reset();
 			output.writeInt(ClientRequest.PROCESS_RESULT.getRequestNum());
 			output.writeObject(result);
+			output.flush();
 		} catch (OptionalDataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -19,18 +19,18 @@ public abstract class AbstractServerRequestHandler {
 		
 	}
 		
-	protected abstract void handleHere(ObjectInputStream input, ObjectOutputStream output);
+	protected abstract void handleHere(ObjectInputStream input, ObjectOutputStream output, Client client);
 	
-	public void processRequest(int requestNum, ObjectInputStream input, ObjectOutputStream output){
+	public void processRequest(int requestNum, ObjectInputStream input, ObjectOutputStream output, Client client){
 		if (requestNum == request.getRequestNum()){
-			handleHere(input, output);
+			handleHere(input, output, client);
 		} else {
-			delegate(requestNum, input, output);
+			delegate(requestNum, input, output, client);
 		}
 	}
 	
-	protected void delegate(int requestNum, ObjectInputStream input, ObjectOutputStream output){
-		nextHandler.processRequest(requestNum, input, output);
+	protected void delegate(int requestNum, ObjectInputStream input, ObjectOutputStream output, Client client){
+		nextHandler.processRequest(requestNum, input, output, client);
 	}
 	
 	public void setNextHandler(AbstractServerRequestHandler nextHandler){

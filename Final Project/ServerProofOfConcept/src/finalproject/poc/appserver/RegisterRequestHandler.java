@@ -17,7 +17,7 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
 		// TODO Auto-generated method stub
 		try {
-			String clientRequest = (String) input.readObject();
+			String clientRequest = (String) input.readObject();			
 			System.out.println(clientRequest);
 			IWorkPacket workPacket = new WorkPacket("DummyID", Integer.valueOf(2));
 			

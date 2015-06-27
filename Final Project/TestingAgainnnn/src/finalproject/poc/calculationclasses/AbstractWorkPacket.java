@@ -1,4 +1,4 @@
-package com.example.testingagainnnn;
+package finalproject.poc.calculationclasses;
 
 /**
  * Abstract implementation of IWorkPacket. To be sent from the server to

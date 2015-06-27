@@ -12,7 +12,7 @@ public class RegisterRequestHandler extends AbstractServerRequestHandler {
 	}
 
 	@Override
-	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
+	protected void handleHere(ObjectInputStream input, ObjectOutputStream output, Client client) {
 		// TODO Auto-generated method stub
 		try {
 			output.reset();
@@ -28,7 +28,7 @@ public class RegisterRequestHandler extends AbstractServerRequestHandler {
 
 	@Override
 	protected void delegate(int requestNum, ObjectInputStream input,
-			ObjectOutputStream output) {
+			ObjectOutputStream output, Client client) {
 
 	}
 

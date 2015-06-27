@@ -1,4 +1,4 @@
-package finalproject.poc.classloading;
+package com.example.testingagainnnn;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -12,13 +12,18 @@ import java.net.UnknownHostException;
 public class Client implements Runnable {
 
 	private static final int PORT_NUMBER = 12346;
-	private static final String HOST = "localhost";
+	private static final String HOST = "10.0.2.2";
 	private Socket client;
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
+	protected boolean processingConnection = true;
 
 	public Client() {
 
+	}
+	
+	public void cancelConnection(){
+		processingConnection = false;
 	}
 
 	private void connectToServer() throws UnknownHostException, IOException {
@@ -29,24 +34,25 @@ public class Client implements Runnable {
 	private void getStreams() throws IOException {
 		input = new ObjectInputStream(client.getInputStream());
 		output = new ObjectOutputStream(client.getOutputStream());
-		output.flush();
-		System.out.println("Streams loaded");
+		output.flush();		
+	}
+	
+	private void registerWithServer() throws IOException {
+		output.reset();
+		output.writeInt(ClientRequest.REGISTER.getRequestNum());
+		output.writeObject("Register");
+		output.flush();		
 	}
 
 	private void processConnection() throws IOException {
 		AbstractServerRequestHandler handler = new CalculationRequestHandler();
-		boolean processingConnection = true;
-		
-		output.reset();
-		output.writeInt(0);
-		output.writeObject("Register");
-		output.flush();
-		System.out.println("Request written");
+		handler.setNextHandler(new BecomeDormantRequestHandler());
+		processingConnection = true;		
 
 		while (processingConnection) {
 			int requestNum = -1;
 			requestNum = input.readInt();
-			handler.processRequest(requestNum, input, output);			
+			handler.processRequest(requestNum, input, output, this);			
 		}
 
 	}
@@ -57,6 +63,7 @@ public class Client implements Runnable {
 		try {
 			connectToServer();
 			getStreams();
+			registerWithServer();
 			processConnection();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block

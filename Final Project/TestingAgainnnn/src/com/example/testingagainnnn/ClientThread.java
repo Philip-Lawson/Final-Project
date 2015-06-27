@@ -10,7 +10,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class ClientThread implements Runnable{
+public class ClientThread extends Client implements Runnable{
 	private static int PORT = 12346;
 	private static final String SERVER_IP = "10.0.2.2";
 	
@@ -60,9 +60,9 @@ public class ClientThread implements Runnable{
 	public void processConnection() throws IOException{	
 		
 		
-		while (true){
+		while (processingConnection){
 			int requestNum = input.readInt();
-			handler.processRequest(requestNum, input, output);					
+			handler.processRequest(requestNum, input, output, this);					
 		}
 					
 	}

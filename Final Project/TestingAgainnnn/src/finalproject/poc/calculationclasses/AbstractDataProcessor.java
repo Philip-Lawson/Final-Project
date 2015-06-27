@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.example.testingagainnnn;
+package finalproject.poc.calculationclasses;
 
 /**
  * Abstract implementation of IDataProcessor. This class processes the work

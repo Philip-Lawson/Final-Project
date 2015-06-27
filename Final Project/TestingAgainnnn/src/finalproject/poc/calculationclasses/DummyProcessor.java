@@ -1,7 +1,7 @@
 /**
  * 
  */
-package finalproject.poc.classloading;
+package finalproject.poc.calculationclasses;
 
 /**
  * A dummy implementation of the data processor class.

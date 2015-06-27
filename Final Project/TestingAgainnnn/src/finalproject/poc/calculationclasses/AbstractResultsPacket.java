@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.example.testingagainnnn;
+package finalproject.poc.calculationclasses;
 
 /**
  * Abstract implementation of IResultsPacket. To be sent from the client device
