@@ -8,10 +8,7 @@ import finalproject.poc.calculationclasses.IWorkPacket;
 import finalproject.poc.calculationclasses.WorkPacket;
 
 public class RegisterRequestHandler extends AbstractClientRequestHandler {
-	
-	public RegisterRequestHandler(){
-		setClientRequest(ClientRequest.REGISTER);
-	}
+		
 
 	@Override
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
@@ -31,6 +28,12 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Override
+	protected int getRequestNum() {
+		// TODO Auto-generated method stub
+		return ClientRequest.REGISTER.getRequestNum();
 	}
 
 }

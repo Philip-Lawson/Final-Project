@@ -17,8 +17,7 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 	public static LinkedList<Integer> numList = new LinkedList<Integer>();
 
 	public ProcessResultHandler() {
-		super();
-		setClientRequest(ClientRequest.PROCESS_RESULT);
+		super();		
 		for (int count = 0; count < 10; count++) {
 			numList.add(count);
 		}
@@ -36,7 +35,8 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 			if (!numList.isEmpty()) {
 				Integer num = numList.removeFirst();
 				System.out.println("Number sent: " + num);
-				IWorkPacket workPacket = new WorkPacket("DummyID", num);
+				String number = num + "";
+				IWorkPacket workPacket = new WorkPacket(number.hashCode() + "", num);
 
 				output.reset();
 				output.writeInt(ServerRequest.NEW_CALCULATION.getRequestNum());
@@ -61,6 +61,12 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 	protected void delegate(int requestNum, ObjectInputStream input,
 			ObjectOutputStream output) {
 
+	}
+
+	@Override
+	protected int getRequestNum() {
+		// TODO Auto-generated method stub
+		return ClientRequest.PROCESS_RESULT.getRequestNum();
 	}
 
 }

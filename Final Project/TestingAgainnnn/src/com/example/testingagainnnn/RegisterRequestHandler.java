@@ -6,11 +6,6 @@ import java.io.ObjectOutputStream;
 
 public class RegisterRequestHandler extends AbstractServerRequestHandler {
 
-	public RegisterRequestHandler() {
-		super();
-		setServerRequest(ServerRequest.REGISTER_REQUEST);
-	}
-
 	@Override
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output, Client client) {
 		// TODO Auto-generated method stub
@@ -29,7 +24,13 @@ public class RegisterRequestHandler extends AbstractServerRequestHandler {
 	@Override
 	protected void delegate(int requestNum, ObjectInputStream input,
 			ObjectOutputStream output, Client client) {
+		// fall through for now
+	}
 
+	@Override
+	protected int getRequestNum() {
+		// TODO Auto-generated method stub
+		return ServerRequest.REGISTER_REQUEST.getRequestNum();
 	}
 
 }

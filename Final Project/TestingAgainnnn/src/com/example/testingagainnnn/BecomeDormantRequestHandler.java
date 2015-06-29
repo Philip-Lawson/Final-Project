@@ -13,4 +13,10 @@ public class BecomeDormantRequestHandler extends AbstractServerRequestHandler {
 		
 	}
 
+	@Override
+	protected int getRequestNum() {
+		// TODO Auto-generated method stub
+		return ServerRequest.BECOME_DORMANT.getRequestNum();
+	}
+
 }

@@ -9,6 +9,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import android.content.Context;
+import android.provider.Settings.Secure;
+
 public class Client implements Runnable {
 
 	private static final int PORT_NUMBER = 12346;
@@ -17,9 +20,16 @@ public class Client implements Runnable {
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 	protected boolean processingConnection = true;
-
-	public Client() {
-
+	private AbstractServerRequestHandler handler;
+	private Context context;	
+	
+	
+	public Client(){
+		
+	}
+	
+	public Client(Context context){
+		this.context = context;
 	}
 	
 	public void cancelConnection(){
@@ -37,15 +47,17 @@ public class Client implements Runnable {
 		output.flush();		
 	}
 	
-	private void registerWithServer() throws IOException {
+	private void registerWithServer() throws IOException {		
+		String androidID = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
+		
 		output.reset();
 		output.writeInt(ClientRequest.REGISTER.getRequestNum());
-		output.writeObject("Register");
+		output.writeObject(androidID);
 		output.flush();		
 	}
 
 	private void processConnection() throws IOException {
-		AbstractServerRequestHandler handler = new CalculationRequestHandler();
+		handler = new CalculationRequestHandler();
 		handler.setNextHandler(new BecomeDormantRequestHandler());
 		processingConnection = true;		
 
@@ -72,10 +84,10 @@ public class Client implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			try {
-				client.close();
-				output.close();
-				input.close();
+			try {				
+				if (output != null) output.close();
+				if (input != null) input.close();
+				if (client != null) client.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -62,8 +62,8 @@ public class ServerThread implements Runnable {
 				registerHandler.processRequest(requestNum, in, out);
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// TODO Auto-generated catch block		
+				System.out.println("Connection closed");
 				break;
 			}
 		}
@@ -72,13 +72,9 @@ public class ServerThread implements Runnable {
 
 	private void closeConnections() {
 		try {
-			if (out != null) {
-				out.close();
-			}
-
-			if (in != null) {
-				in.close();
-			}
+			if (out != null) out.close();
+			if (in != null) in.close();			
+			if (socket != null) socket.close();
 
 		} catch (IOException IOEx) {
 			// IOEx.printStackTrace();

@@ -15,8 +15,7 @@ public class CalculationRequestHandler extends AbstractServerRequestHandler {
 	private DummyProcessor processor;
 
 	public CalculationRequestHandler() {
-		super();
-		setServerRequest(ServerRequest.NEW_CALCULATION);
+		super();		
 		this.processor = new DummyProcessor();
 	}
 
@@ -50,6 +49,12 @@ public class CalculationRequestHandler extends AbstractServerRequestHandler {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Override
+	protected int getRequestNum() {
+		// TODO Auto-generated method stub
+		return ServerRequest.NEW_CALCULATION.getRequestNum();
 	}
 
 }

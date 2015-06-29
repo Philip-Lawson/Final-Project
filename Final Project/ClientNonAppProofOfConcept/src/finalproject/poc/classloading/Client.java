@@ -22,8 +22,8 @@ public class Client implements Runnable {
 	}
 
 	private void connectToServer() throws UnknownHostException, IOException {
-		client = new Socket(InetAddress.getByName(HOST), PORT_NUMBER);		
-		
+		client = new Socket(InetAddress.getByName(HOST), PORT_NUMBER);
+
 	}
 
 	private void getStreams() throws IOException {
@@ -36,7 +36,7 @@ public class Client implements Runnable {
 	private void processConnection() throws IOException {
 		AbstractServerRequestHandler handler = new CalculationRequestHandler();
 		boolean processingConnection = true;
-		
+
 		output.reset();
 		output.writeInt(0);
 		output.writeObject("Register");
@@ -46,7 +46,7 @@ public class Client implements Runnable {
 		while (processingConnection) {
 			int requestNum = -1;
 			requestNum = input.readInt();
-			handler.processRequest(requestNum, input, output);			
+			handler.processRequest(requestNum, input, output);
 		}
 
 	}
@@ -66,9 +66,9 @@ public class Client implements Runnable {
 			e.printStackTrace();
 		} finally {
 			try {
-				client.close();
-				output.close();
-				input.close();
+				if (output != null)	output.close();
+				if (input != null)	input.close();
+				if (client != null)	client.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

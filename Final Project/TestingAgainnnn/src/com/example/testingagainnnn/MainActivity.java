@@ -39,7 +39,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState); 
 		setContentView(R.layout.activity_main);
 
 		this.registerReceiver(new BatteryInfoReceiver(), new IntentFilter(
@@ -58,7 +58,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		 * Toast.makeText(getApplicationContext(), textBox.getText(),
 		 * Toast.LENGTH_LONG).show(); textBox.getText().clear();
 		 */
-		Thread clientThread = new Thread(new Client());
+		Thread clientThread = new Thread(new Client(getApplicationContext()));
 		clientThread.start();
 	}
 

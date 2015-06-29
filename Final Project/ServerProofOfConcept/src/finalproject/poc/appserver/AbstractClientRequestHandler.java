@@ -11,36 +11,36 @@ import java.io.ObjectOutputStream;
  *
  */
 public abstract class AbstractClientRequestHandler {
-	
-	private ClientRequest request;
+
 	private AbstractClientRequestHandler nextHandler;
-	
-	public AbstractClientRequestHandler(){
-		
+
+	public AbstractClientRequestHandler() {
+
 	}
-		
-	protected abstract void handleHere(ObjectInputStream input, ObjectOutputStream output);
-	
-	public void processRequest(int requestNum, ObjectInputStream input, ObjectOutputStream output){
-	System.out.println("Processing request");
-		
-		if (requestNum == request.getRequestNum()){
+
+	public void setNextHandler(AbstractClientRequestHandler nextHandler) {
+		this.nextHandler = nextHandler;
+	}
+
+	public void processRequest(int requestNum, ObjectInputStream input,
+			ObjectOutputStream output) {
+		System.out.println("Processing request");
+
+		if (requestNum == getRequestNum()) {
 			handleHere(input, output);
 		} else {
 			delegate(requestNum, input, output);
 		}
 	}
-	
-	protected void delegate(int requestNum, ObjectInputStream input, ObjectOutputStream output){
+
+	protected abstract int getRequestNum();
+
+	protected abstract void handleHere(ObjectInputStream input,
+			ObjectOutputStream output);
+
+	protected void delegate(int requestNum, ObjectInputStream input,
+			ObjectOutputStream output) {
 		nextHandler.processRequest(requestNum, input, output);
-	}
-	
-	public void setNextHandler(AbstractClientRequestHandler nextHandler){
-		this.nextHandler = nextHandler;
-	}
-	
-	protected void setClientRequest(ClientRequest request){
-		this.request = request;
 	}
 
 }

@@ -9,13 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 
 public class LoadCalculationClassRequestHandler extends
 		AbstractServerRequestHandler {
-
-	private static ServerRequest serverRequest = ServerRequest.LOAD_CALCULATOR_CLASS;
-
-	public LoadCalculationClassRequestHandler() {
-		setServerRequest(serverRequest);
-	}
-
+	
+	
 	@Override
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
 		// TODO Auto-generated method stub
@@ -60,7 +55,13 @@ public class LoadCalculationClassRequestHandler extends
 
 	@Override
 	protected void delegate(int requestNum, ObjectInputStream input, ObjectOutputStream output) {
+		// fall through here
+	}
 
+	@Override
+	protected int getRequestNum() {
+		// TODO Auto-generated method stub
+		return ServerRequest.LOAD_CALCULATOR_CLASS.getRequestNum();
 	}
 
 }
