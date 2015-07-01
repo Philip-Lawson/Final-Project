@@ -4,10 +4,13 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SimpleServer implements Runnable {
 	
 	private ServerSocket server;
+	private ExecutorService threadPool;
 	
 
 	@Override
@@ -15,14 +18,14 @@ public class SimpleServer implements Runnable {
 		// TODO Auto-generated method stub
 		try {
 			server = new ServerSocket(12346);
+			threadPool = Executors.newFixedThreadPool(100);
 			
 			while (true) {
 				try {
 					Socket connection = server.accept();
-					Thread serverThread = new Thread( new ServerThread(connection,
+					threadPool.execute( new ServerThread(connection,
 							this));					
 					
-					serverThread.start();
 				} catch (EOFException eofException) {
 				}
 			}

@@ -1,9 +1,9 @@
 package finalproject.poc.calculationclasses;
 
 /**
- * Abstract implementation of IWorkPacket. To be sent from the server to
- * be processed by the client device. This stores the ID of the work packet
- * and the data to be processed.
+ * Abstract implementation of IWorkPacket. To be sent from the server to be
+ * processed by the client device. This stores the ID of the work packet and the
+ * data to be processed.
  * 
  * @author Phil
  *
@@ -14,6 +14,8 @@ public abstract class AbstractWorkPacket implements IWorkPacket {
 	 * 
 	 */
 	private static final long serialVersionUID = -3127345838271149066L;
+
+	private static long DEFAULT_PACKET_ID = 100000000L;
 
 	/**
 	 * The ID of the work packet. This ID should be unique.
@@ -26,20 +28,22 @@ public abstract class AbstractWorkPacket implements IWorkPacket {
 	private Object initialData;
 
 	/**
-	 * Default constructor.
+	 * Default constructor sets the work packet with a default unique ID.
 	 */
 	public AbstractWorkPacket() {
-
+		this.setPacketId(++DEFAULT_PACKET_ID + "");
 	}
 
 	/**
-	 * Instantiates a work packet with a packet ID.
+	 * Instantiates a work packet with a default unique packet ID and the data
+	 * to be processed.
 	 * 
-	 * @param packetId
-	 *            the ID of the work packet
+	 * @param initialData
+	 *            the data to be processed
 	 */
-	public AbstractWorkPacket(String packetId) {
-		this.setPacketId(packetId);
+	public AbstractWorkPacket(Object initialData) {
+		this();
+		this.setInitialData(initialData);
 	}
 
 	/**
@@ -51,7 +55,7 @@ public abstract class AbstractWorkPacket implements IWorkPacket {
 	 *            the data to be processed
 	 */
 	public AbstractWorkPacket(String packetId, Object initialData) {
-		this(packetId);
+		this.setPacketId(packetId);
 		this.setInitialData(initialData);
 	}
 

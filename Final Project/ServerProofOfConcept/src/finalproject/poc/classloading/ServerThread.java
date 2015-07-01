@@ -16,6 +16,8 @@ public class ServerThread implements Runnable {
 
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
+	private Class<?> classToSend;
+	private byte[] classBytes;
 
 	public ServerThread(Socket socket, SimpleServer server) {
 		this.socket = socket;
@@ -51,6 +53,26 @@ public class ServerThread implements Runnable {
 
 	}
 
+	private void writeClassToBytes() throws IOException {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(bytes);
+		
+		oos.flush();
+		bytes.flush();
+		oos.writeObject(classToSend);
+		System.out.println("Class written");
+
+		classBytes = bytes.toByteArray();
+		System.out.println("Converted to byte array");
+		bytes.close();
+		oos.close();
+	}
+
+	public void changeClass(Class<?> classToStore) throws IOException {
+		this.classToSend = classToStore;
+		writeClassToBytes();
+	}
+
 	private void closeConnections() {
 		try {
 			if (out != null) {
@@ -60,37 +82,26 @@ public class ServerThread implements Runnable {
 			if (in != null) {
 				in.close();
 			}
-			
+
 		} catch (IOException IOEx) {
-			//IOEx.printStackTrace();
+			// IOEx.printStackTrace();
 			System.out.println("Problem closing connection");
 		}
 	}
 
 	private void sendClass() throws IOException, ClassNotFoundException {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(bytes);
-
-		Class<?> classToWrite = ConcreteCalculator.class;
-		oos.flush();
-		bytes.flush();
-		oos.writeObject(classToWrite);
-		System.out.println("Class written");
-
-		byte[] classFile = bytes.toByteArray();
-		System.out.println("Converted to byte array");
-		bytes.close();
-		oos.close();
+		if (null == classBytes){
+			writeClassToBytes();
+		}
 
 		out.writeInt(ServerRequest.LOAD_CALCULATOR_CLASS.getRequestNum());
 		out.flush();
-		out.writeObject(ConcreteCalculator.class.getName());
+		out.writeObject(classToSend.getName());
 		out.flush();
-		
 
 		System.out.println("Sending class");
 		try {
-			out.writeObject(classFile);
+			out.writeObject(classBytes);
 		} catch (SocketException ex) {
 			System.out.println("Problem sending class");
 		}
