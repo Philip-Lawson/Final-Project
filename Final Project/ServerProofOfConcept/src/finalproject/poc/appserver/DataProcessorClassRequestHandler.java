@@ -8,39 +8,32 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import finalproject.poc.calculationclasses.DataProcessorClassWriter;
-import finalproject.poc.persistence.DatabaseFacade;
 
 /**
  * @author Phil
  *
  */
-public class RegisterRequestHandler extends AbstractClientRequestHandler {
-
-	private DatabaseFacade database;
+public class DataProcessorClassRequestHandler extends
+		AbstractClientRequestHandler {
+	
 	private DataProcessorClassWriter classWriter;
 	
-	public RegisterRequestHandler(){
+	public DataProcessorClassRequestHandler(){
 		super();
 	}
 	
-	public RegisterRequestHandler(DatabaseFacade database){
+	public DataProcessorClassRequestHandler(DataProcessorClassWriter classWriter){
 		super();
-		this.database = database;
-	}
-	
-	public RegisterRequestHandler(DatabaseFacade database, DataProcessorClassWriter classWriter){
-		super();
-		this.database = database;
 		this.classWriter = classWriter;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see finalproject.poc.appserver.AbstractClientRequestHandler#getRequestNum()
 	 */
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.REGISTER.getRequestNum();
+		return ClientRequest.REQUEST_CALCULATION_CLASS.getRequestNum();
 	}
 
 	/* (non-Javadoc)
@@ -50,15 +43,13 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
 		// TODO Auto-generated method stub
 		try {
-			RegistrationPack registrationPack = (RegistrationPack) input.readObject();
-			database.addDevice(registrationPack);
-			
 			output.reset();
 			output.writeInt(ServerRequest.LOAD_CALCULATOR_CLASS.getRequestNum());
 			output.writeObject(classWriter.getClassBytes());
 			output.flush();
-		} catch (IOException | ClassNotFoundException ex){
-			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 

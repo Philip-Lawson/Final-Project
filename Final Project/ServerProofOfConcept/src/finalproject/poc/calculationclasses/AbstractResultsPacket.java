@@ -22,6 +22,7 @@ public abstract class AbstractResultsPacket implements IResultsPacket {
 	 * The ID of the processed work packet.
 	 */
 	private String packetId;
+		
 
 	/**
 	 * The processed data.
@@ -47,5 +48,5 @@ public abstract class AbstractResultsPacket implements IResultsPacket {
 	public Object getResult() {
 		return result;
 	}
-
+		
 }

@@ -1,15 +1,17 @@
 /**
  * 
  */
-package finalproject.poc.appserver;
+package finalproject.poc.work;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.NoSuchElementException;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import finalproject.poc.calculationclasses.IWorkPacket;
+import finalproject.poc.calculationclasses.WorkPacketList;
 
 /**
  * Concrete implementation of the AbstractWorkPacketDrawer.
@@ -31,8 +33,9 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 	private ReadWriteLock lock = new ReentrantReadWriteLock(true);
 	private Deque<IWorkPacket> workPacketList = new ArrayDeque<IWorkPacket>();
 	private int numberOfCopies = DEFAULT_NUMBER_OF_COPIES;
-	private int timesCurrentPacketSent = numberOfCopies;
-	private IWorkPacket currentWorkPacket;
+	private int packetsPerList = 5;
+	private int timesCurrentPacketSent = numberOfCopies;	
+	private WorkPacketList currentWorkPacketList;
 
 	@Override
 	public void addWorkPackets(Collection<IWorkPacket> workPackets) {
@@ -49,13 +52,13 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 	}
 	
 	@Override
-	public IWorkPacket getNextWorkPacket() throws NullPointerException {
+	public WorkPacketList getNextWorkPacket(){
 		// TODO work out method to avoid pulling from an empty list
 		lock.writeLock().lock();
 		
 		try {
 			if (timesCurrentPacketSent >= numberOfCopies) {
-				currentWorkPacket = workPacketList.removeFirst();
+				currentWorkPacketList = loadNextPacketList();
 				timesCurrentPacketSent = 1;
 			} else {
 				timesCurrentPacketSent++;
@@ -64,7 +67,7 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 			lock.writeLock().unlock();
 		}
 
-		return currentWorkPacket;
+		return currentWorkPacketList;
 
 	}
 
@@ -100,6 +103,33 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 	@Override
 	public boolean hasWorkPackets() {
 		return numberOfPacketsRemaining() > 0;
+	}
+	
+	public void setPacketsPerList(int packetsPerList){
+		if (packetsPerList > 0){
+			this.packetsPerList = packetsPerList;
+		}
+	}
+	
+	public WorkPacketList loadNextPacketList() {
+		lock.writeLock().lock();
+		
+		try {
+			currentWorkPacketList.clear();
+			
+			for (int count=0; count<packetsPerList; count++){
+				if (!workPacketList.isEmpty()){
+					currentWorkPacketList.add(workPacketList.removeFirst());
+				} else {
+					break;
+				}						
+			}
+			
+		} finally {
+			lock.writeLock().unlock();
+		}
+		
+		return currentWorkPacketList;
 	}
 
 }

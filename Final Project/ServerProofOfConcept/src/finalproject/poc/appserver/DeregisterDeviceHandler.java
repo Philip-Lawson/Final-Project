@@ -7,40 +7,33 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import finalproject.poc.calculationclasses.DataProcessorClassWriter;
 import finalproject.poc.persistence.DatabaseFacade;
 
 /**
  * @author Phil
  *
  */
-public class RegisterRequestHandler extends AbstractClientRequestHandler {
+public class DeregisterDeviceHandler extends AbstractClientRequestHandler {
 
 	private DatabaseFacade database;
-	private DataProcessorClassWriter classWriter;
 	
-	public RegisterRequestHandler(){
+	public DeregisterDeviceHandler(){
 		super();
 	}
 	
-	public RegisterRequestHandler(DatabaseFacade database){
-		super();
-		this.database = database;
-	}
-	
-	public RegisterRequestHandler(DatabaseFacade database, DataProcessorClassWriter classWriter){
+	public DeregisterDeviceHandler(DatabaseFacade database){
 		super();
 		this.database = database;
-		this.classWriter = classWriter;
 	}
 	
+
 	/* (non-Javadoc)
 	 * @see finalproject.poc.appserver.AbstractClientRequestHandler#getRequestNum()
 	 */
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.REGISTER.getRequestNum();
+		return ClientRequest.DEREGISTER_DEVICE.getRequestNum();
 	}
 
 	/* (non-Javadoc)
@@ -49,18 +42,20 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 	@Override
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
 		// TODO Auto-generated method stub
+		String androidID;
+		
 		try {
-			RegistrationPack registrationPack = (RegistrationPack) input.readObject();
-			database.addDevice(registrationPack);
+			androidID = (String)input.readObject();
 			
 			output.reset();
-			output.writeInt(ServerRequest.LOAD_CALCULATOR_CLASS.getRequestNum());
-			output.writeObject(classWriter.getClassBytes());
-			output.flush();
-		} catch (IOException | ClassNotFoundException ex){
+			output.writeInt(ServerRequest.CHANGE_CONFIRMED.getRequestNum());
+			output.writeBoolean(database.deregisterDevice(androidID));
+			output.flush();	
 			
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
 
 	}
 

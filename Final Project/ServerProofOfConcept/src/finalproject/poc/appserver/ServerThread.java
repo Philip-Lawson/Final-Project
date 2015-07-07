@@ -49,8 +49,8 @@ public class ServerThread implements Runnable {
 	}
 
 	private void processConnection() {
-		AbstractClientRequestHandler registerHandler = new RegisterRequestHandler();
-		AbstractClientRequestHandler resultsHandler = new ProcessResultHandler();
+		AbstractClientRequestHandler registerHandler = new POCRegisterRequestHandler();
+		AbstractClientRequestHandler resultsHandler = new POCProcessResultHandler();
 
 		registerHandler.setNextHandler(resultsHandler);
 

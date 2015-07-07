@@ -1,7 +1,7 @@
 /**
  * 
  */
-package finalproject.poc.appserver;
+package finalproject.poc.work;
 
 import java.util.Collection;
 

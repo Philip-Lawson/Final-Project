@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		 * Toast.makeText(getApplicationContext(), textBox.getText(),
 		 * Toast.LENGTH_LONG).show(); textBox.getText().clear();
 		 */
-		Thread clientThread = new Thread(new Client(getApplicationContext()));
+		Thread clientThread = new Thread(new RegisterClientThread(getApplicationContext()));
 		clientThread.start();
 	}
 

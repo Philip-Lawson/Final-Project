@@ -6,19 +6,21 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
+
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 import android.content.Context;
 import android.provider.Settings.Secure;
 
-public class Client implements Runnable {
+public abstract class Client implements Runnable {
 
 	private static final int PORT_NUMBER = 12346;
 	private static final String HOST = "10.0.2.2";
-	private Socket client;
-	private ObjectInputStream input;
-	private ObjectOutputStream output;
+	private SSLSocket client;
+	protected ObjectInputStream input;
+	protected ObjectOutputStream output;
 	protected boolean processingConnection = true;
 	private AbstractServerRequestHandler handler;
 	private Context context;	
@@ -32,12 +34,17 @@ public class Client implements Runnable {
 		this.context = context;
 	}
 	
+	public Context getContext(){
+		return context;
+	}	
+	
 	public void cancelConnection(){
 		processingConnection = false;
 	}
 
 	private void connectToServer() throws UnknownHostException, IOException {
-		client = new Socket(InetAddress.getByName(HOST), PORT_NUMBER);		
+		SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+		client = (SSLSocket) factory.createSocket(InetAddress.getByName(HOST), PORT_NUMBER);		
 		
 	}
 
@@ -47,16 +54,9 @@ public class Client implements Runnable {
 		output.flush();		
 	}
 	
-	private void registerWithServer() throws IOException {		
-		String androidID = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
-		
-		output.reset();
-		output.writeInt(ClientRequest.REGISTER.getRequestNum());
-		output.writeObject(androidID);
-		output.flush();		
-	}
+	protected abstract void communicateWithServer() throws IOException; 
 
-	private void processConnection() throws IOException {
+	protected void processConnection() throws IOException {
 		handler = new CalculationRequestHandler();
 		handler.setNextHandler(new BecomeDormantRequestHandler());
 		processingConnection = true;		
@@ -75,7 +75,7 @@ public class Client implements Runnable {
 		try {
 			connectToServer();
 			getStreams();
-			registerWithServer();
+			communicateWithServer();
 			processConnection();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -87,7 +87,7 @@ public class Client implements Runnable {
 			try {				
 				if (output != null) output.close();
 				if (input != null) input.close();
-				if (client != null) client.close();
+				if (client != null) client.close();				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -1,11 +1,12 @@
 /**
  * 
  */
-package finalproject.poc.appserver;
+package finalproject.poc.work;
 
 import java.util.Collection;
 
 import finalproject.poc.calculationclasses.IWorkPacket;
+import finalproject.poc.calculationclasses.WorkPacketList;
 
 /**
  * This is the abstract representation of a class that stores the work packets
@@ -32,11 +33,11 @@ public abstract class AbstractWorkPacketDrawer {
 	 * Retrieves the next work packet from the drawer, taking into account the
 	 * number of copies of each work packet to be sent out.
 	 * 
-	 * @return the next work packet to be sent.
+	 * @return the next list of work packets to be sent.
 	 * @:throws NullPointerException if the drawer is accessed when it doesn't
 	 *          contain any work packets.
 	 */
-	public abstract IWorkPacket getNextWorkPacket() throws NullPointerException;
+	public abstract WorkPacketList getNextWorkPacket();
 
 	/**
 	 * Sets the number of copies of each work packet to be sent out. This can be
