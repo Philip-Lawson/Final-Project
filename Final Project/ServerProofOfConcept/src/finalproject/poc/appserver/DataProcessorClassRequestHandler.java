@@ -33,7 +33,7 @@ public class DataProcessorClassRequestHandler extends
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.REQUEST_CALCULATION_CLASS.getRequestNum();
+		return ClientRequest.REQUEST_PROCESSING_CLASS;
 	}
 
 	/* (non-Javadoc)
@@ -44,7 +44,7 @@ public class DataProcessorClassRequestHandler extends
 		// TODO Auto-generated method stub
 		try {
 			output.reset();
-			output.writeInt(ServerRequest.LOAD_CALCULATOR_CLASS.getRequestNum());
+			output.writeInt(ServerRequest.LOAD_PROCESSING_CLASS);
 			output.writeObject(classWriter.getClassBytes());
 			output.flush();
 		} catch (IOException e) {

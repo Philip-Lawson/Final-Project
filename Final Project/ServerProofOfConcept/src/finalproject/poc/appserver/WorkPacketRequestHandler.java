@@ -35,7 +35,7 @@ public class WorkPacketRequestHandler extends AbstractClientRequestHandler {
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.REQUEST_WORK_PACKET.getRequestNum();
+		return ClientRequest.REQUEST_WORK_PACKET;
 	}
 
 	/*
@@ -51,10 +51,10 @@ public class WorkPacketRequestHandler extends AbstractClientRequestHandler {
 		try {
 			
 			if (workPacketDrawer.hasWorkPackets()) {
-				output.writeInt(ServerRequest.NEW_CALCULATION.getRequestNum());
+				output.writeInt(ServerRequest.PROCESS_WORK_PACKETS);
 				output.writeObject(workPacketDrawer.getNextWorkPacket());
 			} else {
-				output.writeInt(ServerRequest.BECOME_DORMANT.getRequestNum());
+				output.writeInt(ServerRequest.BECOME_DORMANT);
 			}			
 		
 		} catch (IOException e) {

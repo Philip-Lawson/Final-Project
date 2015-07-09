@@ -29,7 +29,7 @@ public class RegisterClientThread extends Client {
 		registrationPack.setEmailAddress(emailAddress);
 
 		output.reset();
-		output.writeInt(ClientRequest.REGISTER.getRequestNum());
+		output.writeInt(ClientRequest.REGISTER);
 		output.writeObject(registrationPack);
 		output.flush();
 	}

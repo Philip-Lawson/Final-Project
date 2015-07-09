@@ -30,7 +30,7 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.PROCESS_RESULT.getRequestNum();
+		return ClientRequest.PROCESS_RESULT;
 	}
 
 	/* (non-Javadoc)
@@ -54,9 +54,9 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 			output.reset();
 			
 			if (database.isDeviceBlacklisted(deviceID) || !packetDrawer.hasWorkPackets()){				
-				output.writeInt(ServerRequest.BECOME_DORMANT.getRequestNum());
+				output.writeInt(ServerRequest.BECOME_DORMANT);
 			} else {
-				output.writeInt(ServerRequest.NEW_CALCULATION.getRequestNum());
+				output.writeInt(ServerRequest.PROCESS_WORK_PACKETS);
 				output.writeObject(packetDrawer.getNextWorkPacket());
 			}
 			

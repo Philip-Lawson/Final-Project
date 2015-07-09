@@ -33,7 +33,7 @@ public class DeregisterDeviceHandler extends AbstractClientRequestHandler {
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.DEREGISTER_DEVICE.getRequestNum();
+		return ClientRequest.DEREGISTER_DEVICE;
 	}
 
 	/* (non-Javadoc)
@@ -48,7 +48,7 @@ public class DeregisterDeviceHandler extends AbstractClientRequestHandler {
 			androidID = (String)input.readObject();
 			
 			output.reset();
-			output.writeInt(ServerRequest.CHANGE_CONFIRMED.getRequestNum());
+			output.writeInt(ServerRequest.CHANGE_CONFIRMED);
 			output.writeBoolean(database.deregisterDevice(androidID));
 			output.flush();	
 			

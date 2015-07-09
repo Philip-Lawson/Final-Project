@@ -19,7 +19,7 @@ public class POCRegisterRequestHandler extends AbstractClientRequestHandler {
 			IWorkPacket workPacket = new WorkPacket("DummyID", Integer.valueOf(2));
 			
 			output.reset();
-			output.writeInt(ServerRequest.NEW_CALCULATION.getRequestNum());
+			output.writeInt(ServerRequest.PROCESS_WORK_PACKETS);
 			output.writeObject(workPacket);
 			output.flush();
 			System.out.println("Work packet sent");
@@ -33,7 +33,7 @@ public class POCRegisterRequestHandler extends AbstractClientRequestHandler {
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.REGISTER.getRequestNum();
+		return ClientRequest.REGISTER;
 	}
 
 }

@@ -6,6 +6,8 @@ package com.example.appproofofconcept;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import android.content.Context;
+
 /**
  * @author Phil
  *
@@ -13,9 +15,14 @@ import java.io.ObjectOutputStream;
 public abstract class AbstractServerRequestHandler {
 	
 	private AbstractServerRequestHandler nextHandler;
+	protected Context context;
 	
 	public AbstractServerRequestHandler(){
 		
+	}
+	
+	public AbstractServerRequestHandler(Context context){
+		this.context = context.getApplicationContext();
 	}
 	
 	public void setNextHandler(AbstractServerRequestHandler nextHandler){

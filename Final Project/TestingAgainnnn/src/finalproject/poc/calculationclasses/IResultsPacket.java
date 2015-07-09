@@ -44,4 +44,5 @@ public interface IResultsPacket extends Serializable {
 	 *            the processed data
 	 */
 	public void setResult(Object result);
+	
 }

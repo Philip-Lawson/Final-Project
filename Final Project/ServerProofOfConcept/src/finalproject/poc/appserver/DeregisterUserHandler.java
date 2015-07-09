@@ -31,7 +31,7 @@ public class DeregisterUserHandler extends AbstractClientRequestHandler {
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.DEREGISTER_USER.getRequestNum();
+		return ClientRequest.DEREGISTER_USER;
 	}
 
 	/* (non-Javadoc)
@@ -45,7 +45,7 @@ public class DeregisterUserHandler extends AbstractClientRequestHandler {
 			emailAddress = (String) input.readObject();
 			
 			output.reset();
-			output.writeInt(ServerRequest.CHANGE_CONFIRMED.getRequestNum());
+			output.writeInt(ServerRequest.CHANGE_CONFIRMED);
 			output.writeBoolean(database.deregisterUser(emailAddress));
 			output.flush();	
 			

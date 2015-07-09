@@ -8,17 +8,21 @@ import java.io.OptionalDataException;
 import finalproject.poc.calculationclasses.DummyProcessor;
 import finalproject.poc.calculationclasses.IResultsPacket;
 import finalproject.poc.calculationclasses.IWorkPacket;
+import finalproject.poc.calculationclasses.WorkPacketList;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Process;
 import android.support.v4.app.NotificationCompat;
 
 public class CalculationRequestHandler extends AbstractServerRequestHandler {
 	
-	private DummyProcessor processor;
-	
+		
 	public CalculationRequestHandler(){
-		super();
-		this.processor = new DummyProcessor();
+		super();		
+	}
+	
+	public CalculationRequestHandler(Context context){
+		super(context);		
 	}
 
 	@Override
@@ -26,13 +30,17 @@ public class CalculationRequestHandler extends AbstractServerRequestHandler {
 		// TODO Auto-generated method stub
 		
 		try {
-			IWorkPacket packet = (IWorkPacket) input.readObject();
-			IResultsPacket result = processor.execute(packet);
+			WorkPacketList workPacketList = (WorkPacketList) input.readObject();
+			DataProcessingManager processingManager = new DataProcessingManager(workPacketList, context);
 			
-			output.reset();
+			processingManager.startProcessing();			
+			client.cancelConnection();
+			//IResultsPacket result = processor.execute(packet);
+			
+			/*output.reset();
 			output.writeInt(ClientRequest.PROCESS_RESULT.getRequestNum());
-			output.writeObject(result);
-			output.flush();
+			//output.writeObject(result);
+			output.flush();*/
 		} catch (OptionalDataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -50,7 +58,7 @@ public class CalculationRequestHandler extends AbstractServerRequestHandler {
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ServerRequest.NEW_CALCULATION.getRequestNum();
+		return ServerRequest.PROCESS_WORK_PACKETS;
 	}
 		
 	

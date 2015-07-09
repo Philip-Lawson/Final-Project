@@ -35,7 +35,7 @@ public class ChangeEmailHandler extends AbstractClientRequestHandler {
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.CHANGE_EMAIL.getRequestNum();
+		return ClientRequest.CHANGE_EMAIL;
 	}
 
 	/*
@@ -54,7 +54,7 @@ public class ChangeEmailHandler extends AbstractClientRequestHandler {
 					.readObject();
 			
 			output.reset();
-			output.writeInt(ServerRequest.CHANGE_CONFIRMED.getRequestNum());
+			output.writeInt(ServerRequest.CHANGE_CONFIRMED);
 			output.writeBoolean(database.changeEmailAddress(registrationPack));
 			output.flush();			
 		} catch (ClassNotFoundException | IOException e) {

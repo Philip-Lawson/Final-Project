@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.Process;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +39,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private EditText textBox;
 	private Button button;
 	
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState); 
@@ -61,6 +62,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		 * Toast.LENGTH_LONG).show(); textBox.getText().clear();
 		 */
 		Thread clientThread = new Thread(new RegisterClientThread(getApplicationContext()));
+		clientThread.setPriority(Process.THREAD_PRIORITY_BACKGROUND);
 		clientThread.start();
 	}
 

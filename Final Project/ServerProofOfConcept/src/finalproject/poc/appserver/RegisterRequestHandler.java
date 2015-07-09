@@ -40,7 +40,7 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.REGISTER.getRequestNum();
+		return ClientRequest.REGISTER;
 	}
 
 	/* (non-Javadoc)
@@ -54,7 +54,7 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 			database.addDevice(registrationPack);
 			
 			output.reset();
-			output.writeInt(ServerRequest.LOAD_CALCULATOR_CLASS.getRequestNum());
+			output.writeInt(ServerRequest.LOAD_PROCESSING_CLASS);
 			output.writeObject(classWriter.getClassBytes());
 			output.flush();
 		} catch (IOException | ClassNotFoundException ex){

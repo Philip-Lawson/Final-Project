@@ -18,11 +18,7 @@ public class ResultsPacketList extends ArrayList<IResultsPacket> {
 	
 	private String deviceID;
 	
-	public ResultsPacketList(String deviceID){
-		super();
-		this.deviceID = deviceID;
-	}
-
+	
 	public String getDeviceID() {
 		return deviceID;
 	}

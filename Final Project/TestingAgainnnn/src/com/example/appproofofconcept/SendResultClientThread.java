@@ -6,7 +6,9 @@ package com.example.appproofofconcept;
 import java.io.IOException;
 
 import finalproject.poc.calculationclasses.IResultsPacket;
+import finalproject.poc.calculationclasses.ResultsPacketList;
 import android.content.Context;
+import android.provider.Settings.Secure;
 
 /**
  * @author Phil
@@ -14,7 +16,7 @@ import android.content.Context;
  */
 public class SendResultClientThread extends Client {
 	
-	private IResultsPacket results;
+	private ResultsPacketList results;
 	
 	public SendResultClientThread(){
 		super();
@@ -24,13 +26,16 @@ public class SendResultClientThread extends Client {
 		super(context);
 	}
 	
-	public SendResultClientThread(Context context, IResultsPacket results){
+	public SendResultClientThread(Context context, ResultsPacketList results){
 		super(context);
-		this.results = results;
+		this.setResults(results);
+		
 	}
 	
-	public void setResults(IResultsPacket results){
+	public void setResults(ResultsPacketList results){
 		this.results = results;
+		results.setDeviceID(Secure.getString(getContext()
+				.getContentResolver(), Secure.ANDROID_ID));
 	}
 
 	/* (non-Javadoc)
@@ -40,7 +45,7 @@ public class SendResultClientThread extends Client {
 	protected void communicateWithServer() throws IOException {
 		// TODO Auto-generated method stub
 		output.reset();
-		output.writeInt(ClientRequest.PROCESS_RESULT.getRequestNum());
+		output.writeInt(ClientRequest.PROCESS_RESULT);
 		output.writeObject(results);
 		output.flush();
 

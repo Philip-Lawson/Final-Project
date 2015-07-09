@@ -39,13 +39,13 @@ public class POCProcessResultHandler extends AbstractClientRequestHandler {
 				IWorkPacket workPacket = new WorkPacket(number.hashCode() + "", num);
 
 				output.reset();
-				output.writeInt(ServerRequest.NEW_CALCULATION.getRequestNum());
+				output.writeInt(ServerRequest.PROCESS_WORK_PACKETS);
 				output.writeObject(workPacket);
 				output.flush();
 				System.out.println("Work packet sent");
 			} else {
 				output.reset();
-				output.writeInt(ServerRequest.BECOME_DORMANT.getRequestNum());
+				output.writeInt(ServerRequest.BECOME_DORMANT);
 				output.flush();
 				System.out.println("Client connection closed");
 			}
@@ -66,7 +66,7 @@ public class POCProcessResultHandler extends AbstractClientRequestHandler {
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ClientRequest.PROCESS_RESULT.getRequestNum();
+		return ClientRequest.PROCESS_RESULT;
 	}
 
 }
