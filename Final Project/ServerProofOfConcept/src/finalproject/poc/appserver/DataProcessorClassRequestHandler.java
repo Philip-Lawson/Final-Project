@@ -23,7 +23,7 @@ public class DataProcessorClassRequestHandler extends
 	}
 	
 	public DataProcessorClassRequestHandler(DataProcessorClassWriter classWriter){
-		super();
+		this();
 		this.classWriter = classWriter;
 	}
 

@@ -63,11 +63,13 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 			} else {
 				timesCurrentPacketSent++;
 			}
+			
+			return currentWorkPacketList;
 		} finally {
 			lock.writeLock().unlock();
 		}
 
-		return currentWorkPacketList;
+		
 
 	}
 
@@ -84,20 +86,19 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 	}
 
 	@Override
-	public int numberOfPacketsRemaining() {		
-		int packetsRemaining = 0;
+	public int numberOfPacketsRemaining() {				
 		lock.readLock().lock();
 		
 		try {
 			// the multiple of packets within the list left to send and the number
 			// of times the current packet should be sent
-			packetsRemaining = (workPacketList.size() * numberOfCopies)
+			return (workPacketList.size() * numberOfCopies)
 					+ (numberOfCopies - timesCurrentPacketSent);
 		} finally {
 			lock.readLock().unlock();
 		}
 
-		return packetsRemaining;
+	
 	}
 
 	@Override
@@ -124,12 +125,13 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 					break;
 				}						
 			}
+
+			return currentWorkPacketList;
 			
 		} finally {
 			lock.writeLock().unlock();
 		}
 		
-		return currentWorkPacketList;
 	}
 
 }

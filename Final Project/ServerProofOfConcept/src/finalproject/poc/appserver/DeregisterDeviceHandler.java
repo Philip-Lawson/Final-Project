@@ -22,7 +22,7 @@ public class DeregisterDeviceHandler extends AbstractClientRequestHandler {
 	}
 	
 	public DeregisterDeviceHandler(DatabaseFacade database){
-		super();
+		this();
 		this.database = database;
 	}
 	

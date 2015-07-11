@@ -24,13 +24,12 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 	}
 	
 	public RegisterRequestHandler(DatabaseFacade database){
-		super();
+		this();
 		this.database = database;
 	}
 	
 	public RegisterRequestHandler(DatabaseFacade database, DataProcessorClassWriter classWriter){
-		super();
-		this.database = database;
+		this(database);
 		this.classWriter = classWriter;
 	}
 	

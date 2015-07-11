@@ -31,9 +31,7 @@ public class CalculationRequestHandler extends AbstractServerRequestHandler {
 		
 		try {
 			WorkPacketList workPacketList = (WorkPacketList) input.readObject();
-			DataProcessingManager processingManager = new DataProcessingManager(workPacketList, context);
-			
-			processingManager.startProcessing();			
+			DataProcessingManager.getInstance().startProcessing(workPacketList); 
 			client.cancelConnection();
 			//IResultsPacket result = processor.execute(packet);
 			

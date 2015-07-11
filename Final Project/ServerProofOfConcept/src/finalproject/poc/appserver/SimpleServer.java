@@ -10,27 +10,31 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
-
 public class SimpleServer implements Runnable {
 
+	private static final int THREAD_POOL_SIZE = 200;
 	private static final int PORT = 12346;
 	private static final char[] PASSWORD = "passphrase".toCharArray();
 	private static final String KEYSTORE_FILE_NAME = "testkeys";
 	private static final String KEY_STORE = "JKS";
 	private static final String KEY = "SunX509";
 	private static final String ALGORITHM = "TLS";
-		
+
+	private ExecutorService threadPool;
 	private SSLContext context;
 	private KeyManagerFactory keyFactory;
 	private KeyStore keyStore;
 	private SSLServerSocket server;
 	private SSLServerSocketFactory socketFactory;
+	private boolean listening = true;
 
 	private SSLServerSocket getSecureSocket(int port)
 			throws NoSuchAlgorithmException, KeyStoreException,
@@ -39,16 +43,19 @@ public class SimpleServer implements Runnable {
 		context = SSLContext.getInstance(ALGORITHM);
 		keyFactory = KeyManagerFactory.getInstance(KEY);
 		keyStore = KeyStore.getInstance(KEY_STORE);
-		
+
 		keyStore.load(new FileInputStream(KEYSTORE_FILE_NAME), PASSWORD);
 		keyFactory.init(keyStore, PASSWORD);
-		
+
 		context.init(keyFactory.getKeyManagers(), null, null);
 		socketFactory = context.getServerSocketFactory();
-		
-		return (SSLServerSocket) socketFactory.createServerSocket(port);
-		
 
+		return (SSLServerSocket) socketFactory.createServerSocket(port);
+
+	}
+	
+	public void stopServer(){
+		listening = false;
 	}
 
 	@Override
@@ -56,16 +63,13 @@ public class SimpleServer implements Runnable {
 		// TODO Auto-generated method stub
 		try {
 			server = getSecureSocket(PORT);
+			threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
-			while (true) {
-
+			while (listening) {
 				Socket connection = server.accept();
-				Thread serverThread = new Thread(new ServerThread(connection,
-						this));
+				threadPool.execute(new ServerThread(connection, this));
+			}
 
-				serverThread.start();
-
-			}		
 		} catch (UnrecoverableKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

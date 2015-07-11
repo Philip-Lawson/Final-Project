@@ -15,14 +15,14 @@ import finalproject.poc.work.AbstractWorkPacketDrawer;
  */
 public class WorkPacketRequestHandler extends AbstractClientRequestHandler {
 
-	private AbstractWorkPacketDrawer workPacketDrawer;
+	private AbstractWorkPacketDrawer workPacketDrawer;	
 
 	public WorkPacketRequestHandler() {
 		super();
 	}
 
 	public WorkPacketRequestHandler(AbstractWorkPacketDrawer workPacketDrawer) {
-		super();
+		this();
 		this.workPacketDrawer = workPacketDrawer;
 	}
 
@@ -52,7 +52,7 @@ public class WorkPacketRequestHandler extends AbstractClientRequestHandler {
 			
 			if (workPacketDrawer.hasWorkPackets()) {
 				output.writeInt(ServerRequest.PROCESS_WORK_PACKETS);
-				output.writeObject(workPacketDrawer.getNextWorkPacket());
+				output.writeObject(workPacketDrawer.getNextWorkPacket());				
 			} else {
 				output.writeInt(ServerRequest.BECOME_DORMANT);
 			}			

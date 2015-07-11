@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 
+import finalproject.poc.calculationclasses.IDataProcessor;
 import finalproject.poc.calculationclasses.ProcessingClassLoader;
 
 /**
@@ -28,7 +29,8 @@ public class LoadProcessingClassRequestHandler extends AbstractServerRequestHand
 		// TODO Auto-generated method stub
 		try {
 			byte[] classBytes = (byte[]) input.readObject();
-			ProcessingClassLoader.loadClass(classBytes);
+			IDataProcessor processor = ProcessingClassLoader.loadClass(classBytes);
+			DataProcessor.changeProcessorClass(processor);
 		} catch (OptionalDataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

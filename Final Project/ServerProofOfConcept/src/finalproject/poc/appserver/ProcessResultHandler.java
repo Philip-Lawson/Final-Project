@@ -11,6 +11,8 @@ import finalproject.poc.calculationclasses.AbstractResultsValidator;
 import finalproject.poc.calculationclasses.IResultsPacket;
 import finalproject.poc.calculationclasses.ResultsPacketList;
 import finalproject.poc.persistence.DatabaseFacade;
+import finalproject.poc.persistence.DeviceDetailsManager;
+import finalproject.poc.persistence.ResultsPacketManager;
 import finalproject.poc.work.AbstractWorkPacketDrawer;
 
 /**
@@ -19,13 +21,38 @@ import finalproject.poc.work.AbstractWorkPacketDrawer;
  */
 public class ProcessResultHandler extends AbstractClientRequestHandler {
 
-	private DatabaseFacade database;
+	private DeviceDetailsManager deviceDetailsManager;
+	private ResultsPacketManager resultsPacketManager;
 	private AbstractResultsValidator validator;
 	private AbstractWorkPacketDrawer packetDrawer;
-	private ResultsPacketList resultsList;
-	
-	/* (non-Javadoc)
-	 * @see finalproject.poc.appserver.AbstractClientRequestHandler#getRequestNum()
+
+	public ProcessResultHandler() {
+		super();
+	}
+
+	public ProcessResultHandler(DeviceDetailsManager deviceDetailsManager) {
+		super();
+		this.deviceDetailsManager = deviceDetailsManager;
+	}
+
+	public ProcessResultHandler(DeviceDetailsManager deviceDetailsManager,
+			AbstractResultsValidator validator) {
+		this(deviceDetailsManager);
+		this.validator = validator;
+	}
+
+	public ProcessResultHandler(DeviceDetailsManager deviceDetailsManager,
+			AbstractResultsValidator validator,
+			AbstractWorkPacketDrawer packetDrawer) {
+		this(deviceDetailsManager, validator);
+		this.packetDrawer = packetDrawer;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * finalproject.poc.appserver.AbstractClientRequestHandler#getRequestNum()
 	 */
 	@Override
 	protected int getRequestNum() {
@@ -33,40 +60,62 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 		return ClientRequest.PROCESS_RESULT;
 	}
 
-	/* (non-Javadoc)
-	 * @see finalproject.poc.appserver.AbstractClientRequestHandler#handleHere(java.io.ObjectInputStream, java.io.ObjectOutputStream)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * finalproject.poc.appserver.AbstractClientRequestHandler#handleHere(java
+	 * .io.ObjectInputStream, java.io.ObjectOutputStream)
 	 */
 	@Override
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
 		// TODO Auto-generated method stub
 		try {
-			resultsList = (ResultsPacketList) input.readObject();
+			ResultsPacketList resultsList = (ResultsPacketList) input
+					.readObject();
 			String deviceID = resultsList.getDeviceID();
-			
-			for(IResultsPacket result: resultsList) {
-				if (validator.resultIsValid(result)){
-					database.writeValidResultSent(deviceID);
-				} else {
-					database.writeInvalidResultSent(deviceID);
-				}
-			}
-			
-			output.reset();
-			
-			if (database.isDeviceBlacklisted(deviceID) || !packetDrawer.hasWorkPackets()){				
-				output.writeInt(ServerRequest.BECOME_DORMANT);
-			} else {
-				output.writeInt(ServerRequest.PROCESS_WORK_PACKETS);
-				output.writeObject(packetDrawer.getNextWorkPacket());
-			}
-			
-			output.flush();
-			
+
+			processResults(resultsList);
+			sendResponse(output, deviceID);
+
 		} catch (ClassNotFoundException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+
+	private void processResults(ResultsPacketList resultsList) {
+		String deviceID = resultsList.getDeviceID();
+		boolean isValid;		
+
+		for (IResultsPacket result : resultsList) {			
+			isValid = validator.resultIsValid(result);
+
+			if (isValid) {
+				resultsPacketManager.writeResult(result);
+				deviceDetailsManager.writeValidResultSent(deviceID);
+			} else {
+				deviceDetailsManager.writeInvalidResultSent(deviceID);
+			}
+		}
+	}
+
+	private void sendResponse(ObjectOutputStream output, String deviceID)
+			throws IOException {
+		output.reset();
+
+		if (deviceDetailsManager.deviceIsBlacklisted(deviceID)
+				|| !packetDrawer.hasWorkPackets()) {
+			output.writeInt(ServerRequest.BECOME_DORMANT);
+			deviceDetailsManager.deactivateDevice(deviceID);
+		} else {
+			output.writeInt(ServerRequest.PROCESS_WORK_PACKETS);
+			output.writeObject(packetDrawer.getNextWorkPacket());
+			deviceDetailsManager.updateActiveDevice(deviceID);
+		}
+
+		output.flush();
 	}
 
 }

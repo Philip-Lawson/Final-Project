@@ -8,8 +8,10 @@ import finalproject.poc.calculationclasses.IWorkPacket;
 
 public interface DatabaseFacade {
 	
-	public void writeResults(Collection<IResultsPacket> results);
-	public void writeWorkPackets(Collection<IWorkPacket> workPackets);
+	public void writeResult(IResultsPacket resultsPacket);
+	public boolean resultIsSaved(String packetID);
+	public IResultsPacket getResultForComparison(String packetID);
+	public void writeWorkPacket(IWorkPacket workPackets);
 	public void writeValidResultSent(String deviceID);
 	public void writeInvalidResultSent(String deviceId);
 	

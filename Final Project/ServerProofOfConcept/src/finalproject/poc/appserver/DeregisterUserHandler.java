@@ -22,6 +22,7 @@ public class DeregisterUserHandler extends AbstractClientRequestHandler {
 	}
 	
 	public DeregisterUserHandler(DatabaseFacade database){
+		this();
 		this.database = database;
 	}
 

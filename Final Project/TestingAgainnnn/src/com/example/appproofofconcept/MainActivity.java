@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 
 import com.example.testingagainnnn.R;
 
+import finalproject.poc.calculationclasses.WorkPacketList;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
@@ -52,7 +53,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		textBox = (EditText) findViewById(R.id.editText1);
 
 		button.setOnClickListener(this);
-
+		
 	}
 
 	@Override

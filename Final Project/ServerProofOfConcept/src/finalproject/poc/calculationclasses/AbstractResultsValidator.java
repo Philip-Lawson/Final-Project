@@ -6,6 +6,9 @@ package finalproject.poc.calculationclasses;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import finalproject.poc.persistence.DatabaseFacade;
+import finalproject.poc.persistence.ResultsPacketManager;
+
 /**
  * An abstract representation of a result packet validator. <br>
  * </br> The validator has an IValidationStrategy as a class member, allowing
@@ -22,14 +25,12 @@ import java.util.concurrent.ConcurrentMap;
  * @author Phil
  *
  */
-public abstract class AbstractResultsValidator implements IResultValidator,
-		ICachableValidator {
+public abstract class AbstractResultsValidator implements IResultValidator {
 
-	/**
-	 * Used to store results packets using their work packet ID as a key.
-	 */
-	private ConcurrentMap<String, IResultsPacket> resultsCache = new ConcurrentHashMap<String, IResultsPacket>();
+	
 
+	private ResultsPacketManager resultsDrawer;
+	
 	/**
 	 * Used to validate individual results packets.
 	 */
@@ -56,39 +57,19 @@ public abstract class AbstractResultsValidator implements IResultValidator,
 
 	@Override
 	public final boolean resultIsValid(IResultsPacket resultsPacket) {
-		if (resultIsCached(resultsPacket)) {
-			return compareWithCachedResult(resultsPacket,
-					resultsCache.get(resultsPacket.getPacketId()));
+		String packetID = resultsPacket.getPacketId();
+		
+		if (resultsDrawer.resultIsSaved(packetID)) {
+			IResultsPacket savedResult = resultsDrawer.getResultForComparison(packetID);
+			return validationStrategy.compareWithSavedResult(resultsPacket, savedResult);
 		} else {
 			IWorkPacket workPacket = retrieveWorkPacket(resultsPacket.getPacketId());
-			
-			boolean isValid = validationStrategy.validateResult(workPacket,
-					resultsPacket);
-
-			if (isValid) {
-				resultsCache.put(resultsPacket.getPacketId(), resultsPacket);
-			}
-
-			return isValid;
+			return validationStrategy.validateNewResult(workPacket,	resultsPacket);
 		}
 	}
 
-	@Override
-	public final boolean resultIsCached(IResultsPacket resultsPacket) {
-		return resultsCache.containsKey(resultsPacket.getPacketId());
-	}
-
-	/**
-	 * Helper method for resultIsValid. Compares a duplicate results packet with
-	 * a cached valid instance of the results packet. Used when a valid result
-	 * with the same work packet ID is stored in the cache.
-	 * 
-	 * @param resultsPacket
-	 * @param cachedResult
-	 * @return
-	 */
-	protected abstract boolean compareWithCachedResult(
-			IResultsPacket resultsPacket, IResultsPacket cachedResult);
+	
+	
 
 	/**
 	 * Retrieves a work packet using the result's packet ID. This work packet

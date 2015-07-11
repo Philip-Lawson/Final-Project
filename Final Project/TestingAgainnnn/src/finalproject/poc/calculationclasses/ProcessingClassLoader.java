@@ -9,8 +9,8 @@ package finalproject.poc.calculationclasses;
  */
 public class ProcessingClassLoader {
 	
-	public static void loadClass(byte[] classBytes){
-		
+	public static IDataProcessor loadClass(byte[] classBytes){
+		return null;
 	}
 
 }

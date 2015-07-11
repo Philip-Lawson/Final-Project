@@ -13,16 +13,16 @@ import finalproject.poc.persistence.DatabaseFacade;
  * @author Phil
  *
  */
-public class ChangeEmailHandler extends AbstractClientRequestHandler {
+public class ChangeEmailRequestHandler extends AbstractClientRequestHandler {
 
 	private DatabaseFacade database;
 
-	public ChangeEmailHandler() {
+	public ChangeEmailRequestHandler() {
 		super();
 	}
 
-	public ChangeEmailHandler(DatabaseFacade database) {
-		super();
+	public ChangeEmailRequestHandler(DatabaseFacade database) {
+		this();
 		this.database = database;
 	}
 

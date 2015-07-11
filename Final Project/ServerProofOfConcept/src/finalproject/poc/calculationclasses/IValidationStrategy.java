@@ -21,6 +21,20 @@ public interface IValidationStrategy {
 	 *            the result of the processed data
 	 * @return true if the result is valid
 	 */
-	public boolean validateResult(IWorkPacket workPacket,
+	public boolean validateNewResult(IWorkPacket workPacket,
 			IResultsPacket resultsPacket);
+
+	/**
+	 * Checks that a results packet is identical to a previously processed
+	 * duplicate. Since the system only needs one valid result from each work
+	 * packet, this method is used to verify that a client is sending valid
+	 * results. <br></br>The simplest implementation of this method is a bitwise
+	 * comparison.
+	 * 
+	 * @param resultsPacket
+	 * @param savedResult
+	 * @return
+	 */
+	public boolean compareWithSavedResult(IResultsPacket resultsPacket,
+			IResultsPacket savedResult);;
 }
