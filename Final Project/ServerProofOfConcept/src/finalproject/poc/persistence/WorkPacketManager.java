@@ -1,12 +1,11 @@
 /**
  * 
  */
-package finalproject.poc.work;
+package finalproject.poc.persistence;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.NoSuchElementException;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -24,7 +23,7 @@ import finalproject.poc.calculationclasses.WorkPacketList;
  * @author Phil
  *
  */
-public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
+public class WorkPacketManager extends AbstractWorkPacketDrawer {
 
 	private static int DEFAULT_NUMBER_OF_COPIES = 6;
 	private static int MIN_NUMBER_OF_COPIES = 3;
@@ -36,6 +35,8 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 	private int packetsPerList = 5;
 	private int timesCurrentPacketSent = numberOfCopies;	
 	private WorkPacketList currentWorkPacketList;
+	
+	private WorkPacketJDBC workPacketDB;
 
 	@Override
 	public void addWorkPackets(Collection<IWorkPacket> workPackets) {
@@ -49,6 +50,8 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 		} finally {
 			lock.writeLock().unlock();
 		}
+		
+		workPacketDB.addWorkPackets(workPackets);
 	}
 	
 	@Override
@@ -68,8 +71,6 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 		} finally {
 			lock.writeLock().unlock();
 		}
-
-		
 
 	}
 
@@ -112,10 +113,7 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 		}
 	}
 	
-	public WorkPacketList loadNextPacketList() {
-		lock.writeLock().lock();
-		
-		try {
+	private WorkPacketList loadNextPacketList() {		
 			currentWorkPacketList.clear();
 			
 			for (int count=0; count<packetsPerList; count++){
@@ -126,12 +124,12 @@ public class WorkPacketDrawer extends AbstractWorkPacketDrawer {
 				}						
 			}
 
-			return currentWorkPacketList;
-			
-		} finally {
-			lock.writeLock().unlock();
-		}
-		
+			return currentWorkPacketList;		
+	}
+	
+	public void loadIncompleteWorkPackets(){
+		Collection<IWorkPacket> workPackets = workPacketDB.getIncompleteWorkPackets();
+		addWorkPackets(workPackets);
 	}
 
 }

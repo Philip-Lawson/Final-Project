@@ -1,5 +1,15 @@
 package uk.ac.qub.finalproject.server;
 
+/**
+ * THis is a utility class that stores all the constants that represent server
+ * requests to the client. It is written as a class rather than an enum to
+ * maintain consistency between the client request class in the android client
+ * system. It is considered bad practice to use enums in android development due
+ * to memory constraints within the system.
+ * 
+ * @author Phil
+ *
+ */
 public class ServerRequest {
 		
 	public static final int PROCESS_WORK_PACKETS = 100;

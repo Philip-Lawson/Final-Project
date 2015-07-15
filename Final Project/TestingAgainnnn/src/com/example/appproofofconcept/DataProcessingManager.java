@@ -6,11 +6,12 @@ package com.example.appproofofconcept;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.example.testingagainnnn.R;
+
 import finalproject.poc.calculationclasses.ResultsPacketList;
 import finalproject.poc.calculationclasses.WorkPacketList;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.os.Process;
 import android.preference.PreferenceManager;
@@ -19,7 +20,7 @@ import android.preference.PreferenceManager;
  * @author Phil
  *
  */
-public class DataProcessingManager implements Observer {
+public class DataProcessingManager extends Observable implements Observer  {
 
 	private Thread dataProcessor = new Thread(new DataProcessor());
 
@@ -39,14 +40,15 @@ public class DataProcessingManager implements Observer {
 
 	public void sendBatteryInfo(Context context, int charging, int level,
 			int scale) {
-		if (dataProcessor.isAlive()) {
-			if (canContinueProcessing(context, charging, level, scale) == false) {
-				dataProcessor.interrupt();
-			}
-		} else if (canStartProcessing(context, charging, level, scale)) {
-			startProcessing();
-		}
+		boolean canProcessData = canProcessData(context, charging, level, scale);
+		boolean isProcessingData = dataProcessor.isAlive();
 
+		if (isProcessingData) {
+			if (!canProcessData)
+				dataProcessor.interrupt();
+		} else if (canProcessData) {
+			dataProcessor.start();
+		}
 	}
 
 	public void startProcessing() {
@@ -63,24 +65,23 @@ public class DataProcessingManager implements Observer {
 		}
 	}
 
-	private boolean canContinueProcessing(Context context, int charging,
-			int level, int scale) {
+	private boolean canProcessData(Context context, int charging, int level,
+			int scale) {
+		// get preferences
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 
-		int chargeThreshold = PreferenceManager.getDefaultSharedPreferences(
-				context).getInt("MaxCharge", 0);
+		int minimumCharge = pref.getInt(
+				context.getString(R.string.battery_limit_key), 0);
+		boolean chargingEnabled = pref.getBoolean(
+				context.getString(R.string.charging_key), true);
 
-		return deviceIsPluggedIn(charging, context)
-				|| aboveChargingThreshold(scale, level, chargeThreshold);
-	}
-
-	private boolean canStartProcessing(Context context, int charging,
-			int level, int scale) {
-
-		int minimumCharge = PreferenceManager.getDefaultSharedPreferences(
-				context).getInt("MinCharge", 0);
-
-		return deviceIsPluggedIn(charging, context)
-				|| aboveChargingThreshold(scale, level, minimumCharge);
+		if (chargingEnabled) {
+			return deviceIsPluggedIn(charging, context)
+					|| aboveChargingThreshold(scale, level, minimumCharge);
+		} else {
+			return aboveChargingThreshold(scale, level, minimumCharge);
+		}
 	}
 
 	private boolean aboveChargingThreshold(int scale, int level, int threshold) {
@@ -91,13 +92,8 @@ public class DataProcessingManager implements Observer {
 	}
 
 	private boolean deviceIsPluggedIn(int charging, Context context) {
-		boolean chargingEnabled = PreferenceManager
-				.getDefaultSharedPreferences(context).getBoolean(
-						"ChargingEnabled", false);
-		boolean isCharging = charging == BatteryManager.BATTERY_PLUGGED_AC
+		return charging == BatteryManager.BATTERY_PLUGGED_AC
 				|| charging == BatteryManager.BATTERY_PLUGGED_USB;
-
-		return chargingEnabled && isCharging;
 	}
 
 	@Override
@@ -111,8 +107,10 @@ public class DataProcessingManager implements Observer {
 			Thread resultsThread = new Thread(resultSenderThread);
 			resultsThread.setPriority(Process.THREAD_PRIORITY_BACKGROUND);
 			resultsThread.start();
+		} else if(null!= data && data.getClass().equals(DataProcessor.ProgressPacket.class)){			
+			setChanged();
+			notifyObservers(data);
 		}
 
 	}
-
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package finalproject.poc.work;
+package finalproject.poc.persistence;
 
 import java.util.Collection;
 

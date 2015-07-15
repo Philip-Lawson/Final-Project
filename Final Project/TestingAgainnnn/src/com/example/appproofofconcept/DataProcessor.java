@@ -45,6 +45,8 @@ public class DataProcessor extends Observable implements Runnable {
 		// TODO Auto-generated method stub
 		if (null != processorClass && null != workPacketList) {
 			resultsPacketList = new ResultsPacketList();
+			updateProgress(resultsPacketList.size(), workPacketList.size());
+			
 			for (IWorkPacket workPacket : workPacketList) {
 				if (!Thread.currentThread().isInterrupted()) {
 					resultsPacketList.add(processorClass.execute(workPacket));
@@ -55,8 +57,8 @@ public class DataProcessor extends Observable implements Runnable {
 				} else {
 					break;
 				}
-			}
-
+			}		
+			
 			setChanged();
 			notifyObservers(resultsPacketList);
 			
@@ -73,8 +75,18 @@ public class DataProcessor extends Observable implements Runnable {
 
 	}
 
-	public void updateProgress(int packetsProcessed, int numberOfPackets) {
-
+	public void updateProgress(int packetsProcessed, int totalPackets) {
+		setChanged();
+		notifyObservers(new ProgressPacket(packetsProcessed,totalPackets ));
+	}
+	
+	class ProgressPacket {
+		int packetsProcessed, totalPackets;
+		
+		public ProgressPacket(int packetsProcessed, int totalPackets){
+			this.packetsProcessed = packetsProcessed;
+			this.totalPackets = totalPackets;
+		}
 	}
 
 }

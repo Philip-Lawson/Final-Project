@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import finalproject.poc.work.AbstractWorkPacketDrawer;
+import finalproject.poc.persistence.AbstractWorkPacketDrawer;
 
 /**
  * @author Phil

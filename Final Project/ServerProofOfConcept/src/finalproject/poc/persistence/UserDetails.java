@@ -12,17 +12,36 @@ import finalproject.poc.appserver.RegistrationPack;
  *
  */
 public class UserDetails {
+	
+	private DeviceDetailsManager deviceManager;
+	private UserDetailsJDBC userDB;
+	private EmailValidationStrategy emailValidationStrategy = new EmailValidationStrategy();
 
 	public Collection<String> retrieveDedicatedUserEmails(){
 		return null;
 	}
 	
 	public boolean changeEmailAddress(RegistrationPack registrationPack){
-		return true;
+		if (emailValidationStrategy.emailIsValid(registrationPack.getEmailAddress())){
+			return userDB.changeEmailAddress(registrationPack);
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean deregisterUser(String emailAddress){
-		return true;
+		//TODO JDBC code catch exception that returns false
+		Collection<String> userDevices = userDB.getUserDevices(emailAddress);
+		
+		if (null == userDevices){
+			return false;
+		} else {
+			for (String deviceID : userDevices){
+				deviceManager.deregisterDevice(deviceID);
+			}
+			
+			return true;
+		}		
 	}
 		
 }

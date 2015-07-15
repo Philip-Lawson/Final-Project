@@ -6,14 +6,15 @@ package finalproject.poc.appserver;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Date;
 
 import finalproject.poc.calculationclasses.AbstractResultsValidator;
 import finalproject.poc.calculationclasses.IResultsPacket;
 import finalproject.poc.calculationclasses.ResultsPacketList;
+import finalproject.poc.persistence.AbstractWorkPacketDrawer;
 import finalproject.poc.persistence.DatabaseFacade;
 import finalproject.poc.persistence.DeviceDetailsManager;
 import finalproject.poc.persistence.ResultsPacketManager;
-import finalproject.poc.work.AbstractWorkPacketDrawer;
 
 /**
  * @author Phil
@@ -108,11 +109,11 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 		if (deviceDetailsManager.deviceIsBlacklisted(deviceID)
 				|| !packetDrawer.hasWorkPackets()) {
 			output.writeInt(ServerRequest.BECOME_DORMANT);
-			deviceDetailsManager.deactivateDevice(deviceID);
+			deviceDetailsManager.deregisterDevice(deviceID);
 		} else {
 			output.writeInt(ServerRequest.PROCESS_WORK_PACKETS);
 			output.writeObject(packetDrawer.getNextWorkPacket());
-			deviceDetailsManager.updateActiveDevice(deviceID);
+			deviceDetailsManager.updateActiveDevice(deviceID, new Date().getTime());
 		}
 
 		output.flush();

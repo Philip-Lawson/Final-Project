@@ -34,8 +34,24 @@ public class Server implements Runnable {
 	private KeyStore keyStore;
 	private SSLServerSocket server;
 	private SSLServerSocketFactory socketFactory;
+	private AbstractClientRequestHandler requestHandler;
 	private boolean listening = true;
 
+	/**
+	 * This helper method creates the secure server socket used to listen for
+	 * client connections. Since this is a student project it uses the example
+	 * keystore provided by Oracle.
+	 * 
+	 * @param port
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyStoreException
+	 * @throws CertificateException
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws UnrecoverableKeyException
+	 * @throws KeyManagementException
+	 */
 	private SSLServerSocket getSecureSocket(int port)
 			throws NoSuchAlgorithmException, KeyStoreException,
 			CertificateException, FileNotFoundException, IOException,
@@ -53,8 +69,11 @@ public class Server implements Runnable {
 		return (SSLServerSocket) socketFactory.createServerSocket(port);
 
 	}
-	
-	public void stopServer(){
+
+	/**
+	 * Allows the server to be stopped externally.
+	 */
+	public void stopServer() {
 		listening = false;
 	}
 
@@ -67,7 +86,7 @@ public class Server implements Runnable {
 
 			while (listening) {
 				Socket connection = server.accept();
-				threadPool.execute(new ServerThread(connection, this));
+				threadPool.execute(new ServerThread(connection, requestHandler));
 			}
 
 		} catch (UnrecoverableKeyException e) {
@@ -87,8 +106,7 @@ public class Server implements Runnable {
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			// e.printStackTrace();
-			System.out.println("Problem in Simple Server");
+			e.printStackTrace();
 		}
 	}
 

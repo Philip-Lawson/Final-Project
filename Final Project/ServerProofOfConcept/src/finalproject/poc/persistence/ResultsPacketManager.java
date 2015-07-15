@@ -3,6 +3,7 @@
  */
 package finalproject.poc.persistence;
 
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -67,6 +68,14 @@ public class ResultsPacketManager {
 
 	public int getNumberOfPacketsProcessed() {
 		return resultsCache.size();
+	}
+	
+	public void loadResultsPackets(){
+		Collection<IResultsPacket> resultsPackets = resultsDB.getResultsPackets();
+		
+		for(IResultsPacket resultsPacket : resultsPackets){
+			resultsCache.putIfAbsent(resultsPacket.getPacketId(), resultsPacket);
+		}
 	}
 
 }
