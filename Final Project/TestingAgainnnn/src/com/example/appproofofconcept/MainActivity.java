@@ -11,8 +11,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import com.example.testingagainnnn.R;
-
 import finalproject.poc.calculationclasses.WorkPacketList;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -33,7 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends ActionBarActivity implements OnClickListener {
 
 	
 

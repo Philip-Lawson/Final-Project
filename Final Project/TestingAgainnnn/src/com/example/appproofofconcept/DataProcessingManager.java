@@ -6,7 +6,7 @@ package com.example.appproofofconcept;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.example.testingagainnnn.R;
+
 
 import finalproject.poc.calculationclasses.ResultsPacketList;
 import finalproject.poc.calculationclasses.WorkPacketList;
