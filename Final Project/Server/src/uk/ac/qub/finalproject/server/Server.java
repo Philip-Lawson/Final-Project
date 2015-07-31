@@ -3,6 +3,7 @@ package uk.ac.qub.finalproject.server;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -32,10 +33,11 @@ public class Server implements Runnable {
 	private SSLContext context;
 	private KeyManagerFactory keyFactory;
 	private KeyStore keyStore;
-	private SSLServerSocket server;
+	//private SSLServerSocket server;
 	private SSLServerSocketFactory socketFactory;
 	private AbstractClientRequestHandler requestHandler;
 	private boolean listening = true;
+	private ServerSocket server;
 
 	/**
 	 * This helper method creates the secure server socket used to listen for
@@ -60,7 +62,7 @@ public class Server implements Runnable {
 		keyFactory = KeyManagerFactory.getInstance(KEY);
 		keyStore = KeyStore.getInstance(KEY_STORE);
 
-		keyStore.load(new FileInputStream(KEYSTORE_FILE_NAME), PASSWORD);
+		keyStore.load(new FileInputStream(KEYSTORE_FILE_NAME), PASSWORD);	
 		keyFactory.init(keyStore, PASSWORD);
 
 		context.init(keyFactory.getKeyManagers(), null, null);
@@ -68,7 +70,9 @@ public class Server implements Runnable {
 
 		return (SSLServerSocket) socketFactory.createServerSocket(port);
 
+	
 	}
+	
 
 	/**
 	 * Allows the server to be stopped externally.
@@ -76,20 +80,27 @@ public class Server implements Runnable {
 	public void stopServer() {
 		listening = false;
 	}
+	
+	public void setRequestHandlers(AbstractClientRequestHandler requestHandler){
+		this.requestHandler = requestHandler;
+	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
-			server = getSecureSocket(PORT);
+			server = new ServerSocket(PORT);	
+			listening = true;
+			
 			threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-
+			requestHandler = new RegisterRequestHandler();
+				
 			while (listening) {
 				Socket connection = server.accept();
 				threadPool.execute(new ServerThread(connection, requestHandler));
 			}
-
-		} catch (UnrecoverableKeyException e) {
+			
+		} /*catch (UnrecoverableKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (KeyManagementException e) {
@@ -104,7 +115,7 @@ public class Server implements Runnable {
 		} catch (CertificateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} */catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

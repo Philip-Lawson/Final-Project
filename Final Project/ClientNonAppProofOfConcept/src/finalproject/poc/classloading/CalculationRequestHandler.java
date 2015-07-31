@@ -31,7 +31,7 @@ public class CalculationRequestHandler extends AbstractServerRequestHandler {
 			System.out.println(result.getPacketId() + result.getResult());
 
 			output.reset();
-			output.writeInt(ClientRequest.PROCESS_RESULT.getRequestNum());
+			output.writeInt(ClientRequest.PROCESS_RESULT);
 			System.out.println("int written");
 
 			output.writeObject(result);
@@ -54,7 +54,7 @@ public class CalculationRequestHandler extends AbstractServerRequestHandler {
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ServerRequest.NEW_CALCULATION.getRequestNum();
+		return ServerRequest.PROCESS_WORK_PACKETS;
 	}
 
 }

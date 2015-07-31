@@ -49,7 +49,7 @@ public class ServerThread implements Runnable {
 	}
 
 	private void processConnection() {
-		AbstractClientRequestHandler registerHandler = new POCRegisterRequestHandler();
+		/*AbstractClientRequestHandler registerHandler = new POCRegisterRequestHandler();
 		AbstractClientRequestHandler resultsHandler = new POCProcessResultHandler();
 
 		registerHandler.setNextHandler(resultsHandler);
@@ -66,7 +66,19 @@ public class ServerThread implements Runnable {
 				System.out.println("Connection closed");
 				break;
 			}
+		
+			
+		}*/
+		
+		RegisterRequestHandler handler = new RegisterRequestHandler();
+		int requestNum = 0;
+		try {
+			requestNum = in.readInt();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		handler.processRequest(requestNum, in, out);
 
 	}
 

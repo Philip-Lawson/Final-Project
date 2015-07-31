@@ -61,7 +61,7 @@ public class LoadCalculationClassRequestHandler extends
 	@Override
 	protected int getRequestNum() {
 		// TODO Auto-generated method stub
-		return ServerRequest.LOAD_CALCULATOR_CLASS.getRequestNum();
+		return ServerRequest.LOAD_PROCESSING_CLASS;
 	}
 
 }

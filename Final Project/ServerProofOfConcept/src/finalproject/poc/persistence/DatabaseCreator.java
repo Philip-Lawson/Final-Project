@@ -24,15 +24,15 @@ public class DatabaseCreator {
 	private static final String PASSWORD = "";
 
 	private static final String CREATE_DEVICES_TABLE = "CREATE TABLE IF NOT EXISTS devices "
-			+ "( device_id VARCHAR(20) NOT NULL,"
+			+ "( device_id VARBINARY NOT NULL,"
 			+ " valid_results INT DEFAULT 0,"
 			+ " invalid_results INT DEFAULT 0,"
 			+ " PRIMARY KEY (device_id),"
 			+ " INDEX (device_id) );";
 
 	private static final String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS users "
-			+ "( device_id VARCHAR(20) NOT NULL, "
-			+ "email_address VARCHAR(100) NOT NULL, "
+			+ "( device_id VARBINARY NOT NULL, "
+			+ "email_address VARBINARY NOT NULL, "
 			+ "PRIMARY KEY (device_id), "
 			+ "FOREIGN KEY (device_id) REFERENCES devices (device_id), "
 			+ "ON DELETE CASCADE );";

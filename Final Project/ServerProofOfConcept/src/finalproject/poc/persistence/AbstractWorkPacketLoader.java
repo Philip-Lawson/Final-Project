@@ -17,9 +17,9 @@ import finalproject.poc.calculationclasses.IWorkPacket;
  * retrieval of work packets within the context of the persistence system used.
  * 
  * <br>
- * </br>Work packets can be created with a specified packet ID or this can be
- * done automatically using the single param constructor or the default
- * constructor and packet.setInitialData().
+ * </br>Work packets can be created with a specified packet ID or a default
+ * auto-generated packet ID. If a specified packet ID is needed, the two
+ * argument constructor should be used.
  * 
  * @author Phil
  *

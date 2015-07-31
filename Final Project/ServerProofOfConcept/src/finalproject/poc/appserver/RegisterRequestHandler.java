@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import finalproject.poc.calculationclasses.DataProcessorClassWriter;
-import finalproject.poc.persistence.DatabaseFacade;
+
+
 
 /**
  * @author Phil
@@ -16,22 +16,18 @@ import finalproject.poc.persistence.DatabaseFacade;
  */
 public class RegisterRequestHandler extends AbstractClientRequestHandler {
 
-	private DatabaseFacade database;
-	private DataProcessorClassWriter classWriter;
+	//private DeviceDetailsManager deviceManager;
 	
 	public RegisterRequestHandler(){
 		super();
 	}
 	
-	public RegisterRequestHandler(DatabaseFacade database){
+	/*public RegisterRequestHandler(DeviceDetailsManager deviceManager){
 		this();
-		this.database = database;
-	}
+		this.deviceManager = deviceManager;
+	}*/
 	
-	public RegisterRequestHandler(DatabaseFacade database, DataProcessorClassWriter classWriter){
-		this(database);
-		this.classWriter = classWriter;
-	}
+	
 	
 	/* (non-Javadoc)
 	 * @see finalproject.poc.appserver.AbstractClientRequestHandler#getRequestNum()
@@ -49,18 +45,29 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
 		// TODO Auto-generated method stub
 		try {
-			RegistrationPack registrationPack = (RegistrationPack) input.readObject();
-			database.addDevice(registrationPack);
-			
-			output.reset();
-			output.writeInt(ServerRequest.LOAD_PROCESSING_CLASS);
-			output.writeObject(classWriter.getClassBytes());
+			boolean successfulRegistration = true;
+			 
+			try {
+				RegistrationPack registrationPack = (RegistrationPack) input.readObject();
+				//successfulRegistration = deviceManager.addDevice(registrationPack);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				
+			}		
+									
+			output.reset();			
+			output.writeBoolean(successfulRegistration);
 			output.flush();
-		} catch (IOException | ClassNotFoundException ex){
+		} catch (IOException   ex){
 			
 		}
 		
 
+	}
+	
+	@Override
+	protected void delegate(int requestNum, ObjectInputStream input, ObjectOutputStream output){
+		
 	}
 
 }

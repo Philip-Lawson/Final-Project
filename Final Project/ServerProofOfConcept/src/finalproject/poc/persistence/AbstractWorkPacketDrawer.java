@@ -54,6 +54,15 @@ public abstract class AbstractWorkPacketDrawer {
 			throws IllegalArgumentException;
 
 	/**
+	 * Sets the number of work packets to be sent out in each transmission to a
+	 * client device.
+	 * 
+	 * @param packetsPerList
+	 *            the number of work packets in each list.
+	 */
+	public abstract void setPacketsPerList(int packetsPerList);
+
+	/**
 	 * Returns the number of work packets that still need to be sent out. This
 	 * must account the number of copies of each work packet to be sent out.
 	 * 
@@ -67,10 +76,10 @@ public abstract class AbstractWorkPacketDrawer {
 	 * @return true if there are still packets to be sent.
 	 */
 	public abstract boolean hasWorkPackets();
-	
+
 	/**
-	 * Helper method to confirm that the workPacket is not null
-	 * and that it has data and a packet ID
+	 * Helper method to confirm that the workPacket is not null and that it has
+	 * data and a packet ID
 	 * 
 	 * @param workPacket
 	 *            the work packet that must be validated
@@ -80,6 +89,5 @@ public abstract class AbstractWorkPacketDrawer {
 		return null != workPacket && null != workPacket.getInitialData()
 				&& null != workPacket.getPacketId();
 	}
-
 
 }

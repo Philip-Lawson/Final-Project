@@ -53,8 +53,7 @@ public class ChangeEmailRequestHandler extends AbstractClientRequestHandler {
 			RegistrationPack registrationPack = (RegistrationPack) input
 					.readObject();
 			
-			output.reset();
-			output.writeInt(ServerRequest.CHANGE_CONFIRMED);
+			output.reset();			
 			output.writeBoolean(database.changeEmailAddress(registrationPack));
 			output.flush();			
 		} catch (ClassNotFoundException | IOException e) {

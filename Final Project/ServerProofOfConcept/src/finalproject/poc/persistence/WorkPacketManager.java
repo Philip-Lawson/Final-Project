@@ -107,6 +107,7 @@ public class WorkPacketManager extends AbstractWorkPacketDrawer {
 		return numberOfPacketsRemaining() > 0;
 	}
 	
+	@Override
 	public void setPacketsPerList(int packetsPerList){
 		if (packetsPerList > 0){
 			this.packetsPerList = packetsPerList;

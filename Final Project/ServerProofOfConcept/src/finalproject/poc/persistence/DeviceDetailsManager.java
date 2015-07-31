@@ -21,6 +21,7 @@ import finalproject.poc.appserver.RegistrationPack;
 public class DeviceDetailsManager {
 
 	private DeviceDetailsJDBC deviceDB = new DeviceDetailsJDBC();
+	private UserDetails userDetailsManager;
 	private ReadWriteLock lock = new ReentrantReadWriteLock();
 	private ConcurrentMap<String, Device> devicesMap = new ConcurrentHashMap<String, Device>();
 	private List<String> blacklistedDevices = new ArrayList<String>(1000);
@@ -31,15 +32,29 @@ public class DeviceDetailsManager {
 	private static long ACTIVE_DEVICE_THRESHOLD = 0;
 	private static int BLACKLISTING_MIN_THRESHOLD = 10;
 	private static double MIN_PERCENT_INVALID_RESULTS = 30;
+	
+	
+	public DeviceDetailsManager(){
+		
+	}
+	
+	public DeviceDetailsManager(UserDetails userDetailsManager){
+		this.userDetailsManager = userDetailsManager;
+	}
 
 	public boolean addDevice(RegistrationPack registrationPack) {
 		String deviceID = registrationPack.getAndroidID();
+		String email = registrationPack.getEmailAddress();
 
 		if (devicesMap.containsKey(deviceID)) {
 			return false;
 		} else {
-			devicesMap.put(deviceID, new Device(deviceID));
+			devicesMap.put(deviceID, new Device(deviceID, email));
 			deviceDB.registerDevice(registrationPack);
+			
+			if (null != email && !email.equals(""))
+				userDetailsManager.registerUser(email);
+			
 			return true;
 		}
 	}
@@ -47,11 +62,19 @@ public class DeviceDetailsManager {
 	public void writeValidResultSent(String deviceID) {
 
 		if (devicesMap.containsKey(deviceID)) {
-			devicesMap.get(deviceID).addValidResult();
+			Device device = devicesMap.get(deviceID);
+			device.addValidResult();			
+			updateValidResults();
+			deviceDB.writeValidResultSent(deviceID);
+			
+			String emailAddress = device.getEmailAddress();
+			
+			if (null != emailAddress && !emailAddress.equals("")){
+				userDetailsManager.checkForAchievementMilestone(emailAddress);
+			}
 		}
 
-		updateValidResults();
-		deviceDB.writeValidResultSent(deviceID);
+		
 	}
 
 	public void writeInvalidResultSent(String deviceID) {

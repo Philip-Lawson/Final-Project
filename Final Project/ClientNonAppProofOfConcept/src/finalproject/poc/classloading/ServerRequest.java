@@ -1,17 +1,11 @@
 package finalproject.poc.classloading;
 
-public enum ServerRequest {
-	NEW_CALCULATION(0), LOAD_CALCULATOR_CLASS(1), LOAD_WORK_PACKET_CLASS(2), 
-		LOAD_RESULT_PACKET_CLASS(3), BECOME_DORMANT(4);
-
-	private int requestNum;
-
-	private ServerRequest(int requestNum) {
-		this.requestNum = requestNum;
-	}
-
-	public int getRequestNum() {
-		return requestNum;
-	}
+public class ServerRequest {
+		
+	public static final int PROCESS_WORK_PACKETS = 100;
+	public static final int LOAD_PROCESSING_CLASS = 101;
+	public static final int BECOME_DORMANT = 102;
+	public static final int REGISTER_REQUEST = 103;
+	public static final int CHANGE_CONFIRMED = 104;
 
 }
