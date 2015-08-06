@@ -19,8 +19,7 @@ public class LoadCalculationClassRequestHandler extends
 		Class<? extends Calculator> calculator = null;
 
 		try {
-			String className = (String) input.readObject();
-
+			String className = (String) input.readObject();			
 			System.out.println(className);
 			c = classLoader.loadClass(className);	
 			

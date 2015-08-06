@@ -1,20 +1,21 @@
 /**
  * 
  */
-package finalproject.poc.appserver;
+package uk.ac.qub.finalproject.server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
 
-import finalproject.poc.calculationclasses.AbstractResultsValidator;
-import finalproject.poc.calculationclasses.IResultsPacket;
-import finalproject.poc.calculationclasses.ResultsPacketList;
-import finalproject.poc.persistence.AbstractWorkPacketDrawer;
-import finalproject.poc.persistence.DatabaseFacade;
-import finalproject.poc.persistence.DeviceDetailsManager;
-import finalproject.poc.persistence.ResultsPacketManager;
+import uk.ac.qub.finalproject.persistence.AbstractWorkPacketDrawer;
+import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
+import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
+import uk.ac.qub.finalproject.persistence.UserDetails;
+import uk.ac.qub.finalproject.server.calculationclasses.IResultValidator;
+import uk.ac.qub.finalproject.server.calculationclasses.IResultsPacket;
+import uk.ac.qub.finalproject.server.calculationclasses.IWorkPacket;
+import uk.ac.qub.finalproject.server.calculationclasses.ResultsPacketList;
 
 /**
  * @author Phil
@@ -23,8 +24,8 @@ import finalproject.poc.persistence.ResultsPacketManager;
 public class ProcessResultHandler extends AbstractClientRequestHandler {
 
 	private DeviceDetailsManager deviceDetailsManager;
-	private ResultsPacketManager resultsPacketManager;
-	private AbstractResultsValidator validator;
+	private ResultsPacketManager resultsPacketManager;	
+	private IResultValidator validator;
 	private AbstractWorkPacketDrawer packetDrawer;
 
 	public ProcessResultHandler() {
@@ -37,15 +38,16 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 	}
 
 	public ProcessResultHandler(DeviceDetailsManager deviceDetailsManager,
-			AbstractResultsValidator validator) {
+			IResultValidator validator) {
 		this(deviceDetailsManager);
 		this.validator = validator;
 	}
 
 	public ProcessResultHandler(DeviceDetailsManager deviceDetailsManager,
-			AbstractResultsValidator validator,
-			AbstractWorkPacketDrawer packetDrawer) {
+			ResultsPacketManager resultsPacketManager, UserDetails userDetails,
+			IResultValidator validator, AbstractWorkPacketDrawer packetDrawer) {
 		this(deviceDetailsManager, validator);
+		this.resultsPacketManager = resultsPacketManager;
 		this.packetDrawer = packetDrawer;
 	}
 
@@ -57,7 +59,6 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 	 */
 	@Override
 	protected int getRequestNum() {
-		// TODO Auto-generated method stub
 		return ClientRequest.PROCESS_RESULT;
 	}
 
@@ -70,13 +71,12 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 	 */
 	@Override
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
-		// TODO Auto-generated method stub
 		try {
 			ResultsPacketList resultsList = (ResultsPacketList) input
 					.readObject();
 			String deviceID = resultsList.getDeviceID();
 
-			processResults(resultsList);
+			processResults(resultsList, deviceID);
 			sendResponse(output, deviceID);
 
 		} catch (ClassNotFoundException | IOException e) {
@@ -86,22 +86,31 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 
 	}
 
-	private void processResults(ResultsPacketList resultsList) {
-		String deviceID = resultsList.getDeviceID();
-		boolean isValid;		
+	private void processResults(ResultsPacketList resultsList, String deviceID) {
+		for (IResultsPacket result : resultsList) {
+			IWorkPacket initialData = packetDrawer.getInitialData(result
+					.getPacketId());
 
-		for (IResultsPacket result : resultsList) {			
-			isValid = validator.resultIsValid(result);
-
-			if (isValid) {
-				resultsPacketManager.writeResult(result);
+			if (validator.isFuzzyValidator()
+					&& validator.resultIsPending(result.getPacketId())) {
+				validator.addResultToGroup(result, initialData, deviceID);
+			} else if (validator.resultIsValid(result, initialData)) {
 				deviceDetailsManager.writeValidResultSent(deviceID);
+				resultsPacketManager.writeResult(result);
 			} else {
 				deviceDetailsManager.writeInvalidResultSent(deviceID);
 			}
 		}
-		
-		
+
+		if (!packetDrawer.hasWorkPackets()) {
+			if (resultsPacketManager.getNumberOfPacketsProcessed() == packetDrawer
+					.numberOfDistinctWorkPackets()) {
+				// TODO - call the system to finish the calculation
+			} else {
+				// TODO - call the syste to reload incomplete work packets
+			}
+		}
+
 	}
 
 	private void sendResponse(ObjectOutputStream output, String deviceID)
@@ -111,11 +120,11 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 		if (deviceDetailsManager.deviceIsBlacklisted(deviceID)
 				|| !packetDrawer.hasWorkPackets()) {
 			output.writeInt(ServerRequest.BECOME_DORMANT);
-			deviceDetailsManager.deregisterDevice(deviceID);
 		} else {
 			output.writeInt(ServerRequest.PROCESS_WORK_PACKETS);
 			output.writeObject(packetDrawer.getNextWorkPacket());
-			deviceDetailsManager.updateActiveDevice(deviceID, new Date().getTime());
+			deviceDetailsManager.updateActiveDevice(deviceID,
+					new Date().getTime());
 		}
 
 		output.flush();

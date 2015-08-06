@@ -5,36 +5,57 @@ package uk.ac.qub.finalproject.persistence;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
+ * This is the base class for all DAO's in the server's persistence layer. It
+ * contains the connection details along with convenience methods for creating
+ * and closing connections.
+ * 
  * @author Phil
  *
  */
 public abstract class AbstractJDBC {
-	
+
 	private static final String DATABASE_URL = "";
-	private static final String USER = "";
+	private static final String USERNAME = "";
 	private static final String PASSWORD = "";
+
 	
-	protected Connection connection;
-	protected PreparedStatement preparedStatement;
-	
-	protected void createConnection() throws SQLException {
-		connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);		
+	/**
+	 * A convenience method for creating the connection to the database.
+	 * 
+	 * @throws SQLException
+	 *             if the connection fails.
+	 */
+	protected Connection createConnection() throws SQLException {
+		return DriverManager.getConnection(DATABASE_URL, USERNAME,
+				PASSWORD);
 	}
 
-	protected void closeConnection() {
+	/**
+	 * A convenience method for closing the connection and the prepared
+	 * statement. This takes care of nulls and SQL Exceptions.
+	 */
+	protected void closeConnection(Connection connection, Statement statement, ResultSet resultSet) {
 		try {
-			if (preparedStatement != null)
-				preparedStatement.close();
+			if (null != resultSet)
+				resultSet.close();
+		} catch (SQLException SQLEx) {
+
+		}
+		
+		try {
+			if (null != statement)
+				statement.close();
 		} catch (SQLException SQLEx) {
 
 		}
 
 		try {
-			if (connection != null)
+			if (null != connection)
 				connection.close();
 		} catch (SQLException SQLEx) {
 

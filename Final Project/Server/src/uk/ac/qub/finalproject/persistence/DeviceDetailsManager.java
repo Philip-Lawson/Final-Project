@@ -6,6 +6,7 @@ package uk.ac.qub.finalproject.persistence;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -18,9 +19,10 @@ import uk.ac.qub.finalproject.server.RegistrationPack;
  * @author Phil
  *
  */
-public class DeviceDetailsManager {
+public class DeviceDetailsManager extends Observable {
 
 	private DeviceDetailsJDBC deviceDB = new DeviceDetailsJDBC();
+	private UserDetails userDetails;
 	private ReadWriteLock lock = new ReentrantReadWriteLock();
 	private ConcurrentMap<String, Device> devicesMap = new ConcurrentHashMap<String, Device>();
 	private List<String> blacklistedDevices = new ArrayList<String>(1000);
@@ -32,28 +34,58 @@ public class DeviceDetailsManager {
 	private static int BLACKLISTING_MIN_THRESHOLD = 10;
 	private static double MIN_PERCENT_INVALID_RESULTS = 30;
 
+	/**
+	 * Add a device to the persistence layer.
+	 * 
+	 * @param registrationPack
+	 *            the device's registration pack.
+	 * @return true if the device is added successfully.
+	 */
 	public boolean addDevice(RegistrationPack registrationPack) {
 		String deviceID = registrationPack.getAndroidID();
+		String emailAddress = registrationPack.getEmailAddress();
 
 		if (devicesMap.containsKey(deviceID)) {
 			return false;
 		} else {
 			devicesMap.put(deviceID, new Device(deviceID));
 			deviceDB.registerDevice(registrationPack);
+
+			if (null != emailAddress) {
+				userDetails.registerUser(emailAddress);
+			}
+			
 			return true;
 		}
 	}
 
+	/**
+	 * Add a valid result to this device in the cache and the database.
+	 * 
+	 * @param deviceID
+	 */
 	public void writeValidResultSent(String deviceID) {
-
+		Device device;
 		if (devicesMap.containsKey(deviceID)) {
-			devicesMap.get(deviceID).addValidResult();
+			device = devicesMap.get(deviceID);
+			device.addValidResult();
+			updateValidResults();
+			deviceDB.writeValidResultSent(deviceID);
+
+			String emailAddress = device.getEmailAddress();
+
+			if (null != emailAddress) {
+				userDetails.checkForAchievementMilestone(emailAddress);
+			}
 		}
 
-		updateValidResults();
-		deviceDB.writeValidResultSent(deviceID);
 	}
 
+	/**
+	 * Add an invalid result to this device in the cache and the database.
+	 * 
+	 * @param deviceID
+	 */
 	public void writeInvalidResultSent(String deviceID) {
 
 		if (devicesMap.containsKey(deviceID)) {
@@ -73,32 +105,46 @@ public class DeviceDetailsManager {
 
 				updateBlacklistedDevices();
 			}
+
+			setChanged();
+			notifyObservers();
 		}
 
 	}
 
+	/**
+	 * Helper method to determine if a device should be blacklisted.
+	 * 
+	 * @param deviceID
+	 *            the device's unique ID.
+	 * @return true if the device should be blacklisted.
+	 */
 	private boolean shouldBeBlacklisted(String deviceID) {
 		if (devicesMap.get(deviceID).getInvalidResults() > BLACKLISTING_MIN_THRESHOLD) {
-			return isAboveBlacklistingPercent(deviceID);
+			Integer validResults = 0;
+
+			if (devicesMap.containsKey(deviceID)) {
+				validResults = devicesMap.get(deviceID).getValidResults();
+			}
+
+			Integer invalidResults = devicesMap.get(deviceID)
+					.getInvalidResults();
+			Integer totalResults = invalidResults + validResults;
+			double percentInvalid = (invalidResults / totalResults) * 100.0;
+
+			return percentInvalid > MIN_PERCENT_INVALID_RESULTS;
 		} else {
 			return false;
 		}
 	}
 
-	private boolean isAboveBlacklistingPercent(String deviceID) {
-		Integer validResults = 0;
-
-		if (devicesMap.containsKey(deviceID)) {
-			validResults = devicesMap.get(deviceID).getValidResults();
-		}
-
-		Integer invalidResults = devicesMap.get(deviceID).getInvalidResults();
-		Integer totalResults = invalidResults + validResults;
-		double percentInvalid = (invalidResults / totalResults) * 100.0;
-
-		return percentInvalid > MIN_PERCENT_INVALID_RESULTS;
-	}
-
+	/**
+	 * Determines if a device is currently blacklisted.
+	 * 
+	 * @param deviceID
+	 *            the device's unique ID.
+	 * @return true if the device is blacklisted.
+	 */
 	public boolean deviceIsBlacklisted(String deviceID) {
 		lock.readLock().lock();
 
@@ -110,41 +156,87 @@ public class DeviceDetailsManager {
 
 	}
 
-	public void updateActiveDevice(String deviceID, long lastTimeActive) {
+	/**
+	 * Updates a device to the latest time they were active.
+	 * 
+	 * @param deviceID
+	 *            the device's unique ID.
+	 * @param lastTimeActive
+	 *            the last time active in milliseconds.
+	 */
+	public void updateActiveDevice(String deviceID, long latestTimeActive) {
 		if (devicesMap.containsKey(deviceID)) {
-			devicesMap.get(deviceID).setLastTimeActive(lastTimeActive);
+			devicesMap.get(deviceID).setLastTimeActive(latestTimeActive);
 		}
 	}
 
+	/**
+	 * Deregister a device from the system. Deregisters the device from the
+	 * cache and the database.
+	 * 
+	 * @param deviceID
+	 *            the device's unique ID.
+	 */
 	public void deregisterDevice(String deviceID) {
+		// the device details should be kept in the blacklist
+		// in case they re-register
 		devicesMap.remove(deviceID);
 		deviceDB.deregisterDevice(deviceID);
 	}
 
+	/**
+	 * Increments the valid results counter.
+	 */
 	private synchronized void updateValidResults() {
 		++VALID_RESULTS;
 	}
 
+	/**
+	 * Increments the invalid results counter.
+	 */
 	private synchronized void updateInvalidResults() {
 		++INVALID_RESULTS;
 	}
 
+	/**
+	 * Increments the blacklisted devices counter.
+	 */
 	private synchronized void updateBlacklistedDevices() {
 		++NO_OF_BLACKLISTED_DEVICES;
 	}
 
-	public long numberOfValidResults() {
+	/**
+	 * The number of valid results stored during this computation session.
+	 * 
+	 * @return the number of valid results.
+	 */
+	public synchronized long numberOfValidResults() {
 		return VALID_RESULTS;
 	}
 
-	public long numberOfInvalidResults() {
+	/**
+	 * The number of invalid results during this computation session.
+	 * 
+	 * @return the number of invalid results.
+	 */
+	public synchronized long numberOfInvalidResults() {
 		return INVALID_RESULTS;
 	}
 
-	public int numberOfBlacklistedDevices() {
+	/**
+	 * The number of devices that are currently blacklisted.
+	 * 
+	 * @return the number of devices that are currently blacklisted.
+	 */
+	public synchronized int numberOfBlacklistedDevices() {
 		return NO_OF_BLACKLISTED_DEVICES;
 	}
 
+	/**
+	 * Returns the number of devices that are currently active.
+	 * 
+	 * @return the number of devices that are currently active.
+	 */
 	public int numberOfActiveDevices() {
 		int devicesActive = 0;
 		long lastTimeActive;
@@ -162,27 +254,71 @@ public class DeviceDetailsManager {
 
 	}
 
+	/**
+	 * Helper method to determine if a device is considered active.
+	 * 
+	 * @param lastTimeActive
+	 *            the last time the device was active (in milliseconds).
+	 * @param currentTime
+	 *            the current time.
+	 * @return true if the device is within the active device threshold.
+	 */
 	private boolean deviceIsActive(long lastTimeActive, long currentTime) {
 		long timeDelay = TimeUnit.MINUTES.toMillis(ACTIVE_DEVICE_THRESHOLD);
 		return currentTime - lastTimeActive < timeDelay;
 	}
 
-	public int setActiveDeviceThreshold(int minutes) {
+	/**
+	 * Changes the active device threshold. Converts minus numbers to natural
+	 * numbers.
+	 * 
+	 * @param minutes
+	 *            the number of minutes after which a device is considered
+	 *            inactive.
+	 * @return the number of devices active after the change in threshold.
+	 */
+	public int changeActiveDeviceThreshold(int minutes) {
 		ACTIVE_DEVICE_THRESHOLD = Math.abs(minutes);
 		return numberOfActiveDevices();
 	}
 
+	/**
+	 * A device is allowed a certain grace period before it will be considered
+	 * for blacklisting. This method changes the number of results needed before
+	 * a device can be considered for blacklisting e.g. 10 results.<br>
+	 * </br> This avoids a device being prematurely blacklisted for having 1
+	 * invalid result and no valid results i.e. a 100% invalid result rate.
+	 * 
+	 * @param invalidResults
+	 *            the number of invalid results needed
+	 */
 	public void setBlacklistingThreshold(int invalidResults) {
 		BLACKLISTING_MIN_THRESHOLD = Math.abs(invalidResults);
+		resetBlacklist();
+		setChanged();
+		notifyObservers();
 	}
 
+	/**
+	 * A device will be blacklisted if more than n % of its results are invalid.
+	 * This method sets that threshold. Once this method is called the list of
+	 * blacklisted devices is altered to account for the change.
+	 * 
+	 * @param percent
+	 */
 	public void setMinPercentInvalidResults(int percent) {
 		if (percent <= 100 && percent > 0) {
 			MIN_PERCENT_INVALID_RESULTS = percent;
 			resetBlacklist();
+			setChanged();
+			notifyObservers();
 		}
 	}
-	
+
+	/**
+	 * Helper method to reset the device blacklist when the blacklisting
+	 * threshold changes.
+	 */
 	private void resetBlacklist() {
 		lock.writeLock().lock();
 
@@ -200,6 +336,6 @@ public class DeviceDetailsManager {
 		} finally {
 			lock.writeLock().unlock();
 		}
-		
+
 	}
 }

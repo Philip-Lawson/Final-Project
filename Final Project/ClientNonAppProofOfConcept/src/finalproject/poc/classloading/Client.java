@@ -10,6 +10,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 
+import java.security.Security;
+
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -17,7 +19,7 @@ public class Client implements Runnable {
 
 	private static final int PORT_NUMBER = 12346;
 	private static final String HOST = "localhost";
-	private SSLSocket client;
+	private Socket client;
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 
@@ -26,11 +28,13 @@ public class Client implements Runnable {
 	}
 
 	private void connectToServer() throws IOException {
-		System.setProperty("javax.net.ssl.keyStore","C:\\Users\\Phil\\Documents\\GitHub\\Final-Project\\Final Project\\ClientNonAppProofOfConcept\\testkeys");
-		System.setProperty("javax.net.ssl.keyStorePassword","passphrase");
-		
+		/*System.setProperty("javax.net.ssl.keyStore","C:\\Users\\Phil\\Documents\\GitHub\\Final-Project\\Final Project\\ClientNonAppProofOfConcept\\testkeys");
+		System.setProperty("javax.net.ssl.keyStorePassword","passphrase"); 
+
 		SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-		client = (SSLSocket) factory.createSocket(InetAddress.getByName(HOST), PORT_NUMBER);		
+		client = (SSLSocket) factory.createSocket(InetAddress.getByName(HOST), PORT_NUMBER);*/
+				
+		client = new Socket(InetAddress.getByName(HOST), PORT_NUMBER);
 	}
 
 	private void getStreams() throws IOException {
@@ -41,12 +45,12 @@ public class Client implements Runnable {
 	}
 
 	private void processConnection() throws IOException {
-		AbstractServerRequestHandler handler = new CalculationRequestHandler();
+		AbstractServerRequestHandler handler = new LoadCalculationClassRequestHandler();
 		boolean processingConnection = true;
 
 		output.reset();
-		output.writeInt(ClientRequest.REGISTER);
-		output.writeObject(new RegistrationPack());
+		output.writeInt(ClientRequest.REQUEST_PROCESSING_CLASS);
+		///output.writeObject(new RegistrationPack());
 		output.flush();
 		System.out.println("Request written");
 

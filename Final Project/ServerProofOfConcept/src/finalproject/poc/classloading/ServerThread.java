@@ -16,7 +16,7 @@ public class ServerThread implements Runnable {
 
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
-	private Class<?> classToSend;
+	private Class<?> classToSend = ConcreteCalculator.class;
 	private byte[] classBytes;
 
 	public ServerThread(Socket socket, SimpleServer server) {
@@ -94,7 +94,7 @@ public class ServerThread implements Runnable {
 			writeClassToBytes();
 		}
 
-		out.writeInt(ServerRequest.LOAD_CALCULATOR_CLASS.getRequestNum());
+		out.writeInt(ServerRequest.LOAD_PROCESSING_CLASS);
 		out.flush();
 		out.writeObject(classToSend.getName());
 		out.flush();

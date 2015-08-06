@@ -4,12 +4,11 @@
 package uk.ac.qub.finalproject.persistence;
 
 import java.util.Collection;
+import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import uk.ac.qub.finalproject.server.calculationclasses.IResultsPacket;
-
-
 
 /**
  * The results packet manager encapsulates the logic for storing processed
@@ -25,7 +24,7 @@ import uk.ac.qub.finalproject.server.calculationclasses.IResultsPacket;
  * @author Phil
  *
  */
-public class ResultsPacketManager {
+public class ResultsPacketManager extends Observable {
 
 	/**
 	 * The utility class for sending results to the database.
@@ -38,8 +37,18 @@ public class ResultsPacketManager {
 	private ConcurrentMap<String, IResultsPacket> resultsCache = new ConcurrentHashMap<String, IResultsPacket>();
 
 	/**
-	 * Writes the result packet to memory and to the database. If the current
-	 * results packet is a duplicate it will be discarded.
+	 * Takes a results DAO as an argument.
+	 * 
+	 * @param resultsDB
+	 */
+	public ResultsPacketManager(ResultsPacketJDBC resultsDB) {
+		this.resultsDB = resultsDB;
+	}
+
+	/**
+	 * Writes the result packet to memory and to the database. If the referenced
+	 * results packet is already saved it will not be added to the cache or the
+	 * database.
 	 * 
 	 * @param resultsPacket
 	 */
@@ -51,32 +60,57 @@ public class ResultsPacketManager {
 		} else {
 			resultsCache.put(packetID, resultsPacket);
 			resultsDB.writeResult(resultsPacket);
+			setChanged();
+			notifyObservers();
 		}
 
 	}
 
 	/**
+	 * Determines whether a result is saved in the cache. This should be called
+	 * before trying to retrieve a result to avoid receiving a null object.
 	 * 
 	 * @param packetID
-	 * @return
+	 *            the unique ID of the results packet.
+	 * @return true if the result is cached.
 	 */
 	public boolean resultIsSaved(String packetID) {
 		return resultsCache.containsKey(packetID);
 	}
 
+	/**
+	 * Retrieves a result for comparison from the cache. This should only be
+	 * called after calling rewsultIsSaved() otherwise there is a risk of
+	 * retrieving a null value.
+	 * 
+	 * @param packetID
+	 *            the IDF of the packet
+	 * @return a previously processed result for comparison.
+	 */
 	public IResultsPacket getResultForComparison(String packetID) {
 		return resultsCache.get(packetID);
 	}
 
+	/**
+	 * Returns the number of packets that have already been processed.
+	 * 
+	 * @return the number of packets that have been processed.
+	 */
 	public int getNumberOfPacketsProcessed() {
 		return resultsCache.size();
 	}
-	
-	public void loadResultsPackets(){
-		Collection<IResultsPacket> resultsPackets = resultsDB.getResultsPackets();
-		
-		for(IResultsPacket resultsPacket : resultsPackets){
-			resultsCache.putIfAbsent(resultsPacket.getPacketId(), resultsPacket);
+
+	/**
+	 * Loads previously processed results packets from the database. This method
+	 * should be used when the server is restarted.
+	 */
+	public void loadResultsPackets() {
+		Collection<IResultsPacket> resultsPackets = resultsDB
+				.getResultsPackets();
+
+		for (IResultsPacket resultsPacket : resultsPackets) {
+			resultsCache
+					.putIfAbsent(resultsPacket.getPacketId(), resultsPacket);
 		}
 	}
 

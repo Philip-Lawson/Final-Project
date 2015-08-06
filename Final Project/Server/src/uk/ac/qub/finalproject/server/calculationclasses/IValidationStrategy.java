@@ -23,7 +23,7 @@ public interface IValidationStrategy {
 	 */
 	public boolean validateNewResult(IWorkPacket workPacket,
 			IResultsPacket resultsPacket);
-
+	
 	/**
 	 * Checks that a results packet is identical to a previously processed
 	 * duplicate. Since the system only needs one valid result from each work

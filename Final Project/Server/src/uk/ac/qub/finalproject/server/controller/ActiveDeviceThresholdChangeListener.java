@@ -37,9 +37,9 @@ public class ActiveDeviceThresholdChangeListener implements
 		int timeValue = Integer.parseInt(newValue.replaceAll(FIND_NON_NUMBERS_REGEX, ""));
 		
 		if (newValue.contains(HOUR)){
-			deviceDetailsManager.setActiveDeviceThreshold(timeValue*60);
+			deviceDetailsManager.changeActiveDeviceThreshold(timeValue*60);
 		} else {
-			deviceDetailsManager.setActiveDeviceThreshold(timeValue);
+			deviceDetailsManager.changeActiveDeviceThreshold(timeValue);
 		}
 	
 	}

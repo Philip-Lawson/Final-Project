@@ -5,8 +5,6 @@ package uk.ac.qub.finalproject.server.calculationclasses;
 
 import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
 
-
-
 /**
  * An abstract representation of a result packet validator. <br>
  * </br> The validator has an IValidationStrategy as a class member, allowing
@@ -25,10 +23,8 @@ import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
  */
 public abstract class AbstractResultsValidator implements IResultValidator {
 
-	
-
 	private ResultsPacketManager resultsDrawer;
-	
+
 	/**
 	 * Used to validate individual results packets.
 	 */
@@ -54,35 +50,29 @@ public abstract class AbstractResultsValidator implements IResultValidator {
 	}
 
 	@Override
-	public final boolean resultIsValid(IResultsPacket resultsPacket) {
-		String packetID = resultsPacket.getPacketId();
-		
-		if (resultsDrawer.resultIsSaved(packetID)) {
-			IResultsPacket savedResult = resultsDrawer.getResultForComparison(packetID);
-			return validationStrategy.compareWithSavedResult(resultsPacket, savedResult);
-		} else {
-			IWorkPacket workPacket = retrieveWorkPacket(resultsPacket.getPacketId());
-			return validationStrategy.validateNewResult(workPacket,	resultsPacket);
-		}
+	public boolean isFuzzyValidator() {
+		return false;
 	}
 
-	
-	
+	@Override
+	public boolean resultIsPending(String packetID) {
+		return false;
+	}
 
-	/**
-	 * Retrieves a work packet using the result's packet ID. This work packet
-	 * will be used to validate the results.
-	 * 
-	 * @param packetID
-	 *            the packet ID used to track the initial work packet
-	 * @return the initial work packet
-	 */
-	protected abstract IWorkPacket retrieveWorkPacket(String packetID);
+	@Override
+	public final boolean resultIsValid(IResultsPacket resultsPacket, IWorkPacket initialData) {
+		String packetID = resultsPacket.getPacketId();
 
-	/*
-	 * { return resultsPacket . equals ( resultsCache .get( resultsPacket ) .
-	 * getPacketId ()); }
-	 */
+		if (resultsDrawer.resultIsSaved(packetID)) {
+			IResultsPacket savedResult = resultsDrawer
+					.getResultForComparison(packetID);
+			return validationStrategy.compareWithSavedResult(resultsPacket,
+					savedResult);
+		} else {			
+			return validationStrategy.validateNewResult(initialData,
+					resultsPacket);
+		}
+	}
 
 	@Override
 	public final void setValidationStrategy(

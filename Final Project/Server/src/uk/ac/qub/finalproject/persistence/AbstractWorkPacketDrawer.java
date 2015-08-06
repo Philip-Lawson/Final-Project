@@ -4,11 +4,10 @@
 package uk.ac.qub.finalproject.persistence;
 
 import java.util.Collection;
+import java.util.Observable;
 
 import uk.ac.qub.finalproject.server.calculationclasses.IWorkPacket;
 import uk.ac.qub.finalproject.server.calculationclasses.WorkPacketList;
-
-
 
 /**
  * This is the abstract representation of a class that stores the work packets
@@ -19,7 +18,7 @@ import uk.ac.qub.finalproject.server.calculationclasses.WorkPacketList;
  * @author Phil
  *
  */
-public abstract class AbstractWorkPacketDrawer {
+public abstract class AbstractWorkPacketDrawer extends Observable {
 
 	/**
 	 * Appends a collection of work packets to the list of work packets stored
@@ -73,11 +72,27 @@ public abstract class AbstractWorkPacketDrawer {
 	public abstract int numberOfPacketsRemaining();
 
 	/**
+	 * Returns the number of individual work packets loaded.
+	 * 
+	 * @return the number of individual packets loaded.
+	 */
+	public abstract int numberOfDistinctWorkPackets();
+
+	/**
 	 * Determines whether there are any packets remaining to be sent.
 	 * 
 	 * @return true if there are still packets to be sent.
 	 */
 	public abstract boolean hasWorkPackets();
+
+	/**
+	 * Returns the work packet referenced by the packet ID.
+	 * 
+	 * @param packetID
+	 *            the unique ID of the work packet.
+	 * @return the initial data
+	 */
+	public abstract IWorkPacket getInitialData(String packetID);
 
 	/**
 	 * Helper method to confirm that the workPacket is not null and that it has

@@ -19,6 +19,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
+
+
 public class Server implements Runnable {
 
 	private static final int THREAD_POOL_SIZE = 200;
@@ -66,11 +68,9 @@ public class Server implements Runnable {
 		keyFactory.init(keyStore, PASSWORD);
 
 		context.init(keyFactory.getKeyManagers(), null, null);
-		socketFactory = context.getServerSocketFactory();
-
+		socketFactory = context.getServerSocketFactory(); 
+		
 		return (SSLServerSocket) socketFactory.createServerSocket(port);
-
-	
 	}
 	
 
@@ -114,7 +114,7 @@ public class Server implements Runnable {
 			e.printStackTrace();
 		} catch (CertificateException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace(); 
 		} */catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
