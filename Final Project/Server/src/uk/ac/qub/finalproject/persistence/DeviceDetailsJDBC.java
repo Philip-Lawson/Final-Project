@@ -21,14 +21,13 @@ import uk.ac.qub.finalproject.server.RegistrationPack;
 public class DeviceDetailsJDBC extends AbstractJDBC {
 
 	private static final String REGISTER_DEVICE = "INSERT INTO devices VALUES (?);";
-	private static final String REGISTER_EMAIL = "INSERT INTO users VALUES (?, ?);";
+	
 	private static final String DEREGISTER_DEVICE = "DELETE FROM devices WHERE device_id = ?;";
 	private static final String VALID_RESULT_SENT = "UPDATE devices SET valid_results = valid_results + 1 WHERE device_id = ?;";
 	private static final String INVALID_RESULT_SENT = "UPDATE devices SET invalid_results = invalid_results + 1 WHERE device_id = ?;";
 	private static final String LOAD_DEVICES = "SELECT * FROM devices";
 	private static final String LOAD_EMAIL_LIST = "SELECT device_id, email_address FROM users";
 
-	private EmailValidationStrategy emailValidationStrategy = new EmailValidationStrategy();
 	private Encryptor encryptor = new EncryptorImpl();
 	
 	public void setEncryptor(Encryptor encryptor){
@@ -87,29 +86,17 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 		}
 	}
 
-	public boolean registerDevice(RegistrationPack registrationPack) {
-		String email = registrationPack.getEmailAddress();
-		byte[] deviceID = encryptor.encrypt(registrationPack.getAndroidID());		
-		byte[] emailBytes = encryptor.encrypt(email);
+	public boolean registerDevice(RegistrationPack registrationPack) {		
+		byte[] deviceID = encryptor.encrypt(registrationPack.getAndroidID());			
 		
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		try {
 			connection = createConnection();
-
 			preparedStatement = connection.prepareStatement(REGISTER_DEVICE);
 			preparedStatement.setBytes(1, deviceID);
 			preparedStatement.executeQuery();
 			
-			preparedStatement.close();
-
-			if (emailValidationStrategy.emailIsValid(email)) {
-				preparedStatement = connection.prepareStatement(REGISTER_EMAIL);
-				preparedStatement.setBytes(1, deviceID);
-				preparedStatement.setBytes(2, emailBytes);
-				preparedStatement.executeQuery();
-			}
-
 			return true;
 
 		} catch (SQLException SQLEx) {

@@ -2,7 +2,7 @@ package uk.ac.qub.finalproject.server.calculationclasses;
 
 import java.util.Map;
 
-public interface IGroupValidator {
+public interface IGroupValidationStrategy {
 	
 	public IResultsPacket compareGroupResults(Map<String, IResultsPacket> pendingResults, IWorkPacket initalData);
 	

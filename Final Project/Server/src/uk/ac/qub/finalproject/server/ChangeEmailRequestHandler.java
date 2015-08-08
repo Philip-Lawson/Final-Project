@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import uk.ac.qub.finalproject.persistence.UserDetails;
+import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 
 /**
  * @author Phil
@@ -15,13 +15,13 @@ import uk.ac.qub.finalproject.persistence.UserDetails;
  */
 public class ChangeEmailRequestHandler extends AbstractClientRequestHandler {
 
-	private UserDetails userDetails;
+	private UserDetailsManager userDetails;
 
 	public ChangeEmailRequestHandler() {
 		super();
 	}
 
-	public ChangeEmailRequestHandler(UserDetails userDetails) {
+	public ChangeEmailRequestHandler(UserDetailsManager userDetails) {
 		this();
 		this.userDetails = userDetails;
 	}
@@ -33,8 +33,7 @@ public class ChangeEmailRequestHandler extends AbstractClientRequestHandler {
 	 * finalproject.poc.appserver.AbstractClientRequestHandler#getRequestNum()
 	 */
 	@Override
-	protected int getRequestNum() {
-		// TODO Auto-generated method stub
+	protected int getRequestNum() {		
 		return ClientRequest.CHANGE_EMAIL;
 	}
 

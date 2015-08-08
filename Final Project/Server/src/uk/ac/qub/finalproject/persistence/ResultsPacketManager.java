@@ -29,13 +29,17 @@ public class ResultsPacketManager extends Observable {
 	/**
 	 * The utility class for sending results to the database.
 	 */
-	private ResultsPacketJDBC resultsDB;
+	private ResultsPacketJDBC resultsDB = new ResultsPacketJDBC();
 
 	/**
 	 * Used to store results packets using their work packet ID as a key.
 	 */
 	private ConcurrentMap<String, IResultsPacket> resultsCache = new ConcurrentHashMap<String, IResultsPacket>();
 
+	public ResultsPacketManager() {
+		
+	}
+	
 	/**
 	 * Takes a results DAO as an argument.
 	 * 

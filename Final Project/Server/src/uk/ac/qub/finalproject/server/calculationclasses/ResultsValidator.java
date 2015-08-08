@@ -6,22 +6,11 @@ package uk.ac.qub.finalproject.server.calculationclasses;
 import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
 
 /**
- * An abstract representation of a result packet validator. <br>
- * </br> The validator has an IValidationStrategy as a class member, allowing
- * the validation strategy to be changed dynamically. Valid results are stored
- * in a ConcurrentMap to allow for fast reads and synchronised writes .Once a
- * valid result is processed and stored duplicate results packets will be
- * compared using the compareWithCachedResult method. This should prove useful
- * if the validation strategy is computationally intensive. <br>
- * </br> The resultIsCached method is present should the consumer wish to
- * implement policies to minimize entries to a database or to quickly discard
- * duplicates once a result has been processed. In that case resultIsCached
- * <b>must</b> be called before validating a result.
  * 
  * @author Phil
  *
  */
-public abstract class AbstractResultsValidator implements IResultValidator {
+public class ResultsValidator implements IResultValidator {
 
 	private ResultsPacketManager resultsDrawer;
 
@@ -34,8 +23,12 @@ public abstract class AbstractResultsValidator implements IResultValidator {
 	 * Default constructor. IF this is called the validation strategy must be
 	 * set before calling any of this classes methods.
 	 */
-	public AbstractResultsValidator() {
+	public ResultsValidator() {
 
+	}
+	
+	public ResultsValidator(ResultsPacketManager resultsDrawer){
+		this.resultsDrawer = resultsDrawer;
 	}
 
 	/**
@@ -45,15 +38,11 @@ public abstract class AbstractResultsValidator implements IResultValidator {
 	 * @param validationStrategy
 	 *            the strategy used to validate
 	 */
-	public AbstractResultsValidator(IValidationStrategy validationStrategy) {
+	public ResultsValidator(IValidationStrategy validationStrategy) {
 		this.setValidationStrategy(validationStrategy);
 	}
 
-	@Override
-	public boolean isFuzzyValidator() {
-		return false;
-	}
-
+	
 	@Override
 	public boolean resultIsPending(String packetID) {
 		return false;
@@ -79,6 +68,18 @@ public abstract class AbstractResultsValidator implements IResultValidator {
 			IValidationStrategy validationStrategy) {
 		if (null != validationStrategy)
 			this.validationStrategy = validationStrategy;
+	}
+
+	@Override
+	public void addResultToGroup(IResultsPacket resultPacket,
+			IWorkPacket initialData, String deviceID) {
+				
+	}
+
+	@Override
+	public void setGroupValidationStrategy(
+			IGroupValidationStrategy groupValidationStrategy) {
+				
 	}
 
 }

@@ -5,6 +5,7 @@ package uk.ac.qub.finalproject.server;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Observable;
 
 /**
  * The abstract base class of all request handlers that handle the interaction
@@ -17,7 +18,7 @@ import java.io.ObjectOutputStream;
  * @author Phil
  *
  */
-public abstract class AbstractClientRequestHandler {
+public abstract class AbstractClientRequestHandler extends Observable {
 
 	private AbstractClientRequestHandler nextHandler;
 

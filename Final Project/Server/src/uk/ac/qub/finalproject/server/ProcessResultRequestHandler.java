@@ -11,7 +11,7 @@ import java.util.Date;
 import uk.ac.qub.finalproject.persistence.AbstractWorkPacketDrawer;
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
-import uk.ac.qub.finalproject.persistence.UserDetails;
+import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 import uk.ac.qub.finalproject.server.calculationclasses.IResultValidator;
 import uk.ac.qub.finalproject.server.calculationclasses.IResultsPacket;
 import uk.ac.qub.finalproject.server.calculationclasses.IWorkPacket;
@@ -21,30 +21,35 @@ import uk.ac.qub.finalproject.server.calculationclasses.ResultsPacketList;
  * @author Phil
  *
  */
-public class ProcessResultHandler extends AbstractClientRequestHandler {
+public class ProcessResultRequestHandler extends AbstractClientRequestHandler {
+
+	public static final String LOAD_MORE_WORK_PACKETS = "Load More Work Packets";
+	public static final String PROCESSING_COMPLETE = "Processing Complete!";
 
 	private DeviceDetailsManager deviceDetailsManager;
-	private ResultsPacketManager resultsPacketManager;	
+	private ResultsPacketManager resultsPacketManager;
 	private IResultValidator validator;
 	private AbstractWorkPacketDrawer packetDrawer;
 
-	public ProcessResultHandler() {
+	public ProcessResultRequestHandler() {
 		super();
 	}
 
-	public ProcessResultHandler(DeviceDetailsManager deviceDetailsManager) {
+	public ProcessResultRequestHandler(DeviceDetailsManager deviceDetailsManager) {
 		super();
 		this.deviceDetailsManager = deviceDetailsManager;
 	}
 
-	public ProcessResultHandler(DeviceDetailsManager deviceDetailsManager,
+	public ProcessResultRequestHandler(
+			DeviceDetailsManager deviceDetailsManager,
 			IResultValidator validator) {
 		this(deviceDetailsManager);
 		this.validator = validator;
 	}
 
-	public ProcessResultHandler(DeviceDetailsManager deviceDetailsManager,
-			ResultsPacketManager resultsPacketManager, UserDetails userDetails,
+	public ProcessResultRequestHandler(
+			DeviceDetailsManager deviceDetailsManager,
+			ResultsPacketManager resultsPacketManager,
 			IResultValidator validator, AbstractWorkPacketDrawer packetDrawer) {
 		this(deviceDetailsManager, validator);
 		this.resultsPacketManager = resultsPacketManager;
@@ -80,7 +85,6 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 			sendResponse(output, deviceID);
 
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -91,8 +95,7 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 			IWorkPacket initialData = packetDrawer.getInitialData(result
 					.getPacketId());
 
-			if (validator.isFuzzyValidator()
-					&& validator.resultIsPending(result.getPacketId())) {
+			if (validator.resultIsPending(result.getPacketId())) {
 				validator.addResultToGroup(result, initialData, deviceID);
 			} else if (validator.resultIsValid(result, initialData)) {
 				deviceDetailsManager.writeValidResultSent(deviceID);
@@ -105,9 +108,11 @@ public class ProcessResultHandler extends AbstractClientRequestHandler {
 		if (!packetDrawer.hasWorkPackets()) {
 			if (resultsPacketManager.getNumberOfPacketsProcessed() == packetDrawer
 					.numberOfDistinctWorkPackets()) {
-				// TODO - call the system to finish the calculation
+				setChanged();
+				notifyObservers(PROCESSING_COMPLETE);
 			} else {
-				// TODO - call the syste to reload incomplete work packets
+				setChanged();
+				notifyObservers(LOAD_MORE_WORK_PACKETS);
 			}
 		}
 

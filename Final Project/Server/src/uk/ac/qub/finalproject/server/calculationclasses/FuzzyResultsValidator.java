@@ -13,29 +13,18 @@ import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
  * @author Phil
  *
  */
-public class AbstractFuzzyResultsValidator implements IResultValidator {
+public class FuzzyResultsValidator implements IResultValidator {
 
 	private static int MIN_RESULTS_NEEDED_FOR_COMPARISON = 5;
 
 	private ResultsPacketManager resultsDrawer;
 	private DeviceDetailsManager deviceDetailsDrawer;
 	private IValidationStrategy validationStrategy;
-	private IGroupValidator groupValidator;
+	private IGroupValidationStrategy groupValidator;
 	private Map<String, Map<String, IResultsPacket>> pendingResultsMap = new ConcurrentHashMap<String, Map<String, IResultsPacket>>();
 
-	public AbstractFuzzyResultsValidator(ResultsPacketManager resultsDrawer) {
+	public FuzzyResultsValidator(ResultsPacketManager resultsDrawer) {
 		this.resultsDrawer = resultsDrawer;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.qub.finalproject.server.calculationclasses.IResultValidator#
-	 * isFuzzyValidation()
-	 */
-	@Override
-	public boolean isFuzzyValidator() {
-		return true;
 	}
 
 	/*
@@ -70,6 +59,13 @@ public class AbstractFuzzyResultsValidator implements IResultValidator {
 	public void setValidationStrategy(IValidationStrategy validationStrategy) {
 		if (null != validationStrategy)
 			this.validationStrategy = validationStrategy;
+	}
+	
+	@Override
+	public void setGroupValidationStrategy(
+			IGroupValidationStrategy groupValidationStrategy) {
+		if (null != groupValidationStrategy)
+			this.groupValidator = groupValidationStrategy;		
 	}
 
 	@Override
@@ -118,5 +114,5 @@ public class AbstractFuzzyResultsValidator implements IResultValidator {
 			}
 		}
 	}
-
+	
 }

@@ -22,7 +22,7 @@ import uk.ac.qub.finalproject.server.RegistrationPack;
 public class DeviceDetailsManager extends Observable {
 
 	private DeviceDetailsJDBC deviceDB = new DeviceDetailsJDBC();
-	private UserDetails userDetails;
+	private UserDetailsManager userDetails;
 	private ReadWriteLock lock = new ReentrantReadWriteLock();
 	private ConcurrentMap<String, Device> devicesMap = new ConcurrentHashMap<String, Device>();
 	private List<String> blacklistedDevices = new ArrayList<String>(1000);
@@ -33,6 +33,18 @@ public class DeviceDetailsManager extends Observable {
 	private static long ACTIVE_DEVICE_THRESHOLD = 0;
 	private static int BLACKLISTING_MIN_THRESHOLD = 10;
 	private static double MIN_PERCENT_INVALID_RESULTS = 30;
+	
+	public DeviceDetailsManager(){
+		super();
+	}
+	
+	public DeviceDetailsManager(UserDetailsManager userDetails){
+		this.userDetails = userDetails;
+	}
+	
+	public void setUserDetailsManager(UserDetailsManager userDetails){
+		this.userDetails = userDetails;
+	}
 
 	/**
 	 * Add a device to the persistence layer.
@@ -52,7 +64,7 @@ public class DeviceDetailsManager extends Observable {
 			deviceDB.registerDevice(registrationPack);
 
 			if (null != emailAddress) {
-				userDetails.registerUser(emailAddress);
+				userDetails.registerUser(registrationPack);
 			}
 			
 			return true;
@@ -177,11 +189,11 @@ public class DeviceDetailsManager extends Observable {
 	 * @param deviceID
 	 *            the device's unique ID.
 	 */
-	public void deregisterDevice(String deviceID) {
+	public boolean deregisterDevice(String deviceID) {
 		// the device details should be kept in the blacklist
 		// in case they re-register
 		devicesMap.remove(deviceID);
-		deviceDB.deregisterDevice(deviceID);
+		return deviceDB.deregisterDevice(deviceID);
 	}
 
 	/**

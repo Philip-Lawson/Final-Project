@@ -37,7 +37,7 @@ public class Server implements Runnable {
 	private KeyStore keyStore;
 	//private SSLServerSocket server;
 	private SSLServerSocketFactory socketFactory;
-	private AbstractClientRequestHandler requestHandler;
+	private AbstractClientRequestHandler requestHandler;	
 	private boolean listening = true;
 	private ServerSocket server;
 
@@ -86,14 +86,11 @@ public class Server implements Runnable {
 	}
 
 	@Override
-	public void run() {
-		// TODO Auto-generated method stub
+	public void run() {		
 		try {
 			server = new ServerSocket(PORT);	
-			listening = true;
-			
-			threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-			requestHandler = new RegisterRequestHandler();
+			listening = true;			
+			threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);			
 				
 			while (listening) {
 				Socket connection = server.accept();

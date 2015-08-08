@@ -31,6 +31,12 @@ public abstract class AbstractWorkPacketDrawer extends Observable {
 	public abstract void addWorkPackets(Collection<IWorkPacket> workPackets);
 
 	/**
+	 * Asks the work packet drawer to re-load all previously sent work packets
+	 * that have not been processed.
+	 */
+	public abstract void reloadIncompletedWorkPackets();
+
+	/**
 	 * Retrieves the next work packet from the drawer, taking into account the
 	 * number of copies of each work packet to be sent out.
 	 * 

@@ -19,7 +19,7 @@ import uk.ac.qub.finalproject.server.calculationclasses.IResultsPacket;
  * @author Phil
  *
  */
-public abstract class AbstractResultsTransfer {
+public abstract class AbstractResultsTransferManager {
 
 	/**
 	 * The results packet DAO used to retrieve the collection of results.

@@ -173,4 +173,9 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 
 	}
 
+	@Override
+	public void reloadIncompletedWorkPackets() {
+		addWorkPackets(workPacketDB.getIncompleteWorkPackets());		
+	}
+
 }

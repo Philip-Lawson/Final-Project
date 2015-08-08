@@ -14,13 +14,6 @@ package uk.ac.qub.finalproject.server.calculationclasses;
 public interface IResultValidator {
 
 	/**
-	 * Returns true if the validation strategy uses a group comparison method.
-	 * 
-	 * @return
-	 */
-	public boolean isFuzzyValidator();
-
-	/**
 	 * Returns true if the validity of the result is still pending. This is
 	 * applicable for group analysis when there are insufficient results stored
 	 * to complete validation.
@@ -57,5 +50,7 @@ public interface IResultValidator {
 	 *            the new validation strategy
 	 */
 	public void setValidationStrategy(IValidationStrategy validationStrategy);
+	
+	public void setGroupValidationStrategy(IGroupValidationStrategy groupValidationStrategy);
 
 }

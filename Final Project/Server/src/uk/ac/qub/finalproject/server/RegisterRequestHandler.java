@@ -34,7 +34,6 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 	 */
 	@Override
 	protected int getRequestNum() {
-		// TODO Auto-generated method stub
 		return ClientRequest.REGISTER;
 	}
 
@@ -42,8 +41,7 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 	 * @see finalproject.poc.appserver.AbstractClientRequestHandler#handleHere(java.io.ObjectInputStream, java.io.ObjectOutputStream)
 	 */
 	@Override
-	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
-		// TODO Auto-generated method stub
+	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {		
 		try {
 			boolean successfulRegistration = true;
 			 
@@ -51,12 +49,11 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 				RegistrationPack registrationPack = (RegistrationPack) input.readObject();
 				successfulRegistration = deviceManager.addDevice(registrationPack);
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				
+								
 			}		
 									
 			output.reset();			
-			output.writeBoolean(successfulRegistration);
+			output.writeBoolean(successfulRegistration);			
 			output.flush();
 		} catch (IOException   ex){
 			
@@ -65,9 +62,4 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 
 	}
 	
-	@Override
-	protected void delegate(int requestNum, ObjectInputStream input, ObjectOutputStream output){
-		
-	}
-
 }

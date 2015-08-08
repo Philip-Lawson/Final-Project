@@ -1,13 +1,14 @@
 /**
  * 
  */
-package finalproject.poc.appserver;
+package uk.ac.qub.finalproject.server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import finalproject.poc.persistence.AbstractWorkPacketDrawer;
+import uk.ac.qub.finalproject.persistence.AbstractWorkPacketDrawer;
+
 
 /**
  * @author Phil
