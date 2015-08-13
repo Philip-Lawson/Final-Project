@@ -23,30 +23,32 @@ public abstract class AbstractJDBC {
 	private static final String USERNAME = "";
 	private static final String PASSWORD = "";
 
-	
 	/**
 	 * A convenience method for creating the connection to the database.
 	 * 
 	 * @throws SQLException
 	 *             if the connection fails.
+	 * @throws ClassNotFoundException
 	 */
-	protected Connection createConnection() throws SQLException {
-		return DriverManager.getConnection(DATABASE_URL, USERNAME,
-				PASSWORD);
+	protected Connection createConnection() throws SQLException,
+			ClassNotFoundException {
+		Class.forName("com.mysql.jdbc.Driver");
+		return DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
 	}
 
 	/**
 	 * A convenience method for closing the connection and the prepared
 	 * statement. This takes care of nulls and SQL Exceptions.
 	 */
-	protected void closeConnection(Connection connection, Statement statement, ResultSet resultSet) {
+	protected void closeConnection(Connection connection, Statement statement,
+			ResultSet resultSet) {
 		try {
 			if (null != resultSet)
 				resultSet.close();
 		} catch (SQLException SQLEx) {
 
 		}
-		
+
 		try {
 			if (null != statement)
 				statement.close();

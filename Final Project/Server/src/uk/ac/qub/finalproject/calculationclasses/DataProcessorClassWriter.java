@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server.calculationclasses;
+package uk.ac.qub.finalproject.calculationclasses;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,6 +29,7 @@ public class DataProcessorClassWriter {
 		try {
 			lock.readLock().lock();
 			if (null == classBytes) {
+				lock.readLock().unlock();
 				writeClassToBytes();
 			}
 			return classBytes;
@@ -43,16 +44,16 @@ public class DataProcessorClassWriter {
 	}
 
 	private void writeClassToBytes() {
-		try {
+		lock.writeLock().lock();
+		
+		try {			
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(bytes);
 
 			oos.flush();
 			bytes.flush();
 			oos.writeObject(currentProcessingClass.getClass());
-
-			lock.writeLock().lock();
-
+			
 			classBytes = bytes.toByteArray();
 			bytes.close();
 			oos.close();

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server.calculationclasses;
+package uk.ac.qub.finalproject.calculationclasses;
 
 /**
  * Implementations of this interface must use a validation strategy to determine

@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import uk.ac.qub.finalproject.server.calculationclasses.IWorkPacket;
-import uk.ac.qub.finalproject.server.calculationclasses.WorkPacketList;
+import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
+import uk.ac.qub.finalproject.calculationclasses.WorkPacketList;
 
 /**
  * @author Phil
@@ -29,6 +29,14 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	private WorkPacketList currentPacketList;
 	private Map<String, IWorkPacket> sentPacketsMap = new ConcurrentHashMap<String, IWorkPacket>();
 
+	public WorkPacketDrawerImpl() {
+
+	}
+	
+	public WorkPacketDrawerImpl(WorkPacketJDBC workPacketDB) {
+		this.workPacketDB = workPacketDB;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -38,15 +46,16 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	 */
 	@Override
 	public void addWorkPackets(Collection<IWorkPacket> workPackets) {
-		List<IWorkPacket> validPackets = new ArrayList<IWorkPacket>(workPackets.size());
-		
-		for (IWorkPacket workPacket: workPackets){
+		List<IWorkPacket> validPackets = new ArrayList<IWorkPacket>(
+				workPackets.size());
+
+		for (IWorkPacket workPacket : workPackets) {
 			if (workPacketIsValid(workPacket))
 				validPackets.add(workPacket);
 		}
-		
+
 		unprocessedWorkPacketList.addAll(validPackets);
-		
+
 		setChanged();
 		notifyObservers();
 	}
@@ -67,9 +76,6 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 			transferWorkPackets();
 			TIMES_PACKET_LIST_SENT = 1;
 		}
-		
-		setChanged();
-		notifyObservers();
 
 		return currentPacketList;
 	}
@@ -88,9 +94,6 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 			throw new IllegalArgumentException("Invalid Number of Copies");
 		} else {
 			TIMES_TO_SEND_PACKET_LIST = numberOfCopies;
-			
-			setChanged();
-			notifyObservers();
 		}
 
 	}
@@ -104,8 +107,8 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	 */
 	@Override
 	public synchronized void setPacketsPerList(int packetsPerList) {
-		if (packetsPerList >= MIN_PACKETS_PER_LIST) 
-			PACKETS_PER_LIST = packetsPerList;				
+		if (packetsPerList >= MIN_PACKETS_PER_LIST)
+			PACKETS_PER_LIST = packetsPerList;
 	}
 
 	/*
@@ -116,12 +119,14 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	 */
 	@Override
 	public int numberOfPacketsRemaining() {
-		int packetsToTransfer = unprocessedWorkPacketList.size() * TIMES_TO_SEND_PACKET_LIST;
-		int remainderOfCurrentList = (TIMES_TO_SEND_PACKET_LIST - TIMES_PACKET_LIST_SENT) * PACKETS_PER_LIST;
-		
+		int packetsToTransfer = unprocessedWorkPacketList.size()
+				* TIMES_TO_SEND_PACKET_LIST;
+		int remainderOfCurrentList = (TIMES_TO_SEND_PACKET_LIST - TIMES_PACKET_LIST_SENT)
+				* PACKETS_PER_LIST;
+
 		return packetsToTransfer + remainderOfCurrentList;
 	}
-	
+
 	@Override
 	public int numberOfDistinctWorkPackets() {
 		return unprocessedWorkPacketList.size() + sentPacketsMap.size();
@@ -164,8 +169,8 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	private void transferWorkPackets() {
 		currentPacketList.clear();
 		int count = 0;
-		
-		while(count < PACKETS_PER_LIST && unprocessedWorkPacketList.size() > 0){
+
+		while (count < PACKETS_PER_LIST && unprocessedWorkPacketList.size() > 0) {
 			IWorkPacket workPacket = unprocessedWorkPacketList.remove(0);
 			currentPacketList.add(workPacket);
 			sentPacketsMap.putIfAbsent(workPacket.getPacketId(), workPacket);
@@ -175,7 +180,7 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 
 	@Override
 	public void reloadIncompletedWorkPackets() {
-		addWorkPackets(workPacketDB.getIncompleteWorkPackets());		
+		addWorkPackets(workPacketDB.getIncompleteWorkPackets());
 	}
 
 }

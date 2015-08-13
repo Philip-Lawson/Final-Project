@@ -4,7 +4,8 @@
 package uk.ac.qub.finalproject.persistence;
 
 import java.util.Collection;
-import uk.ac.qub.finalproject.server.calculationclasses.IResultsPacket;
+
+import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 
 
 /**

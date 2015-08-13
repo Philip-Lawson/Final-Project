@@ -1,8 +1,9 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server.calculationclasses;
+package uk.ac.qub.finalproject.calculationclasses;
 
+import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
 
 /**
@@ -26,9 +27,14 @@ public class ResultsValidator implements IResultValidator {
 	public ResultsValidator() {
 
 	}
-	
-	public ResultsValidator(ResultsPacketManager resultsDrawer){
+
+	public ResultsValidator(ResultsPacketManager resultsDrawer) {
 		this.resultsDrawer = resultsDrawer;
+	}
+
+	public ResultsValidator(ResultsPacketManager resultsPacketManager,
+			DeviceDetailsManager deviceDetailsManager) {
+		this(resultsPacketManager);
 	}
 
 	/**
@@ -42,14 +48,14 @@ public class ResultsValidator implements IResultValidator {
 		this.setValidationStrategy(validationStrategy);
 	}
 
-	
 	@Override
 	public boolean resultIsPending(String packetID) {
 		return false;
 	}
 
 	@Override
-	public final boolean resultIsValid(IResultsPacket resultsPacket, IWorkPacket initialData) {
+	public final boolean resultIsValid(IResultsPacket resultsPacket,
+			IWorkPacket initialData) {
 		String packetID = resultsPacket.getPacketId();
 
 		if (resultsDrawer.resultIsSaved(packetID)) {
@@ -57,7 +63,7 @@ public class ResultsValidator implements IResultValidator {
 					.getResultForComparison(packetID);
 			return validationStrategy.compareWithSavedResult(resultsPacket,
 					savedResult);
-		} else {			
+		} else {
 			return validationStrategy.validateNewResult(initialData,
 					resultsPacket);
 		}
@@ -73,13 +79,13 @@ public class ResultsValidator implements IResultValidator {
 	@Override
 	public void addResultToGroup(IResultsPacket resultPacket,
 			IWorkPacket initialData, String deviceID) {
-				
+
 	}
 
 	@Override
 	public void setGroupValidationStrategy(
 			IGroupValidationStrategy groupValidationStrategy) {
-				
+
 	}
 
 }

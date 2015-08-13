@@ -18,12 +18,11 @@ import java.sql.Statement;
  */
 public class DatabaseCreator extends AbstractJDBC {
 
-	
-
 	private static final String CREATE_DEVICES_TABLE = "CREATE TABLE IF NOT EXISTS devices "
 			+ "( device_id VARBINARY NOT NULL,"
 			+ " valid_results INT DEFAULT 0,"
 			+ " invalid_results INT DEFAULT 0,"
+			+ " version_code INT DEFAULT -1"
 			+ " PRIMARY KEY (device_id),"
 			+ " INDEX (device_id) );";
 
@@ -48,20 +47,26 @@ public class DatabaseCreator extends AbstractJDBC {
 			+ "ON DELETE CASCADE );";
 
 	
+
+	private String[] TABLE_CREATION_SCRIPTS = { CREATE_DEVICES_TABLE,
+			CREATE_USERS_TABLE, CREATE_RESULTS_PACKET_TABLE,
+			CREATE_WORK_PACKET_TABLE};
+
 	public void setupDatabase() {
 
 		Connection connection = null;
 		Statement statement = null;
-		
+
 		try {
 			connection = createConnection();
-			statement = connection.createStatement();			
-			statement.addBatch(CREATE_DEVICES_TABLE);
-			statement.addBatch(CREATE_USERS_TABLE);
-			statement.addBatch(CREATE_WORK_PACKET_TABLE);
-			statement.addBatch(CREATE_RESULTS_PACKET_TABLE);
+			statement = connection.createStatement();
+
+			for (String script : TABLE_CREATION_SCRIPTS) {
+				statement.addBatch(script);
+			}
+
 			statement.executeBatch();
-		} catch (SQLException e) {
+		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
@@ -69,9 +74,5 @@ public class DatabaseCreator extends AbstractJDBC {
 		}
 
 	}
-
-	
-
-	
 
 }

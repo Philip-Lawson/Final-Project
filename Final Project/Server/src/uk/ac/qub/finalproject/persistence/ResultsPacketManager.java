@@ -4,11 +4,12 @@
 package uk.ac.qub.finalproject.persistence;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import uk.ac.qub.finalproject.server.calculationclasses.IResultsPacket;
+import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 
 /**
  * The results packet manager encapsulates the logic for storing processed
@@ -37,9 +38,9 @@ public class ResultsPacketManager extends Observable {
 	private ConcurrentMap<String, IResultsPacket> resultsCache = new ConcurrentHashMap<String, IResultsPacket>();
 
 	public ResultsPacketManager() {
-		
+
 	}
-	
+
 	/**
 	 * Takes a results DAO as an argument.
 	 * 
@@ -116,6 +117,15 @@ public class ResultsPacketManager extends Observable {
 			resultsCache
 					.putIfAbsent(resultsPacket.getPacketId(), resultsPacket);
 		}
+	}
+
+	/**
+	 * Returns the results map. Used for testing purposes.
+	 * 
+	 * @return
+	 */
+	public Map<String, IResultsPacket> getResultsMap() {
+		return resultsCache;
 	}
 
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server.calculationclasses;
+package uk.ac.qub.finalproject.calculationclasses;
 
 /**
  * @author Phil
@@ -22,7 +22,7 @@ public class DummyValidationStrategy extends AbstractValidationStrategy {
 	@Override
 	public boolean compareWithSavedResult(IResultsPacket resultsPacket,
 			IResultsPacket savedResult) {
-		// TODO Auto-generated method stub
+		
 		return true;
 	}
 

@@ -6,8 +6,8 @@ package uk.ac.qub.finalproject.persistence;
 import java.util.Collection;
 import java.util.Observable;
 
-import uk.ac.qub.finalproject.server.calculationclasses.IWorkPacket;
-import uk.ac.qub.finalproject.server.calculationclasses.WorkPacketList;
+import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
+import uk.ac.qub.finalproject.calculationclasses.WorkPacketList;
 
 /**
  * This is the abstract representation of a class that stores the work packets

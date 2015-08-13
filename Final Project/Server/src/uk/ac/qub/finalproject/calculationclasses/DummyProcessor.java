@@ -1,7 +1,9 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server.calculationclasses;
+package uk.ac.qub.finalproject.calculationclasses;
+
+import java.io.Serializable;
 
 /**
  * A dummy implementation of the data processor class.
@@ -16,13 +18,12 @@ public class DummyProcessor extends AbstractDataProcessor {
 	private static final long serialVersionUID = -1696565467124647685L;
 
 	@Override
-	protected Object processData(Object obj) {
+	protected Serializable processData(Serializable obj) {
 		// TODO Auto-generated method stub
 		Integer number;
 		try {
 			number = (Integer) obj;
-		} catch (ClassCastException e) {
-			// TODO Auto-generated catch block
+		} catch (ClassCastException e) {			
 			return null;
 		}
 		

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import uk.ac.qub.finalproject.server.calculationclasses.IWorkPacket;
+import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
 
 
 /**
@@ -40,7 +40,7 @@ public class WorkPacketJDBC extends AbstractJDBC {
 				preparedStatement.executeUpdate();
 			}
 
-		} catch (SQLException SQLEx) {
+		} catch (SQLException | ClassNotFoundException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -58,14 +58,13 @@ public class WorkPacketJDBC extends AbstractJDBC {
 			connection = createConnection();
 			preparedStatement = connection
 					.prepareStatement(GET_INCOMPLETE_WORK_PACKETS);
-
 			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 				workPackets.add((IWorkPacket) resultSet.getObject(1));
 			}
 
-		} catch (SQLException SQLEx) {
+		} catch (SQLException | ClassNotFoundException SQLEx) {
 
 		} finally {			
 			closeConnection(connection, preparedStatement, resultSet);
@@ -94,7 +93,7 @@ public class WorkPacketJDBC extends AbstractJDBC {
 				workPacket = (IWorkPacket) resultSet.getObject(1);
 			}
 
-		} catch (SQLException SQLEx) {
+		} catch (SQLException | ClassNotFoundException SQLEx) {
 
 		} finally {							
 			closeConnection(connection, preparedStatement, resultSet);

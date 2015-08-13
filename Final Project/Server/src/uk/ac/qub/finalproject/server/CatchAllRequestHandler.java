@@ -15,7 +15,7 @@ public class CatchAllRequestHandler extends AbstractClientRequestHandler {
 	@Override
 	public void processRequest(int requestNum, ObjectInputStream input,
 			ObjectOutputStream output) {
-
+		handleHere(input, output);
 	}
 
 	/*

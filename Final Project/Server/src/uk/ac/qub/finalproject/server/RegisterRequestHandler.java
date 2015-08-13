@@ -8,7 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
-
+import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
 
 /**
  * @author Phil
@@ -17,49 +17,57 @@ import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 public class RegisterRequestHandler extends AbstractClientRequestHandler {
 
 	private DeviceDetailsManager deviceManager;
-	
-	public RegisterRequestHandler(){
+	private DeviceVersionManager deviceVersionManager;
+
+	public RegisterRequestHandler() {
 		super();
 	}
-	
-	public RegisterRequestHandler(DeviceDetailsManager deviceManager){
+
+	public RegisterRequestHandler(DeviceDetailsManager deviceManager,
+			DeviceVersionManager deviceVersionManager) {
 		this();
 		this.deviceManager = deviceManager;
+		this.deviceVersionManager = deviceVersionManager;
 	}
-	
-	
-	
-	/* (non-Javadoc)
-	 * @see finalproject.poc.appserver.AbstractClientRequestHandler#getRequestNum()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * finalproject.poc.appserver.AbstractClientRequestHandler#getRequestNum()
 	 */
 	@Override
 	protected int getRequestNum() {
 		return ClientRequest.REGISTER;
 	}
 
-	/* (non-Javadoc)
-	 * @see finalproject.poc.appserver.AbstractClientRequestHandler#handleHere(java.io.ObjectInputStream, java.io.ObjectOutputStream)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * finalproject.poc.appserver.AbstractClientRequestHandler#handleHere(java
+	 * .io.ObjectInputStream, java.io.ObjectOutputStream)
 	 */
 	@Override
-	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {		
+	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
 		try {
 			boolean successfulRegistration = true;
-			 
+
 			try {
 				RegistrationPack registrationPack = (RegistrationPack) input.readObject();
 				successfulRegistration = deviceManager.addDevice(registrationPack);
+				deviceVersionManager.saveDeviceVersion(registrationPack);
 			} catch (ClassNotFoundException e) {
-								
-			}		
-									
-			output.reset();			
-			output.writeBoolean(successfulRegistration);			
+
+			}
+
+			output.reset();
+			output.writeBoolean(successfulRegistration);
 			output.flush();
-		} catch (IOException   ex){
-			
+		} catch (IOException ex) {
+
 		}
-		
 
 	}
-	
+
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server.calculationclasses;
+package uk.ac.qub.finalproject.calculationclasses;
 
 import java.util.Map;
 
@@ -9,7 +9,7 @@ import java.util.Map;
  * @author Phil
  *
  */
-public class DummyGroupValidaitonStrategy implements IGroupValidationStrategy {
+public class DummyGroupValidationStrategy implements IGroupValidationStrategy {
 
 	/* (non-Javadoc)
 	 * @see uk.ac.qub.finalproject.server.calculationclasses.IGroupValidationStrategy#compareGroupResults(java.util.Map, uk.ac.qub.finalproject.server.calculationclasses.IWorkPacket)

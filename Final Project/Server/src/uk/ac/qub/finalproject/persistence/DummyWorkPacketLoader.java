@@ -5,7 +5,7 @@ package uk.ac.qub.finalproject.persistence;
 
 import java.util.Collection;
 
-import uk.ac.qub.finalproject.server.calculationclasses.IWorkPacket;
+import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
 
 /**
  * @author Phil

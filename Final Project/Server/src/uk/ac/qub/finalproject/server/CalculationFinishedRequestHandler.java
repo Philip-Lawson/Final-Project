@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
+import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
 import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 
 /**
@@ -18,6 +19,7 @@ public class CalculationFinishedRequestHandler extends
 		AbstractClientRequestHandler {
 
 	private DeviceDetailsManager deviceDetailsManager;
+	private DeviceVersionManager deviceVersionManager;
 	private UserDetailsManager userDetailsManager;
 
 	public CalculationFinishedRequestHandler() {
@@ -26,9 +28,11 @@ public class CalculationFinishedRequestHandler extends
 
 	public CalculationFinishedRequestHandler(
 			DeviceDetailsManager deviceDetailsManager,
+			DeviceVersionManager deviceVersionManager,
 			UserDetailsManager userDetailsManager) {
 		super();
 		this.deviceDetailsManager = deviceDetailsManager;
+		this.deviceVersionManager = deviceVersionManager;
 		this.userDetailsManager = userDetailsManager;
 	}
 
@@ -111,7 +115,8 @@ public class CalculationFinishedRequestHandler extends
 			ObjectOutputStream output) {
 		try {
 			String deviceID = (String) input.readObject();
-			;
+
+			output.reset();
 			output.writeBoolean(deviceDetailsManager.deregisterDevice(deviceID));
 			output.flush();
 		} catch (ClassNotFoundException | IOException e) {
@@ -137,6 +142,7 @@ public class CalculationFinishedRequestHandler extends
 		try {
 			registrationPack = (RegistrationPack) input.readObject();
 			output.reset();
+			deviceVersionManager.saveDeviceVersion(registrationPack);
 			output.writeBoolean(deviceDetailsManager
 					.addDevice(registrationPack));
 			output.flush();

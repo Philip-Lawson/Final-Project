@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server.calculationclasses;
+package uk.ac.qub.finalproject.calculationclasses;
 
 import java.util.ArrayList;
 
@@ -18,6 +18,12 @@ public class ResultsPacketList extends ArrayList<IResultsPacket> {
 	
 	private String deviceID;
 	
+	private long timeStamp;
+	
+	public ResultsPacketList(){
+		super();
+	}
+	
 	public ResultsPacketList(String deviceID){
 		super();
 		this.deviceID = deviceID;
@@ -29,6 +35,14 @@ public class ResultsPacketList extends ArrayList<IResultsPacket> {
 
 	public void setDeviceID(String deviceID) {
 		this.deviceID = deviceID;
+	}
+
+	public long getTimeStamp() {
+		return timeStamp;
+	}
+
+	public void setTimeStamp(long timeStamp) {
+		this.timeStamp = timeStamp;
 	}
 
 }

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import uk.ac.qub.finalproject.server.calculationclasses.IResultsPacket;
+import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 
 /**
  * This DAO encapsulates requests to write or read information regarding results
@@ -40,7 +40,7 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 			preparedStatement.setString(1, resultsPacket.getPacketId());
 			preparedStatement.setObject(2, resultsPacket);
 			preparedStatement.executeUpdate();
-		} catch (SQLException SQLEx) {
+		} catch (SQLException | ClassNotFoundException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -71,7 +71,7 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 			while (resultSet.next()) {
 				resultsPackets.add((IResultsPacket) resultSet.getObject(1));
 			}
-		} catch (SQLException SQLEx) {
+		} catch (SQLException | ClassNotFoundException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);

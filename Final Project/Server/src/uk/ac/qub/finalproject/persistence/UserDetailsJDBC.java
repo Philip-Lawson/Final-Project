@@ -41,17 +41,19 @@ public class UserDetailsJDBC extends AbstractJDBC {
 
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
-		try {
-			connection = createConnection();
+		try {			
 
 			if (emailValidationStrategy.emailIsValid(email)) {
+				connection = createConnection();
 				preparedStatement = connection.prepareStatement(REGISTER_EMAIL);
 				preparedStatement.setBytes(1, deviceID);
 				preparedStatement.setBytes(2, emailBytes);
 				preparedStatement.executeQuery();
+				return true;
 			}
-			return true;
-		} catch (SQLException SQLEx) {
+			
+			return false;
+		} catch (SQLException | ClassNotFoundException SQLEx) {
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -75,7 +77,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 			while (resultSet.next()) {
 				devicesList.add(encryptor.decrypt(resultSet.getBytes(1)));
 			}
-		} catch (SQLException SQLEx) {
+		} catch (SQLException | ClassNotFoundException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
@@ -99,7 +101,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 
 			preparedStatement.executeUpdate();
 			return true;
-		} catch (SQLException SQLEx) {
+		} catch (SQLException | ClassNotFoundException SQLEx) {
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -124,7 +126,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 				validResults = resultSet.getInt(1);
 			}
 
-		} catch (SQLException SQLEx) {
+		} catch (SQLException | ClassNotFoundException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
@@ -148,7 +150,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 			while (resultSet.next()) {
 				emailList.add(encryptor.decrypt(resultSet.getBytes(1)));
 			}
-		} catch (SQLException SQLEx) {
+		} catch (SQLException | ClassNotFoundException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);

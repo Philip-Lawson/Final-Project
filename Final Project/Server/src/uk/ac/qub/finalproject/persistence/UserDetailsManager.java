@@ -20,7 +20,6 @@ public class UserDetailsManager extends Observable {
 
 	private EmailValidationStrategy emailValidationStrategy = new EmailValidationStrategy();
 	private ClientAchievementEmailSender emailSender = new ClientAchievementEmailSender();
-	private static int NUM_USERS_WITH_EMAIL = 0;
 
 	public UserDetailsManager() {
 
@@ -30,30 +29,37 @@ public class UserDetailsManager extends Observable {
 		this.deviceManager = deviceManager;
 	}
 
+	public UserDetailsManager(DeviceDetailsManager deviceDetailsManager,
+			UserDetailsJDBC userDB) {
+		this(deviceDetailsManager);
+		this.userDB = userDB;
+	}
+
 	public void setDeviceManager(DeviceDetailsManager deviceManager) {
 		this.deviceManager = deviceManager;
 	}
 
-	public synchronized int getNumUsersWithEmail() {
-		return NUM_USERS_WITH_EMAIL;
+	public void setEmailSender(ClientAchievementEmailSender emailSender) {
+		this.emailSender = emailSender;
 	}
 
-	private synchronized void addUser() {
-		NUM_USERS_WITH_EMAIL++;
-		setChanged();
-		notifyObservers();
-	}
-
-	private synchronized void removeUser() {
-		NUM_USERS_WITH_EMAIL--;
-		setChanged();
-		notifyObservers();
-	}
-
+	/**
+	 * Returns a cllection f all the user emails stored in the database.
+	 * 
+	 * @return
+	 */
 	public Collection<String> retrieveDedicatedUserEmails() {
 		return userDB.getAllUserEmails();
 	}
 
+	/**
+	 * Changes a users email address.
+	 * 
+	 * @param registrationPack
+	 * @return true if the email is valid and the email was changed
+	 *         successfully. Returns false if the email is invalid or there was
+	 *         an issue with the database.
+	 */
 	public boolean changeEmailAddress(RegistrationPack registrationPack) {
 		if (emailValidationStrategy.emailIsValid(registrationPack
 				.getEmailAddress())) {
@@ -63,15 +69,29 @@ public class UserDetailsManager extends Observable {
 		}
 	}
 
+	/**
+	 * Registers a user with a valid email address.
+	 * 
+	 * @param registrationPack
+	 * @return true if the email address is valid and there were n issues with
+	 *         the database connection.
+	 */
 	public boolean registerUser(RegistrationPack registrationPack) {
-		if (userDB.registerEmail(registrationPack)) {
-			addUser();
-			return true;
+		if (emailValidationStrategy.emailIsValid(registrationPack
+				.getEmailAddress())) {
+			return userDB.registerEmail(registrationPack);
 		} else {
 			return false;
 		}
 	}
 
+	/**
+	 * Checks to see if the user should be sent a congratulatory email. If so
+	 * they will be sent an email appropriate to the milestone they have
+	 * achieved e.g. processing 1000 packets.
+	 * 
+	 * @param emailAddress
+	 */
 	public void checkForAchievementMilestone(String emailAddress) {
 		if (emailValidationStrategy.emailIsValid(emailAddress)) {
 			int resultsProcessed = userDB.getUserValidResults(emailAddress);
@@ -89,18 +109,28 @@ public class UserDetailsManager extends Observable {
 
 	}
 
+	/**
+	 * Method not used yet. Designed to allow a user to deregister all their
+	 * devices in one go.
+	 * 
+	 * @param emailAddress
+	 * @return
+	 */
 	public boolean deregisterUser(String emailAddress) {
 		Collection<String> userDevices = userDB.getUserDevices(emailAddress);
 
 		if (null == userDevices) {
 			return false;
 		} else {
+			boolean success = true;
+
 			for (String deviceID : userDevices) {
-				deviceManager.deregisterDevice(deviceID);
+				if (!deviceManager.deregisterDevice(deviceID)) {
+					success = false;
+				}
 			}
-			
-			removeUser();
-			return true;
+
+			return success;
 		}
 	}
 

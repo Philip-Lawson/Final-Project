@@ -1,4 +1,4 @@
-package uk.ac.qub.finalproject.server.calculationclasses;
+package uk.ac.qub.finalproject.calculationclasses;
 
 import java.util.Map;
 

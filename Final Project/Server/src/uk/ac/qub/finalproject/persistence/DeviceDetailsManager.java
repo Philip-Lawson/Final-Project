@@ -33,17 +33,30 @@ public class DeviceDetailsManager extends Observable {
 	private static long ACTIVE_DEVICE_THRESHOLD = 0;
 	private static int BLACKLISTING_MIN_THRESHOLD = 10;
 	private static double MIN_PERCENT_INVALID_RESULTS = 30;
-	
-	public DeviceDetailsManager(){
+	private static long AVERAGE_PROCESSING_TIME = 0;
+	private static long PROCESSING_DIVISOR = 0;
+
+	public DeviceDetailsManager() {
 		super();
 	}
-	
-	public DeviceDetailsManager(UserDetailsManager userDetails){
+
+	public DeviceDetailsManager(UserDetailsManager userDetails) {
 		this.userDetails = userDetails;
 	}
-	
-	public void setUserDetailsManager(UserDetailsManager userDetails){
+
+	public void setUserDetailsManager(UserDetailsManager userDetails) {
 		this.userDetails = userDetails;
+	}
+
+	/**
+	 * Loads device details from the database. This should be called on startup.
+	 * If the program is re-started it will fill the devices map with all
+	 * previously registered devices. It will also fill the blacklist with the
+	 * appropriate devices.
+	 */
+	public void loadDevices() {
+		devicesMap.putAll(deviceDB.loadDevices());
+		resetBlacklist();
 	}
 
 	/**
@@ -66,7 +79,7 @@ public class DeviceDetailsManager extends Observable {
 			if (null != emailAddress) {
 				userDetails.registerUser(registrationPack);
 			}
-			
+
 			return true;
 		}
 	}
@@ -201,6 +214,8 @@ public class DeviceDetailsManager extends Observable {
 	 */
 	private synchronized void updateValidResults() {
 		++VALID_RESULTS;
+		setChanged();
+		notifyObservers();
 	}
 
 	/**
@@ -208,6 +223,8 @@ public class DeviceDetailsManager extends Observable {
 	 */
 	private synchronized void updateInvalidResults() {
 		++INVALID_RESULTS;
+		setChanged();
+		notifyObservers();
 	}
 
 	/**
@@ -215,6 +232,12 @@ public class DeviceDetailsManager extends Observable {
 	 */
 	private synchronized void updateBlacklistedDevices() {
 		++NO_OF_BLACKLISTED_DEVICES;
+		setChanged();
+		notifyObservers();
+	}
+
+	public synchronized int numberOfDevices() {
+		return devicesMap.size();
 	}
 
 	/**
@@ -242,6 +265,17 @@ public class DeviceDetailsManager extends Observable {
 	 */
 	public synchronized int numberOfBlacklistedDevices() {
 		return NO_OF_BLACKLISTED_DEVICES;
+	}
+
+	public synchronized void adjustAverage(int listSize,
+			long timeSpentProcessing) {
+		long difference = timeSpentProcessing - AVERAGE_PROCESSING_TIME;
+		PROCESSING_DIVISOR += listSize;
+		AVERAGE_PROCESSING_TIME += difference / PROCESSING_DIVISOR;
+	}
+
+	public synchronized long getAverageProcessingTime() {
+		return AVERAGE_PROCESSING_TIME;
 	}
 
 	/**
@@ -350,4 +384,5 @@ public class DeviceDetailsManager extends Observable {
 		}
 
 	}
+
 }

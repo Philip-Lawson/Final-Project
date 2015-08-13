@@ -14,6 +14,12 @@ public class DeviceDetailsManagerStub extends DeviceDetailsManager {
 	
 	private RegistrationPack registrationPack;
 	
+	private boolean deregisterSuccess = false;
+	
+	public void setDeregisterSuccess(boolean deregisterSuccess) {
+		this.deregisterSuccess = deregisterSuccess;
+	}
+	
 	@Override
 	public boolean addDevice(RegistrationPack registrationPack){
 		return true;
@@ -27,4 +33,8 @@ public class DeviceDetailsManagerStub extends DeviceDetailsManager {
 		this.registrationPack = registrationPack;
 	}
 
+	@Override
+	public boolean deregisterDevice(String deviceID){
+		return deregisterSuccess;
+	}
 }

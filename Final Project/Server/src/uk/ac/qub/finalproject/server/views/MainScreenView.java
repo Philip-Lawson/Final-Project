@@ -3,12 +3,24 @@
  */
 package uk.ac.qub.finalproject.server.views;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import uk.ac.qub.finalproject.server.controller.BlacklistChangeListener;
 import uk.ac.qub.finalproject.server.controller.Command;
+import uk.ac.qub.finalproject.server.controller.MainViewEventHandler;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
@@ -30,9 +42,92 @@ public class MainScreenView extends Application {
 	@FXML
 	private ComboBox<String> activeDeviceThresholdComboBox;
 
+	@FXML
+	private ProgressBar processingProgressBar;
+
+	@FXML
+	private LineChart<String, Number> processingTimeLineChart;
+
+	private XYChart.Series<String, Number> processingTimeSeries = new XYChart.Series<String, Number>();
+
+	@FXML
+	private Button startButton;
+
+	@FXML
+	private Button stopButton;
+
+	@FXML
+	private Button transferResultsButton;
+
+	@FXML
+	private Button loadAdditionalPacketsButton;
+
+	@FXML
+	private Label activeDevicesLabel;
+
+	@FXML
+	private Label inactiveDevicesLabel;
+
+	@FXML
+	private Label blacklistedDevicesLabel;
+
+	@FXML
+	private Label averageTimeLabel;
+
+	@FXML
+	private Label packetProgressLabel;
+
+	@FXML
+	private Label percentPacketsCompleteLabel;
+
+	@FXML
+	private Label percentBadPacketsLabel;
+
+	private Command startCommand;
+	private Command loadAdditionalWorkPacketsCommand;
+	private Command stopSendingPacketsCommand;
+	private Command transferResultsCommand;
+
+	private MainViewEventHandler loadWorkPacketHandler;
+	private MainViewEventHandler transferResultsHandler;
+
+	private ConcurrentMap<String, Integer> processingTimesMap = new ConcurrentHashMap<String, Integer>();
+	private int totalDevices;
+
 	@Override
 	public void start(Stage arg0) throws Exception {
+		setupButtons();		
 
+	}
+
+	private void setupButtons() {
+		startButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				startCommand.execute();
+				startButton.setDisable(true);
+				stopButton.setDisable(false);
+			}
+		});
+
+		stopButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				stopButton.setDisable(true);
+				startButton.setDisable(false);
+				stopSendingPacketsCommand.execute();
+			}
+
+		});
+
+		loadWorkPacketHandler = new MainViewEventHandler(
+				loadAdditionalWorkPacketsCommand);
+		loadAdditionalPacketsButton.setOnAction(loadWorkPacketHandler);
+
+		transferResultsHandler = new MainViewEventHandler(
+				transferResultsCommand);
+		transferResultsButton.setOnAction(transferResultsHandler);
 	}
 
 	public void setPacketsNumComboBox() {
@@ -72,45 +167,144 @@ public class MainScreenView extends Application {
 		activeDeviceThresholdComboBox.valueProperty().addListener(
 				changeListener);
 	}
-	
-	public void setLoadAdditionalWorkPacketsCommand(Command command){
-		
-	}
-	
-	public void setStartServerCommand(Command command){
-		
+
+	public void setLoadAdditionalWorkPacketsCommand(Command command) {
+		this.loadAdditionalWorkPacketsCommand = command;
 	}
 
-	public void setStopSendingPacketsCommand(Command command){
-		
+	public void setStartServerCommand(Command command) {
+		this.startCommand = command;
 	}
-	
-	public void setTransferResultsCommand(Command command){
-		
+
+	public void setStopSendingPacketsCommand(Command command) {
+		this.stopSendingPacketsCommand = command;
 	}
-	
-	public void updateProgress(int packetsComplete, int packetsLeft) {
+
+	public void setTransferResultsCommand(Command command) {
+		this.transferResultsCommand = command;
+	}
+
+	public void updateProgress(long packetsComplete, long totalPackets) {
+
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				double progress = packetsComplete / totalPackets;
+				int percentComplete = (int) progress * 100;
+
+				processingProgressBar.setProgress(progress);
+				packetProgressLabel.setText(packetsComplete + "/"
+						+ totalPackets);
+				percentPacketsCompleteLabel.setText(percentComplete + " %");
+			}
+
+		});
+	}
+
+	public void addProcessingTime(String minutes) {
+		Integer devices = processingTimesMap.get(minutes);
+
+		if (null == devices) {
+			processingTimesMap.put(minutes, 1);
+		} else {
+			processingTimesMap.put(minutes, ++devices);
+		}
+
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				processingTimeSeries.getData().clear();
+
+				for (String minute : processingTimesMap.keySet()) {
+					Number devices = processingTimesMap.get(minute);
+					processingTimeSeries.getData().add(
+							new XYChart.Data<String, Number>(minute.toString(),
+									devices));
+				}
+
+				processingTimeLineChart.getData().clear();
+				processingTimeLineChart.getData().add(processingTimeSeries);
+
+			}
+
+		});
 
 	}
 
 	public void updateAverageProcessingTime(String averageTime) {
+		Platform.runLater(new Runnable() {
 
+			@Override
+			public void run() {
+				averageTimeLabel.setText(averageTime);
+			}
+
+		});
 	}
 
-	public void updateGoodPacketsProportion(int goodPackets, int badPackets) {
+	public void updatePacketStats(long validPackets, long invalidPackets) {
+		Platform.runLater(new Runnable() {
 
+			@Override
+			public void run() {
+				double percentBadPackets = invalidPackets
+						/ (validPackets + invalidPackets);
+				int percent = (int) (percentBadPackets * 100);
+				percentBadPacketsLabel.setText(percent + " %");
+			}
+
+		});
 	}
 
 	public void updateActiveDevices(int activeDevices) {
+		Platform.runLater(new Runnable() {
 
+			@Override
+			public void run() {
+				activeDevicesLabel.setText(activeDevices + "");
+				inactiveDevicesLabel.setText((totalDevices - activeDevices)
+						+ "");
+			}
+
+		});
 	}
-	
+
 	public void updateTotalNumDevices(int devices) {
-		
-	}
-	
-	public void updateBlacklistedDevices(int blacklistedDevices) {
-		
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				totalDevices = devices;
+				int activeDevices = Integer.parseInt(activeDevicesLabel
+						.getText());
+				inactiveDevicesLabel.setText((devices - activeDevices) + "");
+			}
+
+		});
 	}
 
+	public void updateBlacklistedDevices(int blacklistedDevices) {
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				blacklistedDevicesLabel.setText(blacklistedDevices + "");
+			}
+
+		});
+	}
+
+	public void processingComplete() {
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+	}
 }

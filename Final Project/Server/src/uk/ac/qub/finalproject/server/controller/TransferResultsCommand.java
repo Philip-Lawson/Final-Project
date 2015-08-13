@@ -24,7 +24,6 @@ public class TransferResultsCommand implements Command {
 	@Override
 	public void execute() {
 		resultsTransferManager.transferResults();
-
 	}
 
 }

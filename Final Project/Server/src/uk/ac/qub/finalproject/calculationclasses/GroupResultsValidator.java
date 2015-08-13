@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server.calculationclasses;
+package uk.ac.qub.finalproject.calculationclasses;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,7 +13,7 @@ import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
  * @author Phil
  *
  */
-public class FuzzyResultsValidator implements IResultValidator {
+public class GroupResultsValidator implements IResultValidator {
 
 	private static int MIN_RESULTS_NEEDED_FOR_COMPARISON = 5;
 
@@ -23,29 +23,13 @@ public class FuzzyResultsValidator implements IResultValidator {
 	private IGroupValidationStrategy groupValidator;
 	private Map<String, Map<String, IResultsPacket>> pendingResultsMap = new ConcurrentHashMap<String, Map<String, IResultsPacket>>();
 
-	public FuzzyResultsValidator(ResultsPacketManager resultsDrawer) {
+	public GroupResultsValidator(ResultsPacketManager resultsDrawer) {
 		this.resultsDrawer = resultsDrawer;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.qub.finalproject.server.calculationclasses.IResultValidator#
-	 * resultIsValid
-	 * (uk.ac.qub.finalproject.server.calculationclasses.IResultsPacket)
-	 */
-	@Override
-	public boolean resultIsValid(IResultsPacket resultsPacket, IWorkPacket initialData) {
-		String packetID = resultsPacket.getPacketId();
-
-		if (resultsDrawer.resultIsSaved(packetID)) {
-			IResultsPacket savedResult = resultsDrawer
-					.getResultForComparison(packetID);
-			return validationStrategy.compareWithSavedResult(resultsPacket,
-					savedResult);
-		} else {
-			return false;
-		}
+	
+	public GroupResultsValidator(ResultsPacketManager resultsPacketManager, DeviceDetailsManager deviceDetailsManager){
+		this(resultsPacketManager);
+		this.setDeviceDetailsManager(deviceDetailsManager);
 	}
 
 	/*
@@ -67,7 +51,36 @@ public class FuzzyResultsValidator implements IResultValidator {
 		if (null != groupValidationStrategy)
 			this.groupValidator = groupValidationStrategy;		
 	}
+	
+	public void setResultsDrawer(ResultsPacketManager resultsDrawer){
+		this.resultsDrawer = resultsDrawer;
+	}
+	
+	public void setDeviceDetailsManager(DeviceDetailsManager deviceDetailsManager){
+		this.deviceDetailsDrawer = deviceDetailsManager;
+	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.qub.finalproject.server.calculationclasses.IResultValidator#
+	 * resultIsValid
+	 * (uk.ac.qub.finalproject.server.calculationclasses.IResultsPacket)
+	 */
+	@Override
+	public boolean resultIsValid(IResultsPacket resultsPacket, IWorkPacket initialData) {
+		String packetID = resultsPacket.getPacketId();
 
+		if (resultsDrawer.resultIsSaved(packetID)) {
+			IResultsPacket savedResult = resultsDrawer
+					.getResultForComparison(packetID);
+			return validationStrategy.compareWithSavedResult(resultsPacket,
+					savedResult);
+		} else {
+			return false;
+		}
+	}
+
+	
 	@Override
 	public boolean resultIsPending(String resultsPacketID) {
 		if (pendingResultsMap.containsKey(resultsPacketID)) {

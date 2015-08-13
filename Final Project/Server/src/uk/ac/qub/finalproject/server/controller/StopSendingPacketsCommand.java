@@ -43,7 +43,6 @@ public class StopSendingPacketsCommand implements Command {
 	@Override
 	public void execute() {
 		server.setRequestHandlers(pauseServiceRequestHandler);
-
 	}
 
 }
