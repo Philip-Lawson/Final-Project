@@ -14,6 +14,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import uk.ac.qub.finalproject.persistence.Achievements;
+import uk.ac.qub.finalproject.server.implementations.Implementations;
 
 
 /**
@@ -22,10 +23,10 @@ import uk.ac.qub.finalproject.persistence.Achievements;
  */
 public class ClientAchievementEmailSender {
 
-	private static String SENDER_EMAIL = "";
-	private static String EMAIL_PASSWORD = "";
+	private static String SENDER_EMAIL = Implementations.getEmailAddress();
+	private static String EMAIL_PASSWORD = Implementations.getEmailPassword();
 
-	private AbstractClientAchievementEmailFactory emailBuilder;
+	private AbstractClientAchievementEmailFactory emailBuilder = Implementations.getEmailFactory();
 
 	public void sendEmail(String emailAddress, Achievements type) {
 		String emailTitle = emailBuilder.buildEmailTitle(type);
