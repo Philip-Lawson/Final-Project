@@ -27,14 +27,14 @@ public class DeviceDetailsManager extends Observable {
 	private ConcurrentMap<String, Device> devicesMap = new ConcurrentHashMap<String, Device>();
 	private List<String> blacklistedDevices = new ArrayList<String>(1000);
 
-	private static long VALID_RESULTS = 0;
-	private static long INVALID_RESULTS = 0;
-	private static int NO_OF_BLACKLISTED_DEVICES = 0;
-	private static long ACTIVE_DEVICE_THRESHOLD = 0;
-	private static int BLACKLISTING_MIN_THRESHOLD = 10;
-	private static double MIN_PERCENT_INVALID_RESULTS = 30;
-	private static long AVERAGE_PROCESSING_TIME = 0;
-	private static long PROCESSING_DIVISOR = 0;
+	private long VALID_RESULTS = 0;
+	private long INVALID_RESULTS = 0;
+	private int NO_OF_BLACKLISTED_DEVICES = 0;
+	private long ACTIVE_DEVICE_THRESHOLD = 10;
+	private int BLACKLISTING_MIN_THRESHOLD = 10;
+	private double MIN_PERCENT_INVALID_RESULTS = 30;
+	private long AVERAGE_PROCESSING_TIME = 0;
+	private long PROCESSING_DIVISOR = 0;
 
 	public DeviceDetailsManager() {
 		super();
@@ -57,6 +57,8 @@ public class DeviceDetailsManager extends Observable {
 	public void loadDevices() {
 		devicesMap.putAll(deviceDB.loadDevices());
 		resetBlacklist();
+		setChanged();
+		notifyObservers();
 	}
 
 	/**
@@ -75,10 +77,13 @@ public class DeviceDetailsManager extends Observable {
 		} else {
 			devicesMap.put(deviceID, new Device(deviceID));
 			deviceDB.registerDevice(registrationPack);
-
+			
 			if (null != emailAddress) {
 				userDetails.registerUser(registrationPack);
 			}
+			
+			setChanged();
+			notifyObservers();
 
 			return true;
 		}
@@ -90,9 +95,9 @@ public class DeviceDetailsManager extends Observable {
 	 * @param deviceID
 	 */
 	public void writeValidResultSent(String deviceID) {
-		Device device;
+		
 		if (devicesMap.containsKey(deviceID)) {
-			device = devicesMap.get(deviceID);
+			Device device = devicesMap.get(deviceID);
 			device.addValidResult();
 			updateValidResults();
 			deviceDB.writeValidResultSent(deviceID);
@@ -102,6 +107,9 @@ public class DeviceDetailsManager extends Observable {
 			if (null != emailAddress) {
 				userDetails.checkForAchievementMilestone(emailAddress);
 			}
+			
+			setChanged();
+			notifyObservers();
 		}
 
 	}
@@ -155,7 +163,7 @@ public class DeviceDetailsManager extends Observable {
 			Integer invalidResults = devicesMap.get(deviceID)
 					.getInvalidResults();
 			Integer totalResults = invalidResults + validResults;
-			double percentInvalid = (invalidResults / totalResults) * 100.0;
+			double percentInvalid = (invalidResults / (double)totalResults) * 100.0;
 
 			return percentInvalid > MIN_PERCENT_INVALID_RESULTS;
 		} else {
@@ -213,9 +221,7 @@ public class DeviceDetailsManager extends Observable {
 	 * Increments the valid results counter.
 	 */
 	private synchronized void updateValidResults() {
-		++VALID_RESULTS;
-		setChanged();
-		notifyObservers();
+		++VALID_RESULTS;		
 	}
 
 	/**
@@ -223,8 +229,6 @@ public class DeviceDetailsManager extends Observable {
 	 */
 	private synchronized void updateInvalidResults() {
 		++INVALID_RESULTS;
-		setChanged();
-		notifyObservers();
 	}
 
 	/**
@@ -232,8 +236,6 @@ public class DeviceDetailsManager extends Observable {
 	 */
 	private synchronized void updateBlacklistedDevices() {
 		++NO_OF_BLACKLISTED_DEVICES;
-		setChanged();
-		notifyObservers();
 	}
 
 	public synchronized int numberOfDevices() {
@@ -383,6 +385,30 @@ public class DeviceDetailsManager extends Observable {
 			lock.writeLock().unlock();
 		}
 
+	}
+
+	/**
+	 * Retrieves the map used to store device details. Used for testing purposes
+	 * only.
+	 * 
+	 * @return
+	 */
+	public ConcurrentMap<String, Device> getDeviceMap() {
+		return devicesMap;
+	}
+
+	/**
+	 * Retrieves the list of blacklisted devices. Used for testing purposes
+	 * only.
+	 * 
+	 * @return
+	 */
+	public List<String> getBlacklistedList() {
+		return blacklistedDevices;
+	}
+	
+	public void setDeviceDB(DeviceDetailsJDBC deviceDB){
+		this.deviceDB = deviceDB;
 	}
 
 }
