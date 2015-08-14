@@ -5,9 +5,8 @@ package uk.ac.qub.finalproject.persistence;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
@@ -19,20 +18,20 @@ import uk.ac.qub.finalproject.calculationclasses.WorkPacketList;
  */
 public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 
-	private static int PACKETS_PER_LIST = 5;
 	private static final int MIN_PACKETS_PER_LIST = 5;
-	private static int TIMES_TO_SEND_PACKET_LIST = 5;
-	private static int TIMES_PACKET_LIST_SENT = -1;
+	private int PACKETS_PER_LIST = 5;
+	private int TIMES_TO_SEND_PACKET_LIST = 5;
+	private int TIMES_PACKET_LIST_SENT = 0;
 
 	private WorkPacketJDBC workPacketDB = new WorkPacketJDBC();
-	private List<IWorkPacket> unprocessedWorkPacketList = new Vector<IWorkPacket>();
-	private WorkPacketList currentPacketList;
+	private Map<String, IWorkPacket> unprocessedWorkPacketMap = new ConcurrentHashMap<String, IWorkPacket>();
+	private WorkPacketList currentPacketList = new WorkPacketList();
 	private Map<String, IWorkPacket> sentPacketsMap = new ConcurrentHashMap<String, IWorkPacket>();
 
 	public WorkPacketDrawerImpl() {
 
 	}
-	
+
 	public WorkPacketDrawerImpl(WorkPacketJDBC workPacketDB) {
 		this.workPacketDB = workPacketDB;
 	}
@@ -46,18 +45,30 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	 */
 	@Override
 	public void addWorkPackets(Collection<IWorkPacket> workPackets) {
-		List<IWorkPacket> validPackets = new ArrayList<IWorkPacket>(
-				workPackets.size());
+
+		Collection<IWorkPacket> tempPacketList = new ArrayList<IWorkPacket>(workPackets.size());
 
 		for (IWorkPacket workPacket : workPackets) {
-			if (workPacketIsValid(workPacket))
-				validPackets.add(workPacket);
+			if (workPacketIsValid(workPacket)) {
+				unprocessedWorkPacketMap.putIfAbsent(workPacket.getPacketId(),
+						workPacket);
+				tempPacketList.add(workPacket);
+			}
 		}
 
-		unprocessedWorkPacketList.addAll(validPackets);
+		if (tempPacketList.size() > 0) {
+			workPacketDB.addWorkPackets(tempPacketList);
+			setChanged();
+			notifyObservers();
+		}
 
-		setChanged();
-		notifyObservers();
+		if (!hasWorkPackets()) {
+			synchronized (this) {
+				transferWorkPackets();
+				TIMES_PACKET_LIST_SENT = 0;
+			}
+		}
+
 	}
 
 	/*
@@ -69,15 +80,21 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	 */
 	@Override
 	public synchronized WorkPacketList getNextWorkPacket() {
-		if (TIMES_PACKET_LIST_SENT < TIMES_TO_SEND_PACKET_LIST
-				&& TIMES_PACKET_LIST_SENT > 0) {
-			++TIMES_PACKET_LIST_SENT;
-		} else {
-			transferWorkPackets();
-			TIMES_PACKET_LIST_SENT = 1;
-		}
+		// if the packet should be sent only one more time the next packet list
+		// needs to be prepared. I don't want to send the wrong packet list, so
+		// the current list is copied to a placeholder list while the packets
+		// are being transferred.
+		if (TIMES_PACKET_LIST_SENT >= TIMES_TO_SEND_PACKET_LIST - 1) {
+			WorkPacketList listToReturn = new WorkPacketList();
+			listToReturn.addAll(currentPacketList);
 
-		return currentPacketList;
+			transferWorkPackets();
+			TIMES_PACKET_LIST_SENT = 0;
+			return listToReturn;
+		} else {
+			++TIMES_PACKET_LIST_SENT;
+			return currentPacketList;
+		}		
 	}
 
 	/*
@@ -119,17 +136,17 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	 */
 	@Override
 	public int numberOfPacketsRemaining() {
-		int packetsToTransfer = unprocessedWorkPacketList.size()
+		int packetsToTransfer = unprocessedWorkPacketMap.size()
 				* TIMES_TO_SEND_PACKET_LIST;
 		int remainderOfCurrentList = (TIMES_TO_SEND_PACKET_LIST - TIMES_PACKET_LIST_SENT)
-				* PACKETS_PER_LIST;
+				* currentPacketList.size();
 
 		return packetsToTransfer + remainderOfCurrentList;
 	}
 
 	@Override
 	public int numberOfDistinctWorkPackets() {
-		return unprocessedWorkPacketList.size() + sentPacketsMap.size();
+		return unprocessedWorkPacketMap.size() + sentPacketsMap.size();
 	}
 
 	/*
@@ -141,8 +158,9 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	 */
 	@Override
 	public synchronized boolean hasWorkPackets() {
-		return currentPacketList.size() > 0
-				|| TIMES_PACKET_LIST_SENT < TIMES_TO_SEND_PACKET_LIST;
+		// as access to the current packet list is synchronized it will only
+		// ever be empty when there are no work packets left
+		return currentPacketList.size() > 0;
 	}
 
 	/*
@@ -156,31 +174,62 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	public IWorkPacket getInitialData(String packetID) {
 		if (sentPacketsMap.containsKey(packetID)) {
 			return sentPacketsMap.get(packetID);
+		} else if (unprocessedWorkPacketMap.containsKey(packetID)) {
+			return unprocessedWorkPacketMap.get(packetID);
 		} else {
-			// just in case there's a problem with the map
+			// just in case there's a problem with the cache
 			return workPacketDB.getIndividualWorkPacket(packetID);
 		}
 	}
 
 	/**
 	 * Helper method to transfer work packets. This should always be called from
-	 * within a synchronized method.
+	 * within a synchronized method or with a thread-safe collection.
 	 */
-	private void transferWorkPackets() {
+	public void transferWorkPackets() {
 		currentPacketList.clear();
 		int count = 0;
 
-		while (count < PACKETS_PER_LIST && unprocessedWorkPacketList.size() > 0) {
-			IWorkPacket workPacket = unprocessedWorkPacketList.remove(0);
+		Iterator<String> it = unprocessedWorkPacketMap.keySet().iterator();
+
+		while (count < PACKETS_PER_LIST && it.hasNext()) {
+			IWorkPacket workPacket = unprocessedWorkPacketMap.remove(it.next());
 			currentPacketList.add(workPacket);
 			sentPacketsMap.putIfAbsent(workPacket.getPacketId(), workPacket);
+			count++;
 		}
-
 	}
 
 	@Override
 	public void reloadIncompletedWorkPackets() {
 		addWorkPackets(workPacketDB.getIncompleteWorkPackets());
+	}
+
+	/**
+	 * Returns the current packet list. Used fr testing purposes.
+	 * 
+	 * @return
+	 */
+	public WorkPacketList getCurrentWorkPacketList() {
+		return currentPacketList;
+	}
+
+	/**
+	 * Returns the unprocessed work map. Used for testing purposes.
+	 * 
+	 * @return
+	 */
+	public Map<String, IWorkPacket> getUnprocessedWorkPacketMap() {
+		return unprocessedWorkPacketMap;
+	}
+
+	/**
+	 * Returns the sent packets map. Used fr testing purposes.
+	 * 
+	 * @return
+	 */
+	public Map<String, IWorkPacket> getSentPacketsMap() {
+		return sentPacketsMap;
 	}
 
 }
