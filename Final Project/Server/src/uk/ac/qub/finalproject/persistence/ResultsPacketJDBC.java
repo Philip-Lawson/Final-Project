@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -24,6 +25,9 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 
 	private static final String ADD_RESULTS_PACKET = "INSERT INTO results_packets VALUES (?, ?);";
 	private static final String GET_RESULTS_PACKETS = "SELECT results_packet FROM results_packets";
+	private static final String ALL_RESULTS_COMPLETE = "SELECT COUNT(packet_id) "
+			+ " FROM work_packets JOIN results_packets ON results_packets.packet_id = work_packets.packet_id "
+			+ "WHERE packet_id NOT IN" + "(SELECT packet_id FROM results_packets)";
 
 	/**
 	 * Writes a result to the database.
@@ -33,7 +37,7 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 	public void writeResult(IResultsPacket resultsPacket) {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
-		
+
 		try {
 			connection = createConnection();
 
@@ -58,10 +62,10 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 		ResultSet resultSet = null;
 		Collection<IResultsPacket> resultsPackets = new ArrayList<IResultsPacket>(
 				1000);
-		
+
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
-		
+
 		try {
 			connection = createConnection();
 
@@ -79,5 +83,31 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 		}
 
 		return resultsPackets;
+	}
+
+	public boolean allResultsComplete() {
+		boolean resultsComplete = false;		
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+
+		try {
+			connection = createConnection();
+
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(ALL_RESULTS_COMPLETE);
+			
+			if(resultSet.next()){
+				int unProcessedWorkPackets = resultSet.getInt(1);
+				resultsComplete = (unProcessedWorkPackets == 0);
+			}
+			
+		} catch (SQLException | PropertyVetoException SQLEx) {
+
+		} finally {
+			closeConnection(connection, statement, resultSet);
+		}
+
+		return resultsComplete;
 	}
 }

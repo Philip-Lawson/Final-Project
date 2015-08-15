@@ -67,10 +67,8 @@ public class ResultProcessor extends Observable {
 	}
 	
 	public void checkProcessingComplete(){
-		if (!packetDrawer.hasWorkPackets()) {
-			//TODO - needs to be less brittle - check with database calls instead?
-			if (resultsPacketManager.getNumberOfPacketsProcessed() == packetDrawer
-					.numberOfDistinctWorkPackets()) {
+		if (!packetDrawer.hasWorkPackets()) {			
+			if (resultsPacketManager.allResultsComplete()) {
 				setChanged();
 				notifyObservers(PROCESSING_COMPLETE);
 			} else {

@@ -118,6 +118,10 @@ public class ResultsPacketManager extends Observable {
 					.putIfAbsent(resultsPacket.getPacketId(), resultsPacket);
 		}
 	}
+	
+	public boolean allResultsComplete(){
+		return resultsDB.allResultsComplete();
+	}
 
 	/**
 	 * Returns the results map. Used for testing purposes.
