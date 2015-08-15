@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.serverstubs;
+package uk.ac.qub.finalproject.persistencestubs;
 
 import java.util.ArrayList;
 import java.util.Collection;

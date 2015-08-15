@@ -1,4 +1,4 @@
-package uk.ac.qub.finalproject.serverstubs;
+package uk.ac.qub.finalproject.persistencestubs;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +10,8 @@ import uk.ac.qub.finalproject.persistence.ResultsPacketJDBC;
 public class ResultsPacketJDBCStub extends ResultsPacketJDBC {
 
 	private boolean resultWritten = false;
+	private boolean resultsComplete;
+	
 	private Collection<IResultsPacket> results;
 
 	@Override
@@ -17,8 +19,18 @@ public class ResultsPacketJDBCStub extends ResultsPacketJDBC {
 		return results;
 	}
 
+	@Override
 	public void writeResult(IResultsPacket resultsPacket) {
 		resultWritten = true;
+	}
+	
+	@Override
+	public boolean allResultsComplete(){
+		return resultsComplete;
+	}
+	
+	public void setResultsComplete(boolean resultsComplete){
+		this.resultsComplete = resultsComplete;
 	}
 
 	public boolean resultWritten() {

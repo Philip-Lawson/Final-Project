@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.serverstubs;
+package uk.ac.qub.finalproject.persistencestubs;
 
 import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 import uk.ac.qub.finalproject.server.RegistrationPack;

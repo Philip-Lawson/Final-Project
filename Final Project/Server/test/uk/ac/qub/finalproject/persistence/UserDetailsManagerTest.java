@@ -6,10 +6,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.qub.finalproject.persistencestubs.DeviceDetailsManagerStub;
+import uk.ac.qub.finalproject.persistencestubs.UserDetailsJDBCStub;
 import uk.ac.qub.finalproject.server.RegistrationPack;
-import uk.ac.qub.finalproject.serverstubs.DeviceDetailsManagerStub;
 import uk.ac.qub.finalproject.serverstubs.EmailSenderStub;
-import uk.ac.qub.finalproject.serverstubs.UserDetailsJDBCStub;
 
 public class UserDetailsManagerTest {
 	

@@ -7,8 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.qub.finalproject.calculationclasses.ResultsPacket;
+import uk.ac.qub.finalproject.persistencestubs.ResultsPacketJDBCStub;
 import uk.ac.qub.finalproject.serverstubs.ObservableStub;
-import uk.ac.qub.finalproject.serverstubs.ResultsPacketJDBCStub;
 
 public class ResultsPacketManagerTest {
 
@@ -167,5 +167,17 @@ public class ResultsPacketManagerTest {
 		test.loadResultsPackets();
 		
 		assertEquals(originalSize + newResults, test.getResultsMap().size());
+	}
+	
+	@Test
+	public void testAllResultsComplete(){
+		dbStub.setResultsComplete(true);
+		assertTrue(test.allResultsComplete());
+	}
+	
+	@Test
+	public void testAllResultsNotComplete(){
+		dbStub.setResultsComplete(false);
+		assertFalse(test.allResultsComplete());
 	}
 }

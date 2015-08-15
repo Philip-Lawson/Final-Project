@@ -39,8 +39,7 @@ public class ResultProcessor extends Observable {
 	public void processResults(ResultsPacketList resultsList, String deviceID){
 		processIndividualPackets(resultsList, deviceID);
 		processTimeStamp(resultsList.getTimeStamp(),resultsList.size());
-		checkProcessingComplete();
-		
+		checkProcessingComplete();		
 	}
 	
 	public void processIndividualPackets(ResultsPacketList resultsList, String deviceID){
