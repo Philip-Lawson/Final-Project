@@ -3,6 +3,7 @@
  */
 package uk.ac.qub.finalproject.persistence;
 
+import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,9 +35,9 @@ public class DeviceVersionJDBC extends AbstractJDBC {
 			preparedStatement.executeUpdate();
 
 			closeConnection(connection, preparedStatement, null);
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | PropertyVetoException dbEx) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			dbEx.printStackTrace();
 		}
 
 	}
@@ -61,7 +62,7 @@ public class DeviceVersionJDBC extends AbstractJDBC {
 			}
 			
 			closeConnection(connection, statement, resultSet);
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | PropertyVetoException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

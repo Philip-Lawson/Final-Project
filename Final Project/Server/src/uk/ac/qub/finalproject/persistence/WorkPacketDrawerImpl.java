@@ -52,6 +52,7 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 			if (workPacketIsValid(workPacket)) {
 				unprocessedWorkPacketMap.putIfAbsent(workPacket.getPacketId(),
 						workPacket);
+				sentPacketsMap.remove(workPacket.getPacketId());
 				tempPacketList.add(workPacket);
 			}
 		}

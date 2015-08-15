@@ -3,6 +3,7 @@
  */
 package uk.ac.qub.finalproject.persistence;
 
+import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -66,7 +67,7 @@ public class DatabaseCreator extends AbstractJDBC {
 			}
 
 			statement.executeBatch();
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | PropertyVetoException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {

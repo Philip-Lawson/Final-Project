@@ -13,6 +13,11 @@ import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
  */
 public class ResultsValidator implements IResultValidator {
 
+	/**
+	 * The results cache. This is used to retrieve results that have already
+	 * been processed. This will hopefully make it quicker to validate
+	 * duplicates.
+	 */
 	private ResultsPacketManager resultsDrawer;
 
 	/**

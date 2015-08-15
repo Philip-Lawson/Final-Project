@@ -3,6 +3,7 @@
  */
 package uk.ac.qub.finalproject.persistence;
 
+import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -53,7 +54,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 			}
 			
 			return false;
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -77,7 +78,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 			while (resultSet.next()) {
 				devicesList.add(encryptor.decrypt(resultSet.getBytes(1)));
 			}
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
@@ -101,7 +102,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 
 			preparedStatement.executeUpdate();
 			return true;
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -126,7 +127,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 				validResults = resultSet.getInt(1);
 			}
 
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
@@ -150,7 +151,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 			while (resultSet.next()) {
 				emailList.add(encryptor.decrypt(resultSet.getBytes(1)));
 			}
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);

@@ -3,6 +3,7 @@
  */
 package uk.ac.qub.finalproject.persistence;
 
+import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,7 +44,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			preparedStatement.executeQuery();
 
 			return true;
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | PropertyVetoException e) {
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -60,7 +61,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			preparedStatement.setBytes(1, encryptor.encrypt(deviceID));
 			preparedStatement.executeQuery();
 
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -77,7 +78,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 					.prepareStatement(INVALID_RESULT_SENT);
 			preparedStatement.setBytes(1, encryptor.encrypt(deviceID));
 			preparedStatement.executeQuery();
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -97,7 +98,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 
 			return true;
 
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -154,7 +155,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 				devices.put(deviceID, device);
 			}
 
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | PropertyVetoException e) {
 
 		} finally {
 			try {

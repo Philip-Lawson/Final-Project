@@ -3,6 +3,7 @@
  */
 package uk.ac.qub.finalproject.server.controller;
 
+import java.beans.PropertyVetoException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TimerTask;
@@ -11,7 +12,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import uk.ac.qub.finalproject.calculationclasses.IGroupValidationStrategy;
 import uk.ac.qub.finalproject.calculationclasses.IResultValidator;
 import uk.ac.qub.finalproject.calculationclasses.IValidationStrategy;
@@ -20,6 +23,7 @@ import uk.ac.qub.finalproject.calculationclasses.ResultsValidator;
 import uk.ac.qub.finalproject.persistence.AbstractResultsTransferManager;
 import uk.ac.qub.finalproject.persistence.AbstractWorkPacketDrawer;
 import uk.ac.qub.finalproject.persistence.AbstractWorkPacketLoader;
+import uk.ac.qub.finalproject.persistence.ConnectionPool;
 import uk.ac.qub.finalproject.persistence.DatabaseCreator;
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
@@ -293,6 +297,20 @@ public class Controller extends Application implements Observer {
 		// TODO show loading screen
 
 		setupSystem();
+		arg0.setOnCloseRequest(new EventHandler<WindowEvent>(){
+
+			@Override
+			public void handle(WindowEvent arg0) {
+				try {
+					ConnectionPool.getConnectionPool().closeConnectionPool();
+				} catch (PropertyVetoException e) {
+					//TODO logging					
+				}
+				
+				server.stopServer();
+			}
+			
+		});
 
 		// TODO show main screen
 

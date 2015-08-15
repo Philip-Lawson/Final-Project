@@ -3,6 +3,7 @@
  */
 package uk.ac.qub.finalproject.persistence;
 
+import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,7 +41,7 @@ public class WorkPacketJDBC extends AbstractJDBC {
 				preparedStatement.executeUpdate();
 			}
 
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -64,7 +65,7 @@ public class WorkPacketJDBC extends AbstractJDBC {
 				workPackets.add((IWorkPacket) resultSet.getObject(1));
 			}
 
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 
 		} finally {			
 			closeConnection(connection, preparedStatement, resultSet);
@@ -93,7 +94,7 @@ public class WorkPacketJDBC extends AbstractJDBC {
 				workPacket = (IWorkPacket) resultSet.getObject(1);
 			}
 
-		} catch (SQLException | ClassNotFoundException SQLEx) {
+		} catch (SQLException | PropertyVetoException SQLEx) {
 
 		} finally {							
 			closeConnection(connection, preparedStatement, resultSet);

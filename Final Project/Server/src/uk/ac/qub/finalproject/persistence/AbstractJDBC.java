@@ -3,8 +3,8 @@
  */
 package uk.ac.qub.finalproject.persistence;
 
+import java.beans.PropertyVetoException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,21 +19,17 @@ import java.sql.Statement;
  */
 public abstract class AbstractJDBC {
 
-	private static final String DATABASE_URL = "";
-	private static final String USERNAME = "";
-	private static final String PASSWORD = "";
-
 	/**
 	 * A convenience method for creating the connection to the database.
 	 * 
 	 * @throws SQLException
 	 *             if the connection fails.
 	 * @throws ClassNotFoundException
+	 * @throws PropertyVetoException
 	 */
 	protected Connection createConnection() throws SQLException,
-			ClassNotFoundException {
-		Class.forName("com.mysql.jdbc.Driver");
-		return DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
+			PropertyVetoException {
+		return ConnectionPool.getConnectionPool().getConnection();
 	}
 
 	/**
@@ -55,13 +51,7 @@ public abstract class AbstractJDBC {
 		} catch (SQLException SQLEx) {
 
 		}
-
-		try {
-			if (null != connection)
-				connection.close();
-		} catch (SQLException SQLEx) {
-
-		}
+		
 	}
 
 }
