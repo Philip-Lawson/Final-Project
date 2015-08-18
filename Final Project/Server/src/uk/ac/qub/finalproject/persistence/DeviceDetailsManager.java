@@ -20,6 +20,8 @@ import uk.ac.qub.finalproject.server.RegistrationPack;
  *
  */
 public class DeviceDetailsManager extends Observable {
+	
+	public static final int DEFAULT_ACTIVE_DEVICE_THRESHOLD = 10;
 
 	private DeviceDetailsJDBC deviceDB = new DeviceDetailsJDBC();
 	private UserDetailsManager userDetails;
@@ -30,7 +32,7 @@ public class DeviceDetailsManager extends Observable {
 	private long VALID_RESULTS = 0;
 	private long INVALID_RESULTS = 0;
 	private int NO_OF_BLACKLISTED_DEVICES = 0;
-	private long ACTIVE_DEVICE_THRESHOLD = 10;
+	private int ACTIVE_DEVICE_THRESHOLD = DEFAULT_ACTIVE_DEVICE_THRESHOLD;
 	private int BLACKLISTING_MIN_THRESHOLD = 10;
 	private double MIN_PERCENT_INVALID_RESULTS = 30;
 	private long AVERAGE_PROCESSING_TIME = 0;

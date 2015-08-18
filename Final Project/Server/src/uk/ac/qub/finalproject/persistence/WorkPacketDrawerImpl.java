@@ -18,9 +18,12 @@ import uk.ac.qub.finalproject.calculationclasses.WorkPacketList;
  */
 public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 
+	public static final int DEFAULT_PACKETS_PER_LIST = 10;
+	public static final int DEFAULT_TIMES_TO_SEND_PACKET_LIST = 10;	
 	private static final int MIN_PACKETS_PER_LIST = 5;
-	private int PACKETS_PER_LIST = 5;
-	private int TIMES_TO_SEND_PACKET_LIST = 5;
+	
+	private int PACKETS_PER_LIST = DEFAULT_PACKETS_PER_LIST;
+	private int TIMES_TO_SEND_PACKET_LIST = DEFAULT_TIMES_TO_SEND_PACKET_LIST;
 	private int TIMES_PACKET_LIST_SENT = 0;
 
 	private WorkPacketJDBC workPacketDB = new WorkPacketJDBC();
@@ -125,8 +128,9 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	 */
 	@Override
 	public synchronized void setPacketsPerList(int packetsPerList) {
-		if (packetsPerList >= MIN_PACKETS_PER_LIST)
+		if (packetsPerList >= MIN_PACKETS_PER_LIST) {
 			PACKETS_PER_LIST = packetsPerList;
+		}			
 	}
 
 	/*

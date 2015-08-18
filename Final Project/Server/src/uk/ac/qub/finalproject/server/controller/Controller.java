@@ -4,6 +4,7 @@
 package uk.ac.qub.finalproject.server.controller;
 
 import java.beans.PropertyVetoException;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TimerTask;
@@ -13,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import uk.ac.qub.finalproject.calculationclasses.IGroupValidationStrategy;
@@ -80,6 +84,8 @@ public class Controller extends Application implements Observer {
 	private TransferResultsCommand transferResultsCommand;
 
 	private MainScreenView mainScreen;
+	private Stage primaryStage;
+	private AnchorPane rootLayout;
 
 	public void setupSystem() {
 		setupPersistence();
@@ -87,20 +93,13 @@ public class Controller extends Application implements Observer {
 		setupServer();
 		setupListeners();
 		setupCommands();
-		setupView();
-		startActiveDeviceUpdates();
 	}
 
 	public void setupPersistence() {
 		databaseCreator = new DatabaseCreator();
-		databaseCreator.setupDatabase();
-
 		workPacketDrawer = new WorkPacketDrawerImpl();
-
-		// change this to your own implementation
-		workPacketLoader = Implementations.getWorkPacketLoader(workPacketDrawer);
-		
-		// change this to your own implementation
+		workPacketLoader = Implementations
+				.getWorkPacketLoader(workPacketDrawer);
 		resultsTransferManager = Implementations.getResultsTransferManager();
 
 		deviceDetailsManager = new DeviceDetailsManager();
@@ -111,11 +110,13 @@ public class Controller extends Application implements Observer {
 		deviceDetailsManager.setUserDetailsManager(userDetailsManager);
 		userDetailsManager.setDeviceManager(deviceDetailsManager);
 
-		workPacketLoader.loadWorkPackets();
-		workPacketDrawer.reloadIncompletedWorkPackets();
-		deviceDetailsManager.loadDevices();
-		deviceVersionManager.loadDeviceVersions();
-		resultsPacketManager.loadResultsPackets();
+		/*
+		 * databaseCreator.setupDatabase(); workPacketLoader.loadWorkPackets();
+		 * workPacketDrawer.reloadIncompletedWorkPackets();
+		 * deviceDetailsManager.loadDevices();
+		 * deviceVersionManager.loadDeviceVersions();
+		 * resultsPacketManager.loadResultsPackets();
+		 */
 
 		workPacketDrawer.addObserver(this);
 		deviceDetailsManager.addObserver(this);
@@ -194,19 +195,61 @@ public class Controller extends Application implements Observer {
 
 	}
 
+	public void setupRootLayout() {
+
+	}
+
 	public void setupView() {
-		mainScreen = new MainScreenView();
+		primaryStage.close();
 
-		mainScreen
-				.setActiveDeviceThresholdChangeListener(deviceThresholdChangeListener);
-		mainScreen.setBlacklistChangeListener(blacklistChangeListener);
-		mainScreen.setDuplicatesNumChangeListener(duplicatesNumChangeListener);
-		mainScreen.setPacketsNumChangeListener(packetsNumChangeListener);
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource(
+					"/uk/ac/qub/finalproject/server/views/MainScreen.fxml"));
+			AnchorPane mainView = (AnchorPane) loader.load();
+			mainScreen = loader.getController();
 
-		mainScreen.setLoadAdditionalWorkPacketsCommand(loadWorkPacketsCommand);
-		mainScreen.setStartServerCommand(startServerCommand);
-		mainScreen.setStopSendingPacketsCommand(stopSendingPacketsCommand);
-		mainScreen.setTransferResultsCommand(transferResultsCommand);
+			mainScreen.setupWidgets();
+			mainScreen
+					.setActiveDeviceThresholdChangeListener(deviceThresholdChangeListener);
+			mainScreen.setBlacklistChangeListener(blacklistChangeListener);
+			mainScreen
+					.setDuplicatesNumChangeListener(duplicatesNumChangeListener);
+			mainScreen.setPacketsNumChangeListener(packetsNumChangeListener);
+
+			mainScreen
+					.setLoadAdditionalWorkPacketsCommand(loadWorkPacketsCommand);
+			mainScreen.setStartServerCommand(startServerCommand);
+			mainScreen.setStopSendingPacketsCommand(stopSendingPacketsCommand);
+			mainScreen.setTransferResultsCommand(transferResultsCommand);
+
+			if (rootLayout.getChildren().size() > 0) {
+				rootLayout.getChildren().remove(0);
+			}
+
+			rootLayout.getChildren().add(mainView);
+			AnchorPane.setTopAnchor(rootLayout.getChildren().get(0), 0.0);
+			AnchorPane.setBottomAnchor(rootLayout.getChildren().get(0), 0.0);
+			AnchorPane.setLeftAnchor(rootLayout.getChildren().get(0), 0.0);
+			AnchorPane.setRightAnchor(rootLayout.getChildren().get(0), 0.0);
+
+			primaryStage.setMaximized(true);
+			;
+			primaryStage.setResizable(true);
+
+			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+				@Override
+				public void handle(WindowEvent arg0) {
+					cleanupBeforeClose();
+				}
+
+			});
+
+			primaryStage.show();
+		} catch (IOException ioEx) {
+			ioEx.printStackTrace();
+		}
 	}
 
 	public void startActiveDeviceUpdates() {
@@ -225,6 +268,16 @@ public class Controller extends Application implements Observer {
 			}
 
 		}, 0, 1000 * 60, TimeUnit.MILLISECONDS);
+	}
+
+	private void cleanupBeforeClose() {
+		try {
+			ConnectionPool.getConnectionPool().closeConnectionPool();
+		} catch (PropertyVetoException e) {
+			// TODO logging
+		}
+
+		server.stopServer();
 	}
 
 	@Override
@@ -280,11 +333,12 @@ public class Controller extends Application implements Observer {
 	}
 
 	private void updateViewProcessingComplete() {
+		// show server infographic?
 		mainScreen.processingComplete();
 	}
 
 	private void updateProcessingTimes(String minutes) {
-		mainScreen.addProcessingTime(minutes);
+		mainScreen.addProcessingTime(Integer.parseInt(minutes));
 	}
 
 	public static void main(String[] args) {
@@ -294,23 +348,28 @@ public class Controller extends Application implements Observer {
 
 	@Override
 	public void start(Stage arg0) throws Exception {
+		this.primaryStage = arg0;
+
+		primaryStage.setTitle(Implementations.getServerScreenTitle());
+
+		// initiate root layout
+		FXMLLoader rootLoader = new FXMLLoader();
+		rootLoader.setLocation(getClass().getResource(
+				"/uk/ac/qub/finalproject/server/views/RootLayout.fxml"));
+		rootLayout = (AnchorPane) rootLoader.load();
+
+		Scene scene = new Scene(rootLayout);
+		primaryStage.setScene(scene);
+		primaryStage.setResizable(false);
+		primaryStage.setHeight(420);
+		primaryStage.setWidth(600);
+		primaryStage.show();
+
 		// TODO show loading screen
 
 		setupSystem();
-		arg0.setOnCloseRequest(new EventHandler<WindowEvent>(){
-
-			@Override
-			public void handle(WindowEvent arg0) {
-				try {
-					ConnectionPool.getConnectionPool().closeConnectionPool();
-				} catch (PropertyVetoException e) {
-					//TODO logging					
-				}
-				
-				server.stopServer();
-			}
-			
-		});
+		setupView();
+		// startActiveDeviceUpdates();
 
 		// TODO show main screen
 

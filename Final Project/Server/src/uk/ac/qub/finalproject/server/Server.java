@@ -73,12 +73,23 @@ public class Server implements Runnable {
 		return (SSLServerSocket) socketFactory.createServerSocket(port);
 	}
 	
+	public boolean isListening(){
+		return listening;
+	}
+	
 
 	/**
 	 * Allows the server to be stopped externally.
 	 */
 	public void stopServer() {
 		listening = false;
+		try {
+			if (null != server)
+			server.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void setRequestHandlers(AbstractClientRequestHandler requestHandler){

@@ -39,7 +39,7 @@ public class StartServerCommand implements Command {
 	 */
 	@Override
 	public void execute() {
-		if (!serverThread.isAlive()){
+		if (null == serverThread || !server.isListening()){
 			server.setRequestHandlers(requestHandlerChain);
 			serverThread = new Thread(server);
 			serverThread.start();

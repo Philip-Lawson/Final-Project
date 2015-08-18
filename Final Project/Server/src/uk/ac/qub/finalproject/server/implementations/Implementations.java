@@ -49,4 +49,7 @@ public class Implementations {
 		return null;
 	}
 	
+	public static String getServerScreenTitle(){
+		return "Volunteer Science";
+	}
 }
