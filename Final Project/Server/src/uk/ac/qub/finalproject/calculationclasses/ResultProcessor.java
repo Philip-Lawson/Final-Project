@@ -16,7 +16,7 @@ import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
  *
  */
 public class ResultProcessor extends Observable {
-	
+
 	public static final String LOAD_MORE_WORK_PACKETS = "Load More Work Packets";
 	public static final String PROCESSING_COMPLETE = "Processing Complete!";
 
@@ -24,25 +24,35 @@ public class ResultProcessor extends Observable {
 	private ResultsPacketManager resultsPacketManager;
 	private IResultValidator validator;
 	private AbstractWorkPacketDrawer packetDrawer;
-	
-	public ResultProcessor(
-			DeviceDetailsManager deviceDetailsManager,
+
+	public ResultProcessor(DeviceDetailsManager deviceDetailsManager,
 			ResultsPacketManager resultsPacketManager,
 			IResultValidator validator, AbstractWorkPacketDrawer packetDrawer) {
 		this.deviceDetailsManager = deviceDetailsManager;
-		this.validator =validator;
+		this.validator = validator;
 		this.resultsPacketManager = resultsPacketManager;
 		this.packetDrawer = packetDrawer;
 	}
-	
 
-	public void processResults(ResultsPacketList resultsList, String deviceID){
+	public void processResults(ResultsPacketList resultsList, String deviceID) {
+		
 		processIndividualPackets(resultsList, deviceID);
-		processTimeStamp(resultsList.getTimeStamp(),resultsList.size());
-		checkProcessingComplete();		
+
+		try {
+			// there is a risk that the result list may not have been
+			// timestamped the current implementation uses a Long Object to
+			// avoid getTimeStamp returning a default 0 value - causing the
+			// processing time data to go crazy
+			processTimeStamp(resultsList.getTimeStamp(), resultsList.size());
+		} catch (NullPointerException npEx) {
+			// TODO - log exception
+		}
+
+		checkProcessingComplete();
 	}
-	
-	public void processIndividualPackets(ResultsPacketList resultsList, String deviceID){
+
+	public void processIndividualPackets(ResultsPacketList resultsList,
+			String deviceID) {
 		for (IResultsPacket result : resultsList) {
 			IWorkPacket initialData = packetDrawer.getInitialData(result
 					.getPacketId());
@@ -57,16 +67,16 @@ public class ResultProcessor extends Observable {
 			}
 		}
 	}
-	
-	public void processTimeStamp(long initialTimeStamp, int numPackets){
+
+	public void processTimeStamp(long initialTimeStamp, int numPackets) {
 		long timeProcessing = new Date().getTime() - initialTimeStamp;
 		deviceDetailsManager.adjustAverage(numPackets, timeProcessing);
 		setChanged();
 		notifyObservers(getMinutesProcessing(numPackets, timeProcessing));
 	}
-	
-	public void checkProcessingComplete(){
-		if (!packetDrawer.hasWorkPackets()) {			
+
+	public void checkProcessingComplete() {
+		if (!packetDrawer.hasWorkPackets()) {
 			if (resultsPacketManager.allResultsComplete()) {
 				setChanged();
 				notifyObservers(PROCESSING_COMPLETE);
@@ -76,9 +86,10 @@ public class ResultProcessor extends Observable {
 			}
 		}
 	}
-	
-	public String getMinutesProcessing(int numPackets, long millis){
-		Long minutesProcessing = TimeUnit.MILLISECONDS.toMinutes(millis/numPackets);
+
+	public String getMinutesProcessing(int numPackets, long millis) {
+		Long minutesProcessing = TimeUnit.MILLISECONDS.toMinutes(millis
+				/ numPackets);
 		return minutesProcessing.toString();
 	}
 }
