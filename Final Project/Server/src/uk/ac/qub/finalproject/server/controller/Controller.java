@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import uk.ac.qub.finalproject.calculationclasses.GroupResultsValidator;
 import uk.ac.qub.finalproject.calculationclasses.IGroupValidationStrategy;
 import uk.ac.qub.finalproject.calculationclasses.IResultValidator;
 import uk.ac.qub.finalproject.calculationclasses.IValidationStrategy;
@@ -125,23 +126,21 @@ public class Controller extends Application implements Observer {
 
 	public void setupValidation() {
 
-		// if you need group validation change the name to a
-		// GroupResultsValidator
-		resultValidator = new ResultsValidator(resultsPacketManager,
-				deviceDetailsManager);
-
-		// change this to your own validation strategy
+		if (Implementations.groupValidationNeeded()) {
+			resultValidator = new GroupResultsValidator(resultsPacketManager,
+					deviceDetailsManager);
+			groupValidationStrategy = Implementations.getGroupValidationStrategy();
+			resultValidator.setGroupValidationStrategy(groupValidationStrategy);
+		} else {
+			resultValidator = new ResultsValidator(resultsPacketManager,
+					deviceDetailsManager);
+		}
+		
 		validationStrategy = Implementations.getValidationStrategy();
-
-		// if you need group validation change this to your own group validation
-		// strategy
-		groupValidationStrategy = Implementations.getGroupValidationStrategy();
+		resultValidator.setValidationStrategy(validationStrategy);		
 
 		resultProcessor = new ResultProcessor(deviceDetailsManager,
 				resultsPacketManager, resultValidator, workPacketDrawer);
-
-		resultValidator.setValidationStrategy(validationStrategy);
-		resultValidator.setGroupValidationStrategy(groupValidationStrategy);
 		resultProcessor.addObserver(this);
 	}
 
@@ -234,7 +233,6 @@ public class Controller extends Application implements Observer {
 			AnchorPane.setRightAnchor(rootLayout.getChildren().get(0), 0.0);
 
 			primaryStage.setMaximized(true);
-			;
 			primaryStage.setResizable(true);
 
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {

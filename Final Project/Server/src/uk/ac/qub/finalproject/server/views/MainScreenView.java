@@ -10,10 +10,8 @@ import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.WorkPacketDrawerImpl;
 import uk.ac.qub.finalproject.server.controller.BlacklistChangeListener;
 import uk.ac.qub.finalproject.server.controller.Command;
-import uk.ac.qub.finalproject.server.controller.MainViewEventHandler;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -26,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 
 /**
  * @author Phil
@@ -33,18 +32,22 @@ import javafx.scene.control.ToggleGroup;
  */
 public class MainScreenView {
 
+	private static final String LOADING_PACKETS_PROGRESS_MESSAGE = "Loading Work Packets";
+
+	private static final String RESULTS_TRANSFER_PROGRESS_MESSAGE = "Transferring Results";
+
 	@FXML
 	private ToggleGroup blacklistPercent;
-	
+
 	@FXML
 	private Toggle fivePercentBlacklistRadioButton;
-	
+
 	@FXML
 	private Toggle tenPercentBlacklistRadioButton;
-	
+
 	@FXML
 	private Toggle twentyPercentBlacklistRadioButton;
-	
+
 	@FXML
 	private Toggle thirtyPercentBlacklistRadioButton;
 
@@ -98,15 +101,18 @@ public class MainScreenView {
 	@FXML
 	private Label percentBadPacketsLabel;
 	
+	@FXML
+	private Label databaseProgressLabel;
+	
+	@FXML
+	private GridPane databaseProcessingPane;
+	
 	private NumberFormatter numberFormatter = new NumberFormatter();
 
 	private Command startCommand;
 	private Command loadAdditionalWorkPacketsCommand;
 	private Command stopSendingPacketsCommand;
 	private Command transferResultsCommand;
-
-	private MainViewEventHandler loadWorkPacketHandler;
-	private MainViewEventHandler transferResultsHandler;
 
 	private ConcurrentMap<Number, Integer> processingTimesMap = new ConcurrentHashMap<Number, Integer>();
 	private int totalDevices;
@@ -150,20 +156,46 @@ public class MainScreenView {
 
 		});
 
-		loadWorkPacketHandler = new MainViewEventHandler(
-				loadAdditionalWorkPacketsCommand);
-		loadAdditionalPacketsButton.setOnAction(loadWorkPacketHandler);
+		loadAdditionalPacketsButton
+				.setOnAction(new EventHandler<ActionEvent>() {
 
-		transferResultsHandler = new MainViewEventHandler(
-				transferResultsCommand);
-		transferResultsButton.setOnAction(transferResultsHandler);
-		
+					@Override
+					public void handle(ActionEvent event) {
+						loadAdditionalPacketsButton.setDisable(true);
+						transferResultsButton.setDisable(true);
+						startProgressIndicator(LOADING_PACKETS_PROGRESS_MESSAGE);
+						
+						loadAdditionalWorkPacketsCommand.execute();
+						
+						stopProgressIndicator();
+						loadAdditionalPacketsButton.setDisable(false);
+						transferResultsButton.setDisable(false);
+					}
+
+				});
+
+		transferResultsButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				loadAdditionalPacketsButton.setDisable(true);
+				transferResultsButton.setDisable(true);
+				startProgressIndicator(RESULTS_TRANSFER_PROGRESS_MESSAGE);
+				
+				transferResultsCommand.execute();
+
+				stopProgressIndicator();
+				loadAdditionalPacketsButton.setDisable(false);
+				transferResultsButton.setDisable(false);
+			}
+
+		});
+
 		fivePercentBlacklistRadioButton.setUserData("5");
 		tenPercentBlacklistRadioButton.setUserData("10");
 		twentyPercentBlacklistRadioButton.setUserData("20");
 		thirtyPercentBlacklistRadioButton.setUserData("30");
-		
-		
+
 	}
 
 	public void setPacketsNumComboBox() {
@@ -172,7 +204,7 @@ public class MainScreenView {
 		packetsNumComboBox
 				.setValue(WorkPacketDrawerImpl.DEFAULT_PACKETS_PER_LIST);
 		packetsNumComboBox.setVisibleRowCount(4);
-		
+
 	}
 
 	public void setDuplicatesNumComboBox() {
@@ -193,11 +225,16 @@ public class MainScreenView {
 	}
 
 	public void setupChart() {
-		processingTimeLineChart.getData().add(processingTimeSeries);	
+		processingTimeLineChart.getData().add(processingTimeSeries);
 		NumberAxis xAxis = (NumberAxis) processingTimeLineChart.getXAxis();
 		NumberAxis yAxis = (NumberAxis) processingTimeLineChart.getYAxis();
 		xAxis.setTickLabelFormatter(numberFormatter);
-		yAxis.setTickLabelFormatter(numberFormatter);		
+		yAxis.setTickLabelFormatter(numberFormatter);
+
+		// add an initial time to the chart
+		// this ensures a continuous line from
+		// the bottom of the X/Y axis
+		addProcessingTime(0);
 	}
 
 	public void setBlacklistChangeListener(
@@ -273,15 +310,14 @@ public class MainScreenView {
 				 * Known bug. Occasionally an index out of bounds exception will
 				 * be thrown and printed to console.
 				 * https://bugs.openjdk.java.net/browse/JDK-8120863
-				 */				
+				 */
 				processingTimeSeries.getData().clear();
-				
 
 				for (Number minute : processingTimesMap.keySet()) {
 					Number devices = processingTimesMap.get(minute);
 					processingTimeSeries.getData().add(
 							new XYChart.Data<Number, Number>(minute, devices));
-				}		
+				}
 
 			}
 
@@ -310,9 +346,9 @@ public class MainScreenView {
 							/ (validPackets + invalidPackets);
 					int percent = (int) (percentBadPackets * 100);
 					percentBadPacketsLabel.setText(percent + " %");
-				} catch (ArithmeticException Ex){
-					
-				}				
+				} catch (ArithmeticException Ex) {
+
+				}
 			}
 
 		});
@@ -367,4 +403,29 @@ public class MainScreenView {
 
 		});
 	}
+
+	private void startProgressIndicator(String progressMessage) {
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				databaseProgressLabel.setText(progressMessage);
+				databaseProcessingPane.setVisible(true);
+			}
+
+		});	
+	}
+
+	private void stopProgressIndicator() {
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {				
+				databaseProcessingPane.setVisible(false);
+				databaseProgressLabel.setText("");
+			}
+
+		});
+	}
+
 }

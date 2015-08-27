@@ -31,7 +31,7 @@ public class LoadAdditionalWorkPacketsCommand implements Command {
 	 */
 	@Override
 	public void execute() {
-		workPacketLoader.loadAdditionalWorkPackets();
+		workPacketLoader.loadAdditionalWorkPackets();		
 	}
 
 }

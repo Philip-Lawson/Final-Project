@@ -77,7 +77,8 @@ public class WorkPacketRequestHandler extends AbstractClientRequestHandler {
 	private boolean canSendPackets(String deviceID) {
 		return workPacketDrawer.hasWorkPackets()
 				&& deviceVersionManager.deviceIsVersionOrAbove(
-						MIN_VERSION_CODE, deviceID);
+						MIN_VERSION_CODE, deviceID)
+				&& !deviceDetailsManager.deviceIsBlacklisted(deviceID);
 	}
 
 }

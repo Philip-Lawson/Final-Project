@@ -14,7 +14,7 @@
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uk.ac.qub.finalproject.server.views.MainScreenView">
    <children>
       <ImageView fitHeight="593.0" fitWidth="1194.0" layoutX="6.0" layoutY="7.0" opacity="0.18" pickOnBounds="true" preserveRatio="true" />
-      <GridPane prefHeight="600.0" prefWidth="1200.0" style="-fx-background-color: #E7E7E7;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane layoutY="-6.0" prefHeight="600.0" prefWidth="1200.0" style="-fx-background-color: #E7E7E7;" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-6.0">
          <children>
             <MenuBar GridPane.columnSpan="3">
                <menus>
@@ -47,7 +47,8 @@
                                 </columnConstraints>
                                 <rowConstraints>
                                   <RowConstraints minHeight="10.0" percentHeight="40.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" percentHeight="60.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
                                     <GridPane style=" -fx-background-color:#C6C6C6; -fx-background-radius: 10 10 10 10;" GridPane.rowIndex="1">
@@ -96,7 +97,7 @@
                                           <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <GridPane.margin>
-                                          <Insets bottom="120.0" left="20.0" right="20.0" />
+                                          <Insets bottom="20.0" left="20.0" right="20.0" />
                                        </GridPane.margin>
                                        <padding>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -108,7 +109,6 @@
                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
                                       </columnConstraints>
                                       <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                       </rowConstraints>
@@ -123,17 +123,34 @@
                                                 <Font size="14.0" />
                                              </font>
                                           </Label>
-                                          <Label text="Device Timeout" GridPane.halignment="LEFT" GridPane.rowIndex="2">
+                                          <ComboBox fx:id="packetsNumComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.valignment="CENTER" />
+                                          <ComboBox fx:id="duplicatesNumComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                                       </children>
+                                       <GridPane.margin>
+                                          <Insets bottom="40.0" left="20.0" right="20.0" top="30.0" />
+                                       </GridPane.margin>
+                                       <padding>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </padding>
+                                    </GridPane>
+                                    <GridPane style=" -fx-background-color:#C6C6C6; -fx-background-radius: 10 10 10 10;" GridPane.rowIndex="2">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="70.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <Label text="Device Timeout" GridPane.halignment="LEFT">
                                              <font>
                                                 <Font size="14.0" />
                                              </font>
                                           </Label>
-                                          <ComboBox fx:id="packetsNumComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.valignment="CENTER" />
-                                          <ComboBox fx:id="duplicatesNumComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                                          <ComboBox fx:id="activeDeviceThresholdComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                                          <ComboBox fx:id="activeDeviceThresholdComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.valignment="CENTER" />
                                        </children>
                                        <GridPane.margin>
-                                          <Insets bottom="30.0" left="20.0" right="20.0" top="20.0" />
+                                          <Insets bottom="40.0" left="20.0" right="20.0" top="10.0" />
                                        </GridPane.margin>
                                        <padding>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -187,24 +204,51 @@
                                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                        </GridPane.margin>
                                     </GridPane>
-                                    <GridPane style=" -fx-background-color:#C6C6C6; -fx-background-radius: 10 10 10 10;" GridPane.columnSpan="2" GridPane.rowIndex="1">
-                                       <children>
-                                          <Label text="Average Processing Time" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                                          <Label text="Bad Packets" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                                          <Label fx:id="averageTimeLabel" text="0 mins 0 secs" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                                          <Label fx:id="percentBadPacketsLabel" text="0 %" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                                       </children>
+                                    <GridPane GridPane.columnSpan="2" GridPane.rowIndex="1">
                                        <columnConstraints>
                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                        </columnConstraints>
                                        <rowConstraints>
                                           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <GridPane.margin>
                                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                        </GridPane.margin>
+                                       <children>
+                                          <GridPane style=" -fx-background-color:#C6C6C6; -fx-background-radius: 10 10 10 10;">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <Label text="Average Processing Time" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                                                <Label fx:id="averageTimeLabel" text="0 mins 0 secs" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                                             </children>
+                                             <GridPane.margin>
+                                                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                                             </GridPane.margin>
+                                          </GridPane>
+                                          <GridPane style=" -fx-background-color:#C6C6C6; -fx-background-radius: 10 10 10 10;" GridPane.columnIndex="1">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <Label text="Bad Packets" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                                                <Label fx:id="percentBadPacketsLabel" text="0 %" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                                             </children>
+                                             <GridPane.margin>
+                                                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                                             </GridPane.margin>
+                                          </GridPane>
+                                       </children>
                                     </GridPane>
                                     <GridPane style=" -fx-background-color:#C6C6C6; -fx-background-radius: 10 10 10 10;" GridPane.columnSpan="2" GridPane.rowIndex="2">
                                        <children>
@@ -277,7 +321,7 @@
                   <Cursor fx:constant="DEFAULT" />
                </cursor>
             </TabPane>
-            <GridPane style="-fx-background-color: #DFDFDF; -fx-background-radius: 10 10 10 10;" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <GridPane style="-fx-background-color: #C6C6C6; -fx-background-radius: 10 10 10 10;" GridPane.columnIndex="2" GridPane.rowIndex="3">
                <children>
                   <GridPane style="-fx-background-color: transparent; -fx-background-radius: 10 10 10 10;" GridPane.columnSpan="2" GridPane.rowIndex="1">
                     <columnConstraints>
@@ -288,7 +332,7 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Button fx:id="startButton" mnemonicParsing="false" text="START" GridPane.halignment="RIGHT">
+                        <Button fx:id="startButton" mnemonicParsing="false" style="-fx-background-color: #343434; -fx-background-radius: 8 8 8 8; -fx-text-fill: white;" text="START" GridPane.halignment="RIGHT">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -301,7 +345,7 @@
                         <Insets left="20.0" right="20.0" />
                      </GridPane.margin>
                   </GridPane>
-                  <Button fx:id="stopButton" disable="true" mnemonicParsing="false" text="STOP" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <Button fx:id="stopButton" disable="true" mnemonicParsing="false" style="-fx-background-color: #343434; -fx-background-radius: 8 8 8 8; -fx-text-fill: white;" text="STOP" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -323,7 +367,7 @@
                   <Insets bottom="30.0" left="80.0" right="80.0" top="30.0" />
                </GridPane.margin>
             </GridPane>
-            <GridPane style="-fx-background-color: #DFDFDF; -fx-background-radius: 10 10 10 10;" GridPane.columnIndex="2" GridPane.rowIndex="3">
+            <GridPane style="-fx-background-color: #C6C6C6; -fx-background-radius: 10 10 10 10;" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <children>
                   <GridPane style="-fx-background-color: transparent; -fx-background-radius: 10 10 10 10;" GridPane.columnSpan="2" GridPane.rowIndex="1">
                     <columnConstraints>
@@ -334,7 +378,7 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Button fx:id="loadAdditionalPacketsButton" mnemonicParsing="false" text="LOAD PACKETS" GridPane.halignment="RIGHT">
+                        <Button fx:id="loadAdditionalPacketsButton" mnemonicParsing="false" style="-fx-background-color: #686868; -fx-background-radius: 8 8 8 8; -fx-text-fill: white;" text="LOAD PACKETS" GridPane.halignment="RIGHT">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -342,7 +386,7 @@
                               <Insets right="10.0" />
                            </GridPane.margin>
                         </Button>
-                        <Button fx:id="transferResultsButton" mnemonicParsing="false" text="TRANSFER RESULTS" GridPane.columnIndex="1">
+                        <Button fx:id="transferResultsButton" mnemonicParsing="false" style="-fx-background-color: #686868; -fx-background-radius: 8 8 8 8; -fx-text-fill: white;" text="TRANSFER RESULTS" GridPane.columnIndex="1">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -365,6 +409,27 @@
                   <RowConstraints minHeight="10.0" percentHeight="70.0" prefHeight="30.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" percentHeight="15.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
+               <GridPane.margin>
+                  <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
+               </GridPane.margin>
+            </GridPane>
+            <GridPane fx:id="databaseProcessingPane" style=" -fx-background-color:#C6C6C6; -fx-background-radius: 10 10 10 10;" visible="false" GridPane.rowIndex="3">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" percentHeight="40.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" percentHeight="60.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <ProgressBar prefWidth="200.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                  <Label fx:id="databaseProgressLabel" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
                <GridPane.margin>
                   <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
                </GridPane.margin>

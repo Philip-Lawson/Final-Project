@@ -28,6 +28,9 @@ public class Implementations {
 		return null;
 	}
 		
+	public static boolean groupValidationNeeded(){
+		return false;
+	}
 	
 	public static IValidationStrategy getValidationStrategy(){
 		return new DummyValidationStrategy();

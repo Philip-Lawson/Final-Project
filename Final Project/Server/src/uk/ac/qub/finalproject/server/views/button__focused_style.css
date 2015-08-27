@@ -1,0 +1,15 @@
+button {
+    -fx-background-color: #686868;
+    -fx-background-radius: 8 8 8 8; 
+    -fx-text-fill: white;
+}
+
+button.hover: {
+    -fx-background-color: derive(-fx-background-color,30%);
+}
+
+
+button.focused: {
+    -fx-background-color: derive(-fx-background-color,30%);
+}
+
