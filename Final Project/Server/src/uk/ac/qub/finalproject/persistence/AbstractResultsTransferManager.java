@@ -37,10 +37,7 @@ public abstract class AbstractResultsTransferManager {
 	 */
 	protected abstract Collection<?> convertResults(
 			Collection<IResultsPacket> resultsPackets);
-
-	/**
-	 * Abstract method 
-	 */
+	
 	protected abstract void connectToDatabase();
 
 	protected abstract void writeResults(Collection<?> convertedResults);
@@ -48,6 +45,7 @@ public abstract class AbstractResultsTransferManager {
 	protected abstract void closeConnection();
 
 	public final void transferResults() {
+		System.out.println("converting results");
 		Collection<?> convertedResults = convertResults(resultsDB
 				.getResultsPackets());
 		connectToDatabase();

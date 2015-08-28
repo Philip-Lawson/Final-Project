@@ -13,15 +13,17 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
-
-
 public class Server implements Runnable {
+
+	private static Logger logger = Logger.getLogger(Server.class.getName());
 
 	private static final int THREAD_POOL_SIZE = 200;
 	private static final int PORT = 12346;
@@ -35,9 +37,9 @@ public class Server implements Runnable {
 	private SSLContext context;
 	private KeyManagerFactory keyFactory;
 	private KeyStore keyStore;
-	//private SSLServerSocket server;
+	// private SSLServerSocket server;
 	private SSLServerSocketFactory socketFactory;
-	private AbstractClientRequestHandler requestHandler;	
+	private AbstractClientRequestHandler requestHandler;
 	private boolean listening = true;
 	private ServerSocket server;
 
@@ -64,19 +66,18 @@ public class Server implements Runnable {
 		keyFactory = KeyManagerFactory.getInstance(KEY);
 		keyStore = KeyStore.getInstance(KEY_STORE);
 
-		keyStore.load(new FileInputStream(KEYSTORE_FILE_NAME), PASSWORD);	
+		keyStore.load(new FileInputStream(KEYSTORE_FILE_NAME), PASSWORD);
 		keyFactory.init(keyStore, PASSWORD);
 
 		context.init(keyFactory.getKeyManagers(), null, null);
-		socketFactory = context.getServerSocketFactory(); 
-		
+		socketFactory = context.getServerSocketFactory();
+
 		return (SSLServerSocket) socketFactory.createServerSocket(port);
 	}
-	
-	public boolean isListening(){
+
+	public boolean isListening() {
 		return listening;
 	}
-	
 
 	/**
 	 * Allows the server to be stopped externally.
@@ -85,47 +86,31 @@ public class Server implements Runnable {
 		listening = false;
 		try {
 			if (null != server)
-			server.close();
+				server.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem closing the server", e);
 		}
 	}
-	
-	public void setRequestHandlers(AbstractClientRequestHandler requestHandler){
+
+	public void setRequestHandlers(AbstractClientRequestHandler requestHandler) {
 		this.requestHandler = requestHandler;
 	}
 
 	@Override
-	public void run() {		
+	public void run() {
 		try {
-			server = new ServerSocket(PORT);	
-			listening = true;			
-			threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);			
-				
+			server = new ServerSocket(PORT);
+			listening = true;
+			threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
 			while (listening) {
 				Socket connection = server.accept();
-				threadPool.execute(new ServerThread(connection, requestHandler));
+				threadPool
+						.execute(new ServerThread(connection, requestHandler));
 			}
-			
-		} /*catch (UnrecoverableKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (KeyManagementException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (KeyStoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CertificateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace(); 
-		} */catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		} catch (IOException e) {
+			 logger.log(Level.FINE, "Closing the server", e);
 		}
 	}
 

@@ -27,7 +27,6 @@ public class CatchAllRequestHandler extends AbstractClientRequestHandler {
 	 */
 	@Override
 	protected int getRequestNum() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

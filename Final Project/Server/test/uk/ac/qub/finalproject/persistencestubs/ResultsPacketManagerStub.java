@@ -14,6 +14,7 @@ public class ResultsPacketManagerStub extends ResultsPacketManager {
 	
 	private boolean allResultsComplete;
 	private boolean resultWritten;
+	private boolean resultIsSaved;
 	private IResultsPacket resultsPacket;
 	
 	@Override
@@ -25,6 +26,20 @@ public class ResultsPacketManagerStub extends ResultsPacketManager {
 	public void writeResult(IResultsPacket resultsPacket){
 		resultWritten = true;
 		this.resultsPacket = resultsPacket;
+	}
+	
+	@Override
+	public IResultsPacket getResultForComparison(String packetID){
+		return resultsPacket;
+	}
+	
+	@Override
+	public boolean resultIsSaved(String packtID){
+		return resultIsSaved;
+	}
+	
+	public void setResultSaved(boolean resultIsSaved){
+		this.resultIsSaved = resultIsSaved; 
 	}
 
 	public boolean isAllResultsComplete() {

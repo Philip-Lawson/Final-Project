@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -19,6 +21,8 @@ import java.net.Socket;
  *
  */
 public class ServerThread implements Runnable {
+	
+	private static Logger logger = Logger.getLogger(ServerThread.class.getName());
 
 	private Socket socket;
 	private ObjectOutputStream out;
@@ -37,8 +41,8 @@ public class ServerThread implements Runnable {
 		try {
 			getStreams();
 			processConnection();
-		} catch (IOException e) {			
-			e.printStackTrace();
+		} catch (IOException e) {	
+			logger.log(Level.FINE, "Problem getting the streams", e);
 		} finally {
 			closeConnections();
 		}
@@ -90,24 +94,21 @@ public class ServerThread implements Runnable {
 			if (out != null)
 				out.close();
 		} catch (IOException IOEx) {
-			// IOEx.printStackTrace();
-			System.out.println("Problem closing output stream");
+			logger.log(Level.FINE, "Problem closing the output stream", IOEx);
 		}
 		
 		try {
 			if (in != null)
 				in.close();
 		} catch (IOException IOEx) {
-			// IOEx.printStackTrace();
-			System.out.println("Problem closing input stream");
+			logger.log(Level.FINE, "Problem closing the input stream", IOEx);
 		}
 		
 		try {
 			if (socket != null)
 				socket.close();
 		} catch (IOException IOEx) {
-			// IOEx.printStackTrace();
-			System.out.println("Problem closing connection");
+			logger.log(Level.FINE, "Problem closing the socket", IOEx);
 		}
 	}
 

@@ -78,6 +78,16 @@ public class GroupResultsValidator implements IResultValidator {
 		}
 	}
 
+	/**
+	 * Returns the current number of results needed for a group comparison to
+	 * occur.
+	 * 
+	 * @return
+	 */
+	public int getResultsNeededForComparison() {
+		return resultsNeeded;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -118,11 +128,12 @@ public class GroupResultsValidator implements IResultValidator {
 			Map<String, IResultsPacket> pendingResults = pendingResultsMap
 					.get(resultsPacketID);
 
-			if (pendingResults.size() == MIN_RESULTS_NEEDED_FOR_COMPARISON - 1) {
+			if (pendingResults.size() < MIN_RESULTS_NEEDED_FOR_COMPARISON) {
 				pendingResults.put(deviceID, resultPacket);
+			}
+			
+			if(pendingResults.size() == MIN_RESULTS_NEEDED_FOR_COMPARISON){
 				processGroupResult(pendingResults, initialData);
-			} else if (pendingResults.size() < MIN_RESULTS_NEEDED_FOR_COMPARISON) {
-				pendingResults.put(deviceID, resultPacket);
 			}
 
 		} else {

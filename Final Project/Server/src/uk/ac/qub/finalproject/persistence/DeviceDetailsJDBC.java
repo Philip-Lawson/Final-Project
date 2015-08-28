@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.server.RegistrationPack;
 
@@ -18,6 +20,8 @@ import uk.ac.qub.finalproject.server.RegistrationPack;
  *
  */
 public class DeviceDetailsJDBC extends AbstractJDBC {
+	
+	private static Logger logger = Logger.getLogger(DeviceDetailsJDBC.class.getName());
 
 	private static final String REGISTER_DEVICE = "INSERT INTO devices VALUES (?);";
 
@@ -62,7 +66,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			preparedStatement.executeQuery();
 
 		} catch (SQLException | PropertyVetoException SQLEx) {
-
+			logger.log(Level.FINE, "Problem writing a valid result to the database", SQLEx);
 		} finally {
 			closeConnection(connection, preparedStatement, null);
 		}
@@ -79,7 +83,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			preparedStatement.setBytes(1, encryptor.encrypt(deviceID));
 			preparedStatement.executeQuery();
 		} catch (SQLException | PropertyVetoException SQLEx) {
-
+			logger.log(Level.FINE, "Problem writing an invalid result to the database", SQLEx);
 		} finally {
 			closeConnection(connection, preparedStatement, null);
 		}
@@ -156,7 +160,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			}
 
 		} catch (SQLException | PropertyVetoException e) {
-
+			logger.log(Level.FINE, "Problem loading device attributes from the database", e);
 		} finally {
 			try {
 				if (null != deviceResultSet)

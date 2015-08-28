@@ -3,6 +3,7 @@
  */
 package uk.ac.qub.finalproject.persistence;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
@@ -22,17 +23,15 @@ public class DummyWorkPacketLoader extends AbstractWorkPacketLoader {
 	 */
 	@Override
 	protected Collection<IWorkPacket> retrieveInitialWorkPackets() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<IWorkPacket>();
 	}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.qub.finalproject.persistence.AbstractWorkPacketLoader#retrieveAdditionalWorkPackets()
 	 */
 	@Override
-	protected Collection<IWorkPacket> retrieveAdditionalWorkPackets() {
-		// TODO Auto-generated method stub
-		return null;
+	protected Collection<IWorkPacket> retrieveAdditionalWorkPackets() {		
+		return new ArrayList<IWorkPacket>();
 	}
 
 }

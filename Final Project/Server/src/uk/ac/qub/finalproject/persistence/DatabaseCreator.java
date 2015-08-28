@@ -7,6 +7,8 @@ import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Creates the non-domain specific databases used to store device details, user
@@ -18,6 +20,8 @@ import java.sql.Statement;
  *
  */
 public class DatabaseCreator extends AbstractJDBC {
+	
+	private Logger logger = Logger.getLogger(DatabaseCreator.class.getName());
 
 	private static final String CREATE_DEVICES_TABLE = "CREATE TABLE IF NOT EXISTS devices "
 			+ "( device_id VARBINARY NOT NULL,"
@@ -68,8 +72,7 @@ public class DatabaseCreator extends AbstractJDBC {
 
 			statement.executeBatch();
 		} catch (SQLException | PropertyVetoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Problem setting up the database", e);
 		} finally {
 			closeConnection(connection, statement, null);
 		}

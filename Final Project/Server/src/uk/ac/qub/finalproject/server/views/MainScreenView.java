@@ -18,6 +18,8 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -100,13 +102,16 @@ public class MainScreenView {
 
 	@FXML
 	private Label percentBadPacketsLabel;
-	
+
 	@FXML
 	private Label databaseProgressLabel;
-	
+
 	@FXML
 	private GridPane databaseProcessingPane;
-	
+
+	@FXML
+	private ProgressBar databaseProgressBar;
+
 	private NumberFormatter numberFormatter = new NumberFormatter();
 
 	private Command startCommand;
@@ -161,15 +166,19 @@ public class MainScreenView {
 
 					@Override
 					public void handle(ActionEvent event) {
-						loadAdditionalPacketsButton.setDisable(true);
-						transferResultsButton.setDisable(true);
-						startProgressIndicator(LOADING_PACKETS_PROGRESS_MESSAGE);
-						
-						loadAdditionalWorkPacketsCommand.execute();
-						
-						stopProgressIndicator();
-						loadAdditionalPacketsButton.setDisable(false);
-						transferResultsButton.setDisable(false);
+						if (transferResultsButton.isDisabled()) {
+							showWaitMessage("Still Transferring Results", "transferring results.");
+						} else {
+							loadAdditionalPacketsButton.setDisable(true);
+							startProgressIndicator(LOADING_PACKETS_PROGRESS_MESSAGE);
+							loadAdditionalWorkPacketsCommand.execute();
+
+							stopProgressIndicator();
+							showDatabaseConfirmation("Loading Complete",
+									"Packets Loaded",
+									"All new packets have been loaded to the system");
+							loadAdditionalPacketsButton.setDisable(false);
+						}
 					}
 
 				});
@@ -178,15 +187,19 @@ public class MainScreenView {
 
 			@Override
 			public void handle(ActionEvent event) {
-				loadAdditionalPacketsButton.setDisable(true);
-				transferResultsButton.setDisable(true);
-				startProgressIndicator(RESULTS_TRANSFER_PROGRESS_MESSAGE);
-				
-				transferResultsCommand.execute();
+				if (loadAdditionalPacketsButton.isDisabled()) {
+					showWaitMessage("Still Loading Packets", "loading packets.");
+				} else {
+					transferResultsButton.setDisable(true);
+					startProgressIndicator(RESULTS_TRANSFER_PROGRESS_MESSAGE);
+					transferResultsCommand.execute();
 
-				stopProgressIndicator();
-				loadAdditionalPacketsButton.setDisable(false);
-				transferResultsButton.setDisable(false);
+					stopProgressIndicator();
+					showDatabaseConfirmation("Results Transferred",
+							"Results Transferred",
+							"All results have been transferred to your database.");
+					transferResultsButton.setDisable(false);
+				}
 			}
 
 		});
@@ -215,26 +228,27 @@ public class MainScreenView {
 	}
 
 	public void setActiveDeviceThresholdComboBox() {
-		activeDeviceThresholdComboBox.getItems().addAll("5 minutes",
-				"10 minutes", "15 minutes", "30 minutes", "1 hour", "2 hours",
-				"3 hours", "5 hours", "8 hours");
+		activeDeviceThresholdComboBox.getItems().addAll("5 mins", "10 mins",
+				"15 mins", "30 mins", "1 hour", "2 hours", "3 hours",
+				"5 hours", "8 hours");
 		activeDeviceThresholdComboBox
 				.setValue(DeviceDetailsManager.DEFAULT_ACTIVE_DEVICE_THRESHOLD
-						+ " minutes");
+						+ " mins");
 		activeDeviceThresholdComboBox.setVisibleRowCount(4);
 	}
 
 	public void setupChart() {
+		// add an initial time to the chart
+		// this ensures a continuous line from
+		// the bottom of the X/Y axis
+		processingTimesMap.put(0, 0);
+
 		processingTimeLineChart.getData().add(processingTimeSeries);
 		NumberAxis xAxis = (NumberAxis) processingTimeLineChart.getXAxis();
 		NumberAxis yAxis = (NumberAxis) processingTimeLineChart.getYAxis();
 		xAxis.setTickLabelFormatter(numberFormatter);
 		yAxis.setTickLabelFormatter(numberFormatter);
 
-		// add an initial time to the chart
-		// this ensures a continuous line from
-		// the bottom of the X/Y axis
-		addProcessingTime(0);
 	}
 
 	public void setBlacklistChangeListener(
@@ -293,12 +307,12 @@ public class MainScreenView {
 	}
 
 	public void addProcessingTime(int minutes) {
-		Integer devices = processingTimesMap.get(minutes);
 
-		if (null == devices) {
-			processingTimesMap.put(minutes, 1);
-		} else {
+		if (processingTimesMap.containsKey(minutes)) {
+			Integer devices = processingTimesMap.get(minutes);
 			processingTimesMap.put(minutes, ++devices);
+		} else {
+			processingTimesMap.put(minutes, 1);
 		}
 
 		Platform.runLater(new Runnable() {
@@ -306,11 +320,6 @@ public class MainScreenView {
 			@Override
 			public void run() {
 
-				/*
-				 * Known bug. Occasionally an index out of bounds exception will
-				 * be thrown and printed to console.
-				 * https://bugs.openjdk.java.net/browse/JDK-8120863
-				 */
 				processingTimeSeries.getData().clear();
 
 				for (Number minute : processingTimesMap.keySet()) {
@@ -318,9 +327,7 @@ public class MainScreenView {
 					processingTimeSeries.getData().add(
 							new XYChart.Data<Number, Number>(minute, devices));
 				}
-
 			}
-
 		});
 
 	}
@@ -410,22 +417,43 @@ public class MainScreenView {
 			@Override
 			public void run() {
 				databaseProgressLabel.setText(progressMessage);
+				databaseProgressBar.setVisible(true);
 				databaseProcessingPane.setVisible(true);
 			}
 
-		});	
+		});
 	}
 
 	private void stopProgressIndicator() {
 		Platform.runLater(new Runnable() {
 
 			@Override
-			public void run() {				
+			public void run() {
 				databaseProcessingPane.setVisible(false);
+				databaseProgressBar.setVisible(false);
 				databaseProgressLabel.setText("");
 			}
 
 		});
+	}
+
+	private void showDatabaseConfirmation(String title, String headerText,
+			String contentText) {
+		Alert databaseAlert = new Alert(AlertType.INFORMATION);
+		databaseAlert.setTitle(title);
+		databaseAlert.setHeaderText(headerText);
+		databaseAlert.setContentText(contentText);
+		databaseAlert.showAndWait();
+
+	}
+
+	private void showWaitMessage(String title, String contentText) {
+		Alert databaseAlert = new Alert(AlertType.WARNING);
+		databaseAlert.setTitle(title);
+		databaseAlert.setHeaderText("");
+		databaseAlert.setContentText("Please try again when the database has finished " + contentText);
+		databaseAlert.showAndWait();
+
 	}
 
 }

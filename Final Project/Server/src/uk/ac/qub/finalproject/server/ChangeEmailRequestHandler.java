@@ -6,6 +6,8 @@ package uk.ac.qub.finalproject.server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 
@@ -14,6 +16,8 @@ import uk.ac.qub.finalproject.persistence.UserDetailsManager;
  *
  */
 public class ChangeEmailRequestHandler extends AbstractClientRequestHandler {
+	
+	private static Logger logger = Logger.getLogger(ChangeEmailRequestHandler.class.getName());
 
 	private UserDetailsManager userDetails;
 
@@ -46,8 +50,7 @@ public class ChangeEmailRequestHandler extends AbstractClientRequestHandler {
 	 */
 	@Override
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
-		// TODO Auto-generated method stub
-		;
+		
 		try {
 			RegistrationPack registrationPack = (RegistrationPack) input
 					.readObject();
@@ -56,8 +59,7 @@ public class ChangeEmailRequestHandler extends AbstractClientRequestHandler {
 			output.writeBoolean(userDetails.changeEmailAddress(registrationPack));
 			output.flush();			
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem changing email address", e);
 		}
 
 	}

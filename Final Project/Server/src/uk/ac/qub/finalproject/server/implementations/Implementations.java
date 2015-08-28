@@ -10,6 +10,7 @@ import uk.ac.qub.finalproject.calculationclasses.IValidationStrategy;
 import uk.ac.qub.finalproject.persistence.AbstractResultsTransferManager;
 import uk.ac.qub.finalproject.persistence.AbstractWorkPacketDrawer;
 import uk.ac.qub.finalproject.persistence.AbstractWorkPacketLoader;
+import uk.ac.qub.finalproject.persistence.DummyResultsTransferManager;
 import uk.ac.qub.finalproject.persistence.DummyWorkPacketLoader;
 import uk.ac.qub.finalproject.server.AbstractClientAchievementEmailFactory;
 import uk.ac.qub.finalproject.server.ClientAchievementEmailFactory;
@@ -25,7 +26,7 @@ public class Implementations {
 	}
 	
 	public static AbstractResultsTransferManager getResultsTransferManager(){
-		return null;
+		return new DummyResultsTransferManager();
 	}
 		
 	public static boolean groupValidationNeeded(){

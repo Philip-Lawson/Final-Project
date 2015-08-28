@@ -6,6 +6,8 @@ package uk.ac.qub.finalproject.server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 
@@ -14,6 +16,8 @@ import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
  *
  */
 public class DeleteAccountRequestHandler extends AbstractClientRequestHandler {
+	
+	private static Logger logger = Logger.getLogger(DeleteAccountRequestHandler.class.getName());
 	
 	private DeviceDetailsManager deviceDetailsManager;
 	
@@ -43,8 +47,7 @@ public class DeleteAccountRequestHandler extends AbstractClientRequestHandler {
 			output.writeBoolean(deviceDetailsManager.deregisterDevice(deviceID));			
 			output.flush();			
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem deleting account", e);
 		}		
 
 	}

@@ -6,6 +6,8 @@ package uk.ac.qub.finalproject.server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
@@ -17,6 +19,9 @@ import uk.ac.qub.finalproject.persistence.UserDetailsManager;
  */
 public class CalculationFinishedRequestHandler extends
 		AbstractClientRequestHandler {
+
+	private static Logger logger = Logger
+			.getLogger(CalculationFinishedRequestHandler.class.getName());
 
 	private DeviceDetailsManager deviceDetailsManager;
 	private DeviceVersionManager deviceVersionManager;
@@ -92,8 +97,7 @@ public class CalculationFinishedRequestHandler extends
 			output.writeInt(ServerRequest.BECOME_DORMANT);
 			output.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem sending dormant message", e);
 		}
 	}
 
@@ -106,8 +110,7 @@ public class CalculationFinishedRequestHandler extends
 					.changeEmailAddress(registrationPack));
 			output.flush();
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem changing email address", e);
 		}
 	}
 
@@ -120,8 +123,7 @@ public class CalculationFinishedRequestHandler extends
 			output.writeBoolean(deviceDetailsManager.deregisterDevice(deviceID));
 			output.flush();
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem deleting account", e);
 		}
 	}
 
@@ -131,8 +133,7 @@ public class CalculationFinishedRequestHandler extends
 			input.readObject();
 			sendBecomeDormantMessage(output);
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem processing result", e);
 		}
 	}
 
@@ -147,8 +148,7 @@ public class CalculationFinishedRequestHandler extends
 					.addDevice(registrationPack));
 			output.flush();
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem registering device", e);
 		}
 	}
 

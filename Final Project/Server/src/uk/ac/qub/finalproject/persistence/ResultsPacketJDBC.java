@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 
@@ -22,6 +24,8 @@ import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
  *
  */
 public class ResultsPacketJDBC extends AbstractJDBC {
+	
+	private static Logger logger = Logger.getLogger(ResultsPacketJDBC.class.getName());
 
 	private static final String ADD_RESULTS_PACKET = "INSERT INTO results_packets VALUES (?, ?);";
 	private static final String GET_RESULTS_PACKETS = "SELECT results_packet FROM results_packets";
@@ -46,7 +50,7 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 			preparedStatement.setObject(2, resultsPacket);
 			preparedStatement.executeUpdate();
 		} catch (SQLException | PropertyVetoException SQLEx) {
-
+			logger.log(Level.WARNING, "Problem saving results packet to the database", SQLEx);
 		} finally {
 			closeConnection(connection, preparedStatement, null);
 		}
@@ -77,7 +81,7 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 				resultsPackets.add((IResultsPacket) resultSet.getObject(1));
 			}
 		} catch (SQLException | PropertyVetoException SQLEx) {
-
+			logger.log(Level.WARNING, "Problem loading results packet from the database", SQLEx);
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
 		}
@@ -103,6 +107,7 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 			}
 			
 		} catch (SQLException | PropertyVetoException SQLEx) {
+			logger.log(Level.WARNING, "Problem getting result statistics from the database", SQLEx);
 
 		} finally {
 			closeConnection(connection, statement, resultSet);

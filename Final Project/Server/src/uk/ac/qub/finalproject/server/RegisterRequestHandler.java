@@ -6,6 +6,8 @@ package uk.ac.qub.finalproject.server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
@@ -15,6 +17,8 @@ import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
  *
  */
 public class RegisterRequestHandler extends AbstractClientRequestHandler {
+	
+	private static Logger logger = Logger.getLogger(RegisterRequestHandler.class.getName());
 
 	private DeviceDetailsManager deviceManager;
 	private DeviceVersionManager deviceVersionManager;
@@ -65,7 +69,7 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 			output.writeBoolean(successfulRegistration);
 			output.flush();
 		} catch (IOException ex) {
-
+			logger.log(Level.FINE, "Problem registering a device", ex);
 		}
 
 	}

@@ -4,6 +4,8 @@
 package uk.ac.qub.finalproject.server;
 
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -16,22 +18,25 @@ import javax.mail.internet.MimeMessage;
 import uk.ac.qub.finalproject.persistence.Achievements;
 import uk.ac.qub.finalproject.server.implementations.Implementations;
 
-
 /**
  * @author Phil
  *
  */
 public class ClientAchievementEmailSender {
 
+	private Logger logger = Logger.getLogger(ClientAchievementEmailSender.class
+			.getName());
+
 	private static String SENDER_EMAIL = Implementations.getEmailAddress();
 	private static String EMAIL_PASSWORD = Implementations.getEmailPassword();
 
-	private AbstractClientAchievementEmailFactory emailBuilder = Implementations.getEmailFactory();
+	private AbstractClientAchievementEmailFactory emailBuilder = Implementations
+			.getEmailFactory();
 
 	public void sendEmail(String emailAddress, Achievements type) {
 		String emailTitle = emailBuilder.buildEmailTitle(type);
 		String emailBody = emailBuilder.buildEmail(type);
-		
+
 		String host = "mail."
 				+ SENDER_EMAIL.substring(SENDER_EMAIL.lastIndexOf("@") + 1,
 						SENDER_EMAIL.length());
@@ -58,18 +63,18 @@ public class ClientAchievementEmailSender {
 			message.setText(emailBody);
 
 			// send the message
-			Transport.send(message);		
+			Transport.send(message);
 
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem sending email to users", e);
 		}
 	}
-	
-	public static void changeEmailAddress(String senderEmail){
+
+	public static void changeEmailAddress(String senderEmail) {
 		SENDER_EMAIL = senderEmail;
 	}
-	
-	public static void changePassword(String emailPassword){
+
+	public static void changePassword(String emailPassword) {
 		EMAIL_PASSWORD = emailPassword;
 	}
 

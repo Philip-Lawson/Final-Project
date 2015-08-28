@@ -7,11 +7,18 @@ import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
 
 /**
+ * The results validator validates all results that are sent from client
+ * devices. It is essentially a co-ordinator class that allows for different
+ * implementations of results caching and validation strategies to be used
+ * without affecting core logic. <br></br> This is a single result-only validator and has
+ * empty implementations of group validator methods. It is dependent on a
+ * ResultsPacketManager cache to retrieve results and on a ValidationStrategy to
+ * validate the results.
  * 
  * @author Phil
  *
  */
-public class ResultsValidator implements IResultValidator {
+public class SingleResultsValidator implements IResultValidator {
 
 	/**
 	 * The results cache. This is used to retrieve results that have already
@@ -29,29 +36,27 @@ public class ResultsValidator implements IResultValidator {
 	 * Default constructor. IF this is called the validation strategy must be
 	 * set before calling any of this classes methods.
 	 */
-	public ResultsValidator() {
+	public SingleResultsValidator() {
 
 	}
 
-	public ResultsValidator(ResultsPacketManager resultsDrawer) {
+	public SingleResultsValidator(ResultsPacketManager resultsDrawer) {
 		this.resultsDrawer = resultsDrawer;
 	}
 
-	public ResultsValidator(ResultsPacketManager resultsPacketManager,
+	public SingleResultsValidator(IValidationStrategy validationStrategy) {
+		this.setValidationStrategy(validationStrategy);
+	}
+	
+	public SingleResultsValidator(ResultsPacketManager resultsPacketManager,
 			DeviceDetailsManager deviceDetailsManager) {
 		this(resultsPacketManager);
 	}
-
-	/**
-	 * Instantiates an abstract results validator with a validation strategy.
-	 * The instance can now be used without further modification.
-	 * 
-	 * @param validationStrategy
-	 *            the strategy used to validate
-	 */
-	public ResultsValidator(IValidationStrategy validationStrategy) {
-		this.setValidationStrategy(validationStrategy);
+	
+	public void setResultsPacketManager(ResultsPacketManager resultsPacketManager){
+		this.resultsDrawer = resultsPacketManager;
 	}
+		
 
 	@Override
 	public boolean resultIsPending(String packetID) {

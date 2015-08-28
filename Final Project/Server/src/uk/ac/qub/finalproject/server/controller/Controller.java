@@ -24,7 +24,7 @@ import uk.ac.qub.finalproject.calculationclasses.IGroupValidationStrategy;
 import uk.ac.qub.finalproject.calculationclasses.IResultValidator;
 import uk.ac.qub.finalproject.calculationclasses.IValidationStrategy;
 import uk.ac.qub.finalproject.calculationclasses.ResultProcessor;
-import uk.ac.qub.finalproject.calculationclasses.ResultsValidator;
+import uk.ac.qub.finalproject.calculationclasses.SingleResultsValidator;
 import uk.ac.qub.finalproject.persistence.AbstractResultsTransferManager;
 import uk.ac.qub.finalproject.persistence.AbstractWorkPacketDrawer;
 import uk.ac.qub.finalproject.persistence.AbstractWorkPacketLoader;
@@ -132,7 +132,7 @@ public class Controller extends Application implements Observer {
 			groupValidationStrategy = Implementations.getGroupValidationStrategy();
 			resultValidator.setGroupValidationStrategy(groupValidationStrategy);
 		} else {
-			resultValidator = new ResultsValidator(resultsPacketManager,
+			resultValidator = new SingleResultsValidator(resultsPacketManager,
 					deviceDetailsManager);
 		}
 		
@@ -226,14 +226,17 @@ public class Controller extends Application implements Observer {
 				rootLayout.getChildren().remove(0);
 			}
 
-			rootLayout.getChildren().add(mainView);
+			rootLayout.getChildren().add(mainView);			
 			AnchorPane.setTopAnchor(rootLayout.getChildren().get(0), 0.0);
 			AnchorPane.setBottomAnchor(rootLayout.getChildren().get(0), 0.0);
 			AnchorPane.setLeftAnchor(rootLayout.getChildren().get(0), 0.0);
 			AnchorPane.setRightAnchor(rootLayout.getChildren().get(0), 0.0);
-
+			
+			primaryStage.setHeight(600);
+			primaryStage.setWidth(1200);
 			primaryStage.setMaximized(true);
 			primaryStage.setResizable(true);
+			
 
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
@@ -311,7 +314,7 @@ public class Controller extends Application implements Observer {
 		long validResults = deviceDetailsManager.numberOfValidResults();
 		long invalidResults = deviceDetailsManager.numberOfInvalidResults();
 		long averageTime = deviceDetailsManager.getAverageProcessingTime();
-		String time = String.format("%d min, %d sec",
+		String time = String.format("%d mins %d secs",
 				TimeUnit.MILLISECONDS.toSeconds(averageTime) / 60,
 				TimeUnit.MILLISECONDS.toSeconds(averageTime) % 60);
 
@@ -356,7 +359,7 @@ public class Controller extends Application implements Observer {
 				"/uk/ac/qub/finalproject/server/views/RootLayout.fxml"));
 		rootLayout = (AnchorPane) rootLoader.load();
 
-		Scene scene = new Scene(rootLayout);
+		Scene scene = new Scene(rootLayout);		
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
 		primaryStage.setHeight(420);

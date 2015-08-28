@@ -296,7 +296,7 @@ public class WorkPacketDrawerImplTest {
 	@Test
 	public void testNumberOfPacketsRemainingNoneSent() {
 		int numPacketsToAdd = 25;
-		int packetsPerList = 5;
+		int numberOfCopies = 5;
 		Collection<IWorkPacket> workPackets = new ArrayList<IWorkPacket>(
 				numPacketsToAdd);
 
@@ -305,10 +305,10 @@ public class WorkPacketDrawerImplTest {
 			workPackets.add(packet);
 		}
 		
-		test.setPacketsPerList(packetsPerList);
+		test.setNumberOfCopies(numberOfCopies);;
 		test.addWorkPackets(workPackets);
 		
-		assertEquals(numPacketsToAdd*packetsPerList, test.numberOfPacketsRemaining());
+		assertEquals(numPacketsToAdd*numberOfCopies, test.numberOfPacketsRemaining());
 	}
 	
 	@Test

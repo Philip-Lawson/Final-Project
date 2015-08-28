@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.calculationclasses.ResultProcessor;
 import uk.ac.qub.finalproject.calculationclasses.ResultsPacketList;
@@ -20,6 +22,8 @@ import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
  *
  */
 public class ProcessResultRequestHandler extends AbstractClientRequestHandler {
+	
+	private static Logger logger = Logger.getLogger(ProcessResultRequestHandler.class.getName());
 
 	private static int MIN_VERSION_CODE = 1;
 
@@ -75,7 +79,7 @@ public class ProcessResultRequestHandler extends AbstractClientRequestHandler {
 			sendResponse(output, deviceID);
 
 		} catch (ClassNotFoundException | IOException e) {
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem processing result", e);
 		}
 
 	}

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.calculationclasses.WorkPacketList;
 import uk.ac.qub.finalproject.persistence.AbstractWorkPacketDrawer;
@@ -18,6 +20,8 @@ import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
  *
  */
 public class WorkPacketRequestHandler extends AbstractClientRequestHandler {
+	
+	private static Logger  logger = Logger.getLogger(WorkPacketRequestHandler.class.getName());
 
 	private static int MIN_VERSION_CODE = 1;
 
@@ -68,8 +72,7 @@ public class WorkPacketRequestHandler extends AbstractClientRequestHandler {
 			output.flush();
 
 		} catch (IOException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINE, "Problem sending a work packet", e);
 		}
 
 	}

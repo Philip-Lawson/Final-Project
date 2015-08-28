@@ -20,7 +20,7 @@ import uk.ac.qub.finalproject.server.RegistrationPack;
  *
  */
 public class DeviceDetailsManager extends Observable {
-	
+
 	public static final int DEFAULT_ACTIVE_DEVICE_THRESHOLD = 10;
 
 	private DeviceDetailsJDBC deviceDB = new DeviceDetailsJDBC();
@@ -79,11 +79,11 @@ public class DeviceDetailsManager extends Observable {
 		} else {
 			devicesMap.put(deviceID, new Device(deviceID));
 			deviceDB.registerDevice(registrationPack);
-			
+
 			if (null != emailAddress) {
 				userDetails.registerUser(registrationPack);
 			}
-			
+
 			setChanged();
 			notifyObservers();
 
@@ -97,7 +97,7 @@ public class DeviceDetailsManager extends Observable {
 	 * @param deviceID
 	 */
 	public void writeValidResultSent(String deviceID) {
-		
+
 		if (devicesMap.containsKey(deviceID)) {
 			Device device = devicesMap.get(deviceID);
 			device.addValidResult();
@@ -109,7 +109,7 @@ public class DeviceDetailsManager extends Observable {
 			if (null != emailAddress) {
 				userDetails.checkForAchievementMilestone(emailAddress);
 			}
-			
+
 			setChanged();
 			notifyObservers();
 		}
@@ -165,7 +165,7 @@ public class DeviceDetailsManager extends Observable {
 			Integer invalidResults = devicesMap.get(deviceID)
 					.getInvalidResults();
 			Integer totalResults = invalidResults + validResults;
-			double percentInvalid = (invalidResults / (double)totalResults) * 100.0;
+			double percentInvalid = (invalidResults / (double) totalResults) * 100.0;
 
 			return percentInvalid > MIN_PERCENT_INVALID_RESULTS;
 		} else {
@@ -223,7 +223,7 @@ public class DeviceDetailsManager extends Observable {
 	 * Increments the valid results counter.
 	 */
 	private synchronized void updateValidResults() {
-		++VALID_RESULTS;		
+		++VALID_RESULTS;
 	}
 
 	/**
@@ -408,8 +408,13 @@ public class DeviceDetailsManager extends Observable {
 	public List<String> getBlacklistedList() {
 		return blacklistedDevices;
 	}
-	
-	public void setDeviceDB(DeviceDetailsJDBC deviceDB){
+
+	/**
+	 * Sets the device DAO. Used for testing purposes.
+	 * 
+	 * @param deviceDB
+	 */
+	public void setDeviceDB(DeviceDetailsJDBC deviceDB) {
 		this.deviceDB = deviceDB;
 	}
 
