@@ -27,7 +27,7 @@ public class DeviceVersionJDBC extends AbstractJDBC {
 	private String SAVE_DEVICE_CODE = "UPDATE devices SET version_code = ? WHERE device_id = ?";
 	private String LOAD_DEVICE_VERSION_INFO = "SELECT version_code, device_id FROM devices ORDER BY version_code DESC";
 
-	private Encryptor encryptor = Encryptor.getEncryptor();
+	private Encryptor encryptor = getEncryptor();
 
 	public void saveDeviceVersion(Integer version, String deviceID) {
 		try {

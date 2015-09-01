@@ -33,11 +33,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 	private static final String LOAD_DEVICES = "SELECT * FROM devices";
 	private static final String LOAD_EMAIL_LIST = "SELECT device_id, email_address FROM users";
 
-	private Encryptor encryptor = Encryptor.getEncryptor();
-
-	public void setEncryptor(Encryptor encryptor) {
-		this.encryptor = encryptor;
-	}
+	private Encryptor encryptor = getEncryptor();
 
 	public boolean deregisterDevice(String deviceID) {
 		Connection connection = null;

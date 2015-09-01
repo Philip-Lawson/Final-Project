@@ -28,12 +28,8 @@ public class UserDetailsJDBC extends AbstractJDBC {
 		        + "SELECT email_address FROM "
 			+ "(SELECT email_address FROM users WHERE device_id = ?) AS temp_users) ;";
 
-	private Encryptor encryptor = Encryptor.getEncryptor();
+	private Encryptor encryptor = getEncryptor();
 	private EmailValidationStrategy emailValidationStrategy = new EmailValidationStrategy();
-
-	public void setEncryptor(Encryptor encryptor) {
-		this.encryptor = encryptor;
-	}
 
 	public boolean registerEmail(RegistrationPack registrationPack) {
 

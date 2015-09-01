@@ -38,7 +38,7 @@ public abstract class AbstractJDBC {
 	 */
 	protected void closeConnection(Connection connection, Statement statement,
 			ResultSet resultSet) {
-				
+
 		try {
 			if (null != resultSet)
 				resultSet.close();
@@ -52,16 +52,24 @@ public abstract class AbstractJDBC {
 		} catch (SQLException SQLEx) {
 
 		}
-		
+
 		try {
 			connection.commit();
 			connection.close();
 		} catch (SQLException e) {
-			
+
 		}
-		
-		
-		
+
+	}
+
+	/**
+	 * Provides the encryptor needed to encryt and decrypt files. Isolates the
+	 * knowledge of the singleton to this class
+	 * 
+	 * @return
+	 */
+	protected Encryptor getEncryptor() {
+		return Encryptor.getEncryptor();
 	}
 
 }
