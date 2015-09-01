@@ -23,8 +23,8 @@ public class WorkPacketJDBC extends AbstractJDBC {
 
 	private static final String ADD_WORK_PACKET = "INSERT INTO work_packets VALUES (?, ?);";
 	private static final String GET_INCOMPLETE_WORK_PACKETS = "SELECT work_packet "
-			+ "FROM work_packets JOIN results_packets ON work_packets.packet_id = results_packets.packet_id "
-			+ "WHERE packet_id NOT IN results_packets;";
+			+ "FROM work_packets WHERE packet_id NOT IN "
+			+ "(SELECT packet_id FROM results_packets);";
 	private static final String GET_INDIVIDUAL_WORK_PACKET = "SELECT work_packet FROM work_packets WHERE packet_id = ?";
 
 	public void addWorkPackets(Collection<IWorkPacket> workPackets) {
