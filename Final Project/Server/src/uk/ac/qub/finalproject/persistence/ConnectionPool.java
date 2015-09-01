@@ -16,9 +16,9 @@ import com.mchange.v2.c3p0.*;
 public class ConnectionPool {	
 	
 	private static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
-	private static final String DATABASE_URL = "";
-	private static final String USER = "";
-	private static final String PASSWORD = "";
+	private static final String DATABASE_URL = "jdbc:mysql://web2.eeecs.qub.ac.uk/40143289";
+	private static final String USER = "40143289";
+	private static final String PASSWORD = "FMA4237";
 	
 	private static ConnectionPool uniqueInstance;
 	
