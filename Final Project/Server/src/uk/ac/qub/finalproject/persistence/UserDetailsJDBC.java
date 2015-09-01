@@ -20,9 +20,9 @@ import uk.ac.qub.finalproject.server.RegistrationPack;
 public class UserDetailsJDBC extends AbstractJDBC {
 
 	private static final String REGISTER_EMAIL = "INSERT INTO users VALUES (?, ?);";
-	private static final String GET_USER_DEVICES = "SELECT device_id FROM user WHERE email_address = ?";
+	private static final String GET_USER_DEVICES = "SELECT device_id FROM users WHERE email_address = ?";
 	private static final String GET_ALL_EMAILS = "SELECT email_address FROM users";
-	private static final String GET_VALID_RESULTS_COMPLETED = "SELECT SUM (valid_results) FROM devices WHERE device_id IN ("
+	private static final String GET_VALID_RESULTS_COMPLETED = "SELECT SUM(valid_results) FROM devices WHERE device_id IN ("
 			+ GET_USER_DEVICES + ")";
 	private static final String CHANGE_EMAIL_ADDRESS = "UPDATE users SET email_address = ? WHERE email_address IN ("
 		        + "SELECT email_address FROM "
