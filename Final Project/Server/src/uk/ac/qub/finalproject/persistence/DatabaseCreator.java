@@ -24,7 +24,7 @@ public class DatabaseCreator extends AbstractJDBC {
 	private Logger logger = Logger.getLogger(DatabaseCreator.class.getName());
 
 	private static final String CREATE_DEVICES_TABLE = "CREATE TABLE IF NOT EXISTS devices "
-			+ "( device_id VARBINARY NOT NULL,"
+			+ "( device_id VARBINARY (255) NOT NULL,"
 			+ " valid_results INT DEFAULT 0,"
 			+ " invalid_results INT DEFAULT 0,"
 			+ " version_code INT DEFAULT -1"
@@ -32,10 +32,10 @@ public class DatabaseCreator extends AbstractJDBC {
 			+ " INDEX (device_id) );";
 
 	private static final String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS users "
-			+ "( device_id VARBINARY NOT NULL, "
-			+ "email_address VARBINARY NOT NULL, "
+			+ "( device_id VARBINARY (255) NOT NULL, "
+			+ "email_address VARBINARY (255) NOT NULL, "
 			+ "PRIMARY KEY (device_id), "
-			+ "FOREIGN KEY (device_id) REFERENCES devices (device_id), "
+			+ "FOREIGN KEY (device_id) REFERENCES devices (device_id) "
 			+ "ON DELETE CASCADE );";
 
 	private static final String CREATE_WORK_PACKET_TABLE = "CREATE TABLE IF NOT EXISTS work_packets "
@@ -48,7 +48,7 @@ public class DatabaseCreator extends AbstractJDBC {
 			+ "( packet_id VARCHAR(20) NOT NULL, "
 			+ "results_packet BLOB NOT NULL, "
 			+ "PRIMARY KEY (packet_id), "
-			+ "FOREIGN KEY (packet_id) REFERENCES work_packets (packet_id), "
+			+ "FOREIGN KEY (packet_id) REFERENCES work_packets (packet_id) "
 			+ "ON DELETE CASCADE );";
 
 	
