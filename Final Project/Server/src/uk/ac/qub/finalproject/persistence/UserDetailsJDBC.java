@@ -24,8 +24,9 @@ public class UserDetailsJDBC extends AbstractJDBC {
 	private static final String GET_ALL_EMAILS = "SELECT email_address FROM users";
 	private static final String GET_VALID_RESULTS_COMPLETED = "SELECT SUM (valid_results) FROM devices WHERE device_id IN ("
 			+ GET_USER_DEVICES + ")";
-	private static final String CHANGE_EMAIL_ADDRESS = "UPDATE users SET email_address = ? WHERE email_address = "
-			+ "(SELECT email_address FROM users WHERE device_id = ?) ;";
+	private static final String CHANGE_EMAIL_ADDRESS = "UPDATE users SET email_address = ? WHERE email_address IN ("
+		        + "SELECT email_address FROM "
+			+ "(SELECT email_address FROM users WHERE device_id = ?) AS temp_users) ;";
 
 	private Encryptor encryptor = new EncryptorImpl();
 	private EmailValidationStrategy emailValidationStrategy = new EmailValidationStrategy();
