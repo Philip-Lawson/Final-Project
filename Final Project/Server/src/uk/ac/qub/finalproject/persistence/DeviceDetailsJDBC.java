@@ -23,7 +23,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 	
 	private static Logger logger = Logger.getLogger(DeviceDetailsJDBC.class.getName());
 
-	private static final String REGISTER_DEVICE = "INSERT INTO devices VALUES (?);";
+	private static final String REGISTER_DEVICE = "INSERT INTO devices (device_id) VALUES (?);";
 
 	private static final String DEREGISTER_DEVICE = "DELETE FROM devices WHERE device_id = ?;";
 	private static final String VALID_RESULT_SENT = "UPDATE devices SET valid_results = valid_results + 1 WHERE device_id = ?;";
