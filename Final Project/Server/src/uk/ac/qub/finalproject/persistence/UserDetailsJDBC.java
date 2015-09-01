@@ -28,7 +28,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 		        + "SELECT email_address FROM "
 			+ "(SELECT email_address FROM users WHERE device_id = ?) AS temp_users) ;";
 
-	private Encryptor encryptor = new EncryptorImpl();
+	private Encryptor encryptor = Encryptor.getEncryptor();
 	private EmailValidationStrategy emailValidationStrategy = new EmailValidationStrategy();
 
 	public void setEncryptor(Encryptor encryptor) {
@@ -50,7 +50,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 				preparedStatement = connection.prepareStatement(REGISTER_EMAIL);
 				preparedStatement.setBytes(1, deviceID);
 				preparedStatement.setBytes(2, emailBytes);
-				preparedStatement.executeQuery();
+				preparedStatement.executeUpdate();
 				return true;
 			}
 			

@@ -38,6 +38,7 @@ public abstract class AbstractJDBC {
 	 */
 	protected void closeConnection(Connection connection, Statement statement,
 			ResultSet resultSet) {
+				
 		try {
 			if (null != resultSet)
 				resultSet.close();
@@ -51,6 +52,15 @@ public abstract class AbstractJDBC {
 		} catch (SQLException SQLEx) {
 
 		}
+		
+		try {
+			connection.commit();
+			connection.close();
+		} catch (SQLException e) {
+			
+		}
+		
+		
 		
 	}
 

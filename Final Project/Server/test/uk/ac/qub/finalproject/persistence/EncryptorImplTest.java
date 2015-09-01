@@ -8,10 +8,10 @@ import org.junit.Test;
 
 public class EncryptorImplTest {
 
-	EncryptorImpl test;
+	Encryptor test;
 	@Before
 	public void setUp() throws Exception {
-		test = new EncryptorImpl();
+		test = Encryptor.getEncryptor();
 	}
 
 	@After

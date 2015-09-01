@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
@@ -20,8 +21,9 @@ import uk.ac.qub.finalproject.server.RegistrationPack;
  *
  */
 public class DeviceDetailsJDBC extends AbstractJDBC {
-	
-	private static Logger logger = Logger.getLogger(DeviceDetailsJDBC.class.getName());
+
+	private static Logger logger = Logger.getLogger(DeviceDetailsJDBC.class
+			.getName());
 
 	private static final String REGISTER_DEVICE = "INSERT INTO devices (device_id) VALUES (?);";
 
@@ -31,7 +33,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 	private static final String LOAD_DEVICES = "SELECT * FROM devices";
 	private static final String LOAD_EMAIL_LIST = "SELECT device_id, email_address FROM users";
 
-	private Encryptor encryptor = new EncryptorImpl();
+	private Encryptor encryptor = Encryptor.getEncryptor();
 
 	public void setEncryptor(Encryptor encryptor) {
 		this.encryptor = encryptor;
@@ -45,7 +47,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 
 			preparedStatement = connection.prepareStatement(DEREGISTER_DEVICE);
 			preparedStatement.setBytes(1, encryptor.encrypt(deviceID));
-			preparedStatement.executeQuery();
+			preparedStatement.executeUpdate();
 
 			return true;
 		} catch (SQLException | PropertyVetoException e) {
@@ -63,10 +65,11 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 
 			preparedStatement = connection.prepareStatement(VALID_RESULT_SENT);
 			preparedStatement.setBytes(1, encryptor.encrypt(deviceID));
-			preparedStatement.executeQuery();
+			preparedStatement.executeUpdate();
 
 		} catch (SQLException | PropertyVetoException SQLEx) {
-			logger.log(Level.FINE, "Problem writing a valid result to the database", SQLEx);
+			logger.log(Level.FINE,
+					"Problem writing a valid result to the database", SQLEx);
 		} finally {
 			closeConnection(connection, preparedStatement, null);
 		}
@@ -81,9 +84,10 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			preparedStatement = connection
 					.prepareStatement(INVALID_RESULT_SENT);
 			preparedStatement.setBytes(1, encryptor.encrypt(deviceID));
-			preparedStatement.executeQuery();
+			preparedStatement.executeUpdate();
 		} catch (SQLException | PropertyVetoException SQLEx) {
-			logger.log(Level.FINE, "Problem writing an invalid result to the database", SQLEx);
+			logger.log(Level.FINE,
+					"Problem writing an invalid result to the database", SQLEx);
 		} finally {
 			closeConnection(connection, preparedStatement, null);
 		}
@@ -98,7 +102,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			connection = createConnection();
 			preparedStatement = connection.prepareStatement(REGISTER_DEVICE);
 			preparedStatement.setBytes(1, deviceID);
-			preparedStatement.executeQuery();
+			preparedStatement.executeUpdate();
 
 			return true;
 
@@ -121,12 +125,14 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 		ResultSet emailResultSet = null;
 
 		Connection connection = null;
-		PreparedStatement preparedStatement = null;
+		Statement statement = null;
 
 		try {
 			connection = createConnection();
-			preparedStatement = connection.prepareStatement(LOAD_DEVICES);
-			deviceResultSet = preparedStatement.executeQuery();
+			statement = connection.createStatement();
+			deviceResultSet = statement.executeQuery(LOAD_DEVICES);
+
+			deviceResultSet.beforeFirst();
 
 			while (deviceResultSet.next()) {
 				Device device = new Device();
@@ -143,10 +149,11 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 				device.setLastTimeActive(0);
 				devices.put(deviceID, device);
 			}
-			preparedStatement.close();
 
-			preparedStatement = connection.prepareStatement(LOAD_EMAIL_LIST);
-			emailResultSet = preparedStatement.executeQuery();
+			statement.close();
+
+			statement = connection.createStatement();
+			emailResultSet = statement.executeQuery(LOAD_EMAIL_LIST);
 
 			while (emailResultSet.next()) {
 				String deviceID = encryptor.decrypt(emailResultSet
@@ -160,7 +167,8 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			}
 
 		} catch (SQLException | PropertyVetoException e) {
-			logger.log(Level.FINE, "Problem loading device attributes from the database", e);
+			logger.log(Level.FINE,
+					"Problem loading device attributes from the database", e);
 		} finally {
 			try {
 				if (null != deviceResultSet)
@@ -169,7 +177,7 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 
 			}
 
-			closeConnection(connection, preparedStatement, emailResultSet);
+			closeConnection(connection, statement, emailResultSet);
 		}
 
 		return devices;

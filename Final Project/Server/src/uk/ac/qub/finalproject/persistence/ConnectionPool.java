@@ -20,7 +20,7 @@ public class ConnectionPool {
 	private static final String USER = "40143289";
 	private static final String PASSWORD = "FMA4237";
 	
-	private static ConnectionPool uniqueInstance;
+	private static volatile ConnectionPool uniqueInstance;
 	
 	private ComboPooledDataSource connectionPool;
 	
@@ -56,6 +56,4 @@ public class ConnectionPool {
 		connectionPool.close();
 	}
 	
-	
-
 }

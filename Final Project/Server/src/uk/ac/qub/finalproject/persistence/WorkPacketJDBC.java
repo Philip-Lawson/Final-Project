@@ -100,9 +100,6 @@ public class WorkPacketJDBC extends AbstractJDBC {
 			closeConnection(connection, preparedStatement, resultSet);
 		}
 
-		return workPacket;
-
-		
-		
+		return workPacket;		
 	}
 }
