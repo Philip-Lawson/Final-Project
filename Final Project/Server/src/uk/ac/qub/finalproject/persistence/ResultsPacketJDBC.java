@@ -30,8 +30,8 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 	private static final String ADD_RESULTS_PACKET = "INSERT INTO results_packets VALUES (?, ?);";
 	private static final String GET_RESULTS_PACKETS = "SELECT results_packet FROM results_packets";
 	private static final String ALL_RESULTS_COMPLETE = "SELECT COUNT(packet_id) "
-			+ " FROM work_packets JOIN results_packets ON results_packets.packet_id = work_packets.packet_id "
-			+ "WHERE packet_id NOT IN" + "(SELECT packet_id FROM results_packets)";
+			+ " FROM work_packets WHERE packet_id NOT IN "
+			+ "(SELECT packet_id FROM results_packets)";
 
 	/**
 	 * Writes a result to the database.
