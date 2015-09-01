@@ -25,9 +25,9 @@ public class DatabaseCreator extends AbstractJDBC {
 
 	private static final String CREATE_DEVICES_TABLE = "CREATE TABLE IF NOT EXISTS devices "
 			+ "( device_id VARBINARY (255) NOT NULL,"
-			+ " valid_results INT DEFAULT 0,"
-			+ " invalid_results INT DEFAULT 0,"
-			+ " version_code INT DEFAULT -1"
+			+ " valid_results INT NOT NULL DEFAULT 0,"
+			+ " invalid_results INT NOT NULL DEFAULT 0,"
+			+ " version_code INT NOT NULL DEFAULT -1"
 			+ " PRIMARY KEY (device_id),"
 			+ " INDEX (device_id) );";
 
