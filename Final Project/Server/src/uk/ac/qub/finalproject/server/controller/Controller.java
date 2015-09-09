@@ -111,8 +111,10 @@ public class Controller extends Application implements Observer {
 		deviceDetailsManager.setUserDetailsManager(userDetailsManager);
 		userDetailsManager.setDeviceManager(deviceDetailsManager);
 
+		databaseCreator.setupDatabase(); 
+		
 		/*
-		 * databaseCreator.setupDatabase(); workPacketLoader.loadWorkPackets();
+		 * workPacketLoader.loadWorkPackets();
 		 * workPacketDrawer.reloadIncompletedWorkPackets();
 		 * deviceDetailsManager.loadDevices();
 		 * deviceVersionManager.loadDeviceVersions();

@@ -26,6 +26,9 @@ public class EmailValidationStrategy {
 	public boolean emailIsValid(String emailAddress) {
 		if (null == emailAddress) {
 			return false;
+		} else if (emailAddress.equals("")) {
+			// allow the user to become anonymous
+			return true;
 		} else {
 			Pattern pattern = Pattern.compile(EMAIL_REGEX);
 			Matcher matcher = pattern.matcher(emailAddress);
