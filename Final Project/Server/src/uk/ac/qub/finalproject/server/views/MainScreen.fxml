@@ -53,7 +53,7 @@
                                  <children>
                                     <GridPane style=" -fx-background-color:#C6C6C6; -fx-background-radius: 10 10 10 10;" GridPane.rowIndex="1">
                                        <children>
-                                          <RadioButton fx:id="fivePercentBlacklistRadioButton" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Over  5%  Bad Results   " GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                                          <RadioButton fx:id="fivePercentBlacklistRadioButton" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Over  5%  Bad Results   " toggleGroup="$blacklistPercent" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                                              <toggleGroup>
                                                 <ToggleGroup fx:id="blacklistPercent" />
                                              </toggleGroup>
@@ -62,20 +62,17 @@
                                              </GridPane.margin>
                                           </RadioButton>
                                           <RadioButton fx:id="tenPercentBlacklistRadioButton" contentDisplay="CENTER" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" selected="true" text="Over 10% Bad Results   " toggleGroup="$blacklistPercent" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
-                                             <GridPane.margin>
+                                          <GridPane.margin>
                                                 <Insets right="20.0" />
                                              </GridPane.margin>
                                           </RadioButton>
                                           <RadioButton fx:id="twentyPercentBlacklistRadioButton" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Over 20% Bad Results   " toggleGroup="$blacklistPercent" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
-                                             <GridPane.margin>
+                                            <GridPane.margin>
                                                 <Insets right="20.0" />
                                              </GridPane.margin>
                                           </RadioButton>
-                                          <RadioButton fx:id="thirtyPercentBlacklistRadioButton" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Over 30% Bad Results   " GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
-                                             <toggleGroup>
-                                                <ToggleGroup fx:id="blacklistPercent" />
-                                             </toggleGroup>
-                                             <GridPane.margin>
+                                          <RadioButton fx:id="thirtyPercentBlacklistRadioButton" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Over 30% Bad Results   " toggleGroup="$blacklistPercent" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+                                            <GridPane.margin>
                                                 <Insets right="20.0" />
                                              </GridPane.margin>
                                           </RadioButton>
@@ -177,7 +174,7 @@
                                  <children>
                                     <GridPane style=" -fx-background-color:#C6C6C6; -fx-background-radius: 10 10 10 10;" GridPane.columnSpan="2">
                                        <children>
-                                          <ProgressBar fx:id="processingProgressBar" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="200.0" progress="0.41" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                                          <ProgressBar fx:id="processingProgressBar" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="200.0" progress="0.0" GridPane.columnSpan="3" GridPane.rowIndex="1">
                                              <padding>
                                                 <Insets left="30.0" right="30.0" />
                                              </padding>

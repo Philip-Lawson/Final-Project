@@ -12,6 +12,10 @@ import uk.ac.qub.finalproject.server.controller.BlacklistChangeListener;
 import uk.ac.qub.finalproject.server.controller.Command;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -112,6 +116,7 @@ public class MainScreenView {
 	@FXML
 	private ProgressBar databaseProgressBar;
 
+	private Alert databaseAlert;
 	private NumberFormatter numberFormatter = new NumberFormatter();
 
 	private Command startCommand;
@@ -134,7 +139,7 @@ public class MainScreenView {
 		startButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				startCommand.execute();				
+				startCommand.execute();
 				startButton.setDisable(true);
 				stopButton.setDisable(false);
 			}
@@ -157,17 +162,46 @@ public class MainScreenView {
 					@Override
 					public void handle(ActionEvent event) {
 						if (transferResultsButton.isDisabled()) {
-							showWaitMessage("Still Transferring Results", "transferring results.");
+							showWaitMessage("Still Transferring Results",
+									"transferring results.");
 						} else {
 							loadAdditionalPacketsButton.setDisable(true);
 							startProgressIndicator(LOADING_PACKETS_PROGRESS_MESSAGE);
-							loadAdditionalWorkPacketsCommand.execute();
 
-							stopProgressIndicator();
-							showDatabaseConfirmation("Loading Complete",
-									"Packets Loaded",
-									"All new packets have been loaded to the system");
-							loadAdditionalPacketsButton.setDisable(false);
+							Task<Void> loadPackets = new Task<Void>() {
+
+								@Override
+								protected Void call() throws Exception {
+									loadAdditionalWorkPacketsCommand.execute();
+									return null;
+								}
+
+							};
+
+							loadPackets.stateProperty().addListener(
+									new ChangeListener<Worker.State>() {
+
+										@Override
+										public void changed(
+												ObservableValue<? extends State> observable,
+												State oldValue, State newValue) {
+											if (newValue == Worker.State.SUCCEEDED) {
+												stopProgressIndicator();
+												closeWaitMessage();												
+												showDatabaseConfirmation(
+														"Loading Complete",
+														"Packets Loaded",
+														"All new packets have been loaded to the system");
+																								
+												loadAdditionalPacketsButton
+														.setDisable(false);
+											}
+
+										}
+
+									});
+
+							new Thread(loadPackets).start();
 						}
 					}
 
@@ -182,13 +216,40 @@ public class MainScreenView {
 				} else {
 					transferResultsButton.setDisable(true);
 					startProgressIndicator(RESULTS_TRANSFER_PROGRESS_MESSAGE);
-					transferResultsCommand.execute();
 
-					stopProgressIndicator();
-					showDatabaseConfirmation("Results Transferred",
-							"Results Transferred",
-							"All results have been transferred to your database.");
-					transferResultsButton.setDisable(false);
+					Task<Void> transferTask = new Task<Void>() {
+
+						@Override
+						protected Void call() throws Exception {
+							transferResultsCommand.execute();							
+							return null;
+						}
+
+					};
+
+					transferTask.stateProperty().addListener(
+							new ChangeListener<Worker.State>() {
+
+								@Override
+								public void changed(
+										ObservableValue<? extends Worker.State> observable,
+										Worker.State oldValue,
+										Worker.State newValue) {
+									if (newValue == Worker.State.SUCCEEDED) {
+										stopProgressIndicator();
+										closeWaitMessage();
+										showDatabaseConfirmation(
+												"Results Transferred",
+												"Results Transferred",
+												"All results have been transferred to your database.");
+										transferResultsButton.setDisable(false);
+									}
+								}
+
+							});
+
+					new Thread(transferTask).start();
+
 				}
 			}
 
@@ -198,6 +259,13 @@ public class MainScreenView {
 		tenPercentBlacklistRadioButton.setUserData("10");
 		twentyPercentBlacklistRadioButton.setUserData("20");
 		thirtyPercentBlacklistRadioButton.setUserData("30");
+
+		/*
+		 * Bug fix. THe progress bar blocks if it hasn't previously been set
+		 * visible.
+		 */
+		databaseProgressBar.setVisible(true);
+		databaseProgressBar.setVisible(false);
 
 	}
 
@@ -438,12 +506,25 @@ public class MainScreenView {
 	}
 
 	private void showWaitMessage(String title, String contentText) {
-		Alert databaseAlert = new Alert(AlertType.WARNING);
+		databaseAlert = new Alert(AlertType.WARNING);
 		databaseAlert.setTitle(title);
 		databaseAlert.setHeaderText("");
-		databaseAlert.setContentText("Please try again when the database has finished " + contentText);
+		databaseAlert
+				.setContentText("Please try again when the database has finished "
+						+ contentText);
 		databaseAlert.showAndWait();
 
+	}
+	
+	private void closeWaitMessage(){
+		Platform.runLater(new Runnable(){
+			public void run(){
+				if (databaseAlert != null && databaseAlert.isShowing()){
+					databaseAlert.close();
+				}
+			}
+		});
+		
 	}
 
 }

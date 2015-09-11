@@ -40,7 +40,7 @@ public class EmailValidationStrategyTest {
 	
 	@Test
 	public void testBlankEmail(){
-		assertFalse(test.emailIsValid(blankEmail));
+		assertTrue(test.emailIsValid(blankEmail));
 	}
 	
 	@Test

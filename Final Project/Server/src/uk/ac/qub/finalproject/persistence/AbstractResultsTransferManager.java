@@ -45,7 +45,6 @@ public abstract class AbstractResultsTransferManager {
 	protected abstract void closeConnection();
 
 	public final void transferResults() {
-		System.out.println("converting results");
 		Collection<?> convertedResults = convertResults(resultsDB
 				.getResultsPackets());
 		connectToDatabase();
