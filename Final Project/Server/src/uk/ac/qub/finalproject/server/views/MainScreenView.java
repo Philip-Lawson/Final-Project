@@ -121,7 +121,6 @@ public class MainScreenView {
 
 	private ConcurrentMap<Number, Integer> processingTimesMap = new ConcurrentHashMap<Number, Integer>();
 	private int totalDevices;
-	private int number = 10;
 
 	public void setupWidgets() {
 		setupButtons();
@@ -135,16 +134,7 @@ public class MainScreenView {
 		startButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				startCommand.execute();
-				number++;
-				int num = (number / 10) * 10;
-				addProcessingTime(num);
-				updateActiveDevices(num);
-				updateAverageProcessingTime(num + "");
-				updateBlacklistedDevices(num);
-				updatePacketStats(num, num);
-				updateProgress(num, num);
-				updateTotalNumDevices(num * 2);
+				startCommand.execute();				
 				startButton.setDisable(true);
 				stopButton.setDisable(false);
 			}

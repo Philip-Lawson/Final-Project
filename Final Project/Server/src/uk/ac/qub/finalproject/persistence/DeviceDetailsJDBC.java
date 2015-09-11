@@ -17,6 +17,9 @@ import java.util.logging.Logger;
 import uk.ac.qub.finalproject.server.RegistrationPack;
 
 /**
+ * A DAO to store, write and update information in the database regarding device
+ * details.
+ * 
  * @author Phil
  *
  */

@@ -10,50 +10,75 @@ import java.sql.SQLException;
 import com.mchange.v2.c3p0.*;
 
 /**
+ * A connection pool object for accessing the database. This is implemented
+ * using the C3P0 library and a double checked locking singleton.
+ * 
  * @author Phil
  *
  */
-public class ConnectionPool {	
-	
+public class ConnectionPool {
+
 	private static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
 	private static final String DATABASE_URL = "jdbc:mysql://web2.eeecs.qub.ac.uk/40143289";
 	private static final String USER = "40143289";
 	private static final String PASSWORD = "FMA4237";
-	
+
 	private static volatile ConnectionPool uniqueInstance;
-	
+
 	private ComboPooledDataSource connectionPool;
-	
-	private ConnectionPool() throws PropertyVetoException{
+
+	private ConnectionPool() throws PropertyVetoException {
 		setupConnection();
 	}
-	
-	public static ConnectionPool getConnectionPool() throws PropertyVetoException{
+
+	/**
+	 * Returns an instance of the connection pool.
+	 * 
+	 * @return
+	 * @throws PropertyVetoException
+	 */
+	public static ConnectionPool getConnectionPool()
+			throws PropertyVetoException {
 		if (null == uniqueInstance) {
-			synchronized (ConnectionPool.class){
-				if (null == uniqueInstance){
+			synchronized (ConnectionPool.class) {
+				if (null == uniqueInstance) {
 					uniqueInstance = new ConnectionPool();
 				}
 			}
 		}
-		
+
 		return uniqueInstance;
 	}
-	
-	private void setupConnection() throws PropertyVetoException{
+
+	/**
+	 * Configures the connection pool.
+	 * 
+	 * @throws PropertyVetoException
+	 */
+	private void setupConnection() throws PropertyVetoException {
 		connectionPool = new ComboPooledDataSource();
 		connectionPool.setDriverClass(DRIVER_CLASS);
 		connectionPool.setJdbcUrl(DATABASE_URL);
 		connectionPool.setUser(USER);
 		connectionPool.setPassword(PASSWORD);
 	}
-	
-	public Connection getConnection() throws SQLException{
+
+	/**
+	 * Returns a connection to the database from the connection pool.
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public Connection getConnection() throws SQLException {
 		return connectionPool.getConnection();
 	}
-	
-	public void closeConnectionPool(){
+
+	/**
+	 * Closes the connection pool. This should only be called on closing the
+	 * application.
+	 */
+	public void closeConnectionPool() {
 		connectionPool.close();
 	}
-	
+
 }
