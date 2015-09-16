@@ -6,8 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 import uk.ac.qub.finalproject.persistencestubs.DeviceVersionJDBCStub;
-import uk.ac.qub.finalproject.server.RegistrationPack;
 
 public class DeviceVersionManagerTest {
 

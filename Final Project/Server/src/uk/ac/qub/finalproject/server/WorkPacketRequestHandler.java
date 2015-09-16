@@ -14,14 +14,16 @@ import uk.ac.qub.finalproject.calculationclasses.WorkPacketList;
 import uk.ac.qub.finalproject.persistence.AbstractWorkPacketDrawer;
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
+import uk.ac.qub.finalproject.persistence.LoggingUtils;
 
 /**
  * @author Phil
  *
  */
 public class WorkPacketRequestHandler extends AbstractClientRequestHandler {
-	
-	private static Logger  logger = Logger.getLogger(WorkPacketRequestHandler.class.getName());
+
+	private Logger logger = LoggingUtils
+			.getLogger(WorkPacketRequestHandler.class);
 
 	private static int MIN_VERSION_CODE = 1;
 
@@ -72,7 +74,8 @@ public class WorkPacketRequestHandler extends AbstractClientRequestHandler {
 			output.flush();
 
 		} catch (IOException | ClassNotFoundException e) {
-			logger.log(Level.FINE, "Problem sending a work packet", e);
+			logger.log(Level.FINE, WorkPacketRequestHandler.class.getName()
+					+ " Problem sending a work packet", e);
 		}
 
 	}

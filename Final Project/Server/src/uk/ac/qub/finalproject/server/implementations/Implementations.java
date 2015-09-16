@@ -20,40 +20,51 @@ import uk.ac.qub.finalproject.server.ClientAchievementEmailFactory;
  *
  */
 public class Implementations {
-			
-	public static AbstractWorkPacketLoader getWorkPacketLoader(AbstractWorkPacketDrawer workPacketDrawer){
+
+	public static AbstractWorkPacketLoader getWorkPacketLoader(
+			AbstractWorkPacketDrawer workPacketDrawer) {
 		return new DummyWorkPacketLoader(workPacketDrawer);
 	}
-	
-	public static AbstractResultsTransferManager getResultsTransferManager(){
+
+	public static AbstractResultsTransferManager getResultsTransferManager() {
 		return new DummyResultsTransferManager();
 	}
-		
-	public static boolean groupValidationNeeded(){
+
+	public static boolean groupValidationNeeded() {
 		return false;
 	}
-	
-	public static IValidationStrategy getValidationStrategy(){
+
+	public static IValidationStrategy getValidationStrategy() {
 		return new DummyValidationStrategy();
 	}
-	
-	public static IGroupValidationStrategy getGroupValidationStrategy(){
+
+	public static IGroupValidationStrategy getGroupValidationStrategy() {
 		return new DummyGroupValidationStrategy();
 	}
-	
-	public static AbstractClientAchievementEmailFactory getEmailFactory(){
+
+	public static AbstractClientAchievementEmailFactory getEmailFactory() {
 		return new ClientAchievementEmailFactory();
 	}
-	
-	public static String getEmailAddress(){
+
+	public static String getEmailAddress() {
 		return null;
 	}
-	
-	public static String getEmailPassword(){
+
+	public static String getEmailPassword() {
 		return null;
 	}
-	
-	public static String getServerScreenTitle(){
-		return "Volunteer Science";
+
+	public static String getServerScreenTitle() {
+		return "Citizen Science";
+	}
+
+	/**
+	 * This must be changed before use. Otherwise files stored in the database
+	 * will not be secure.
+	 * 
+	 * @return
+	 */
+	public static byte[] getSecretKeySpec() {
+		return new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, };
 	}
 }

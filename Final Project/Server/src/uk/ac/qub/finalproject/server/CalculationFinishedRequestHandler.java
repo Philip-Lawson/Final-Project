@@ -9,8 +9,10 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
+import uk.ac.qub.finalproject.persistence.LoggingUtils;
 import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 
 /**
@@ -20,8 +22,8 @@ import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 public class CalculationFinishedRequestHandler extends
 		AbstractClientRequestHandler {
 
-	private static Logger logger = Logger
-			.getLogger(CalculationFinishedRequestHandler.class.getName());
+	private Logger logger = LoggingUtils
+			.getLogger(CalculationFinishedRequestHandler.class);
 
 	private DeviceDetailsManager deviceDetailsManager;
 	private DeviceVersionManager deviceVersionManager;
@@ -97,7 +99,9 @@ public class CalculationFinishedRequestHandler extends
 			output.writeInt(ServerRequest.BECOME_DORMANT);
 			output.flush();
 		} catch (IOException e) {
-			logger.log(Level.FINE, "Problem sending dormant message", e);
+			logger.log(Level.FINE,
+					CalculationFinishedRequestHandler.class.getName()
+							+ " Problem sending dormant message", e);
 		}
 	}
 
@@ -110,7 +114,9 @@ public class CalculationFinishedRequestHandler extends
 					.changeEmailAddress(registrationPack));
 			output.flush();
 		} catch (ClassNotFoundException | IOException e) {
-			logger.log(Level.FINE, "Problem changing email address", e);
+			logger.log(Level.FINE,
+					CalculationFinishedRequestHandler.class.getName()
+							+ " Problem changing email address", e);
 		}
 	}
 
@@ -123,7 +129,9 @@ public class CalculationFinishedRequestHandler extends
 			output.writeBoolean(deviceDetailsManager.deregisterDevice(deviceID));
 			output.flush();
 		} catch (ClassNotFoundException | IOException e) {
-			logger.log(Level.FINE, "Problem deleting account", e);
+			logger.log(Level.FINE,
+					CalculationFinishedRequestHandler.class.getName()
+							+ " Problem deleting account", e);
 		}
 	}
 
@@ -133,7 +141,9 @@ public class CalculationFinishedRequestHandler extends
 			input.readObject();
 			sendBecomeDormantMessage(output);
 		} catch (ClassNotFoundException | IOException e) {
-			logger.log(Level.FINE, "Problem processing result", e);
+			logger.log(Level.FINE,
+					CalculationFinishedRequestHandler.class.getName()
+							+ " Problem processing result", e);
 		}
 	}
 
@@ -148,7 +158,9 @@ public class CalculationFinishedRequestHandler extends
 					.addDevice(registrationPack));
 			output.flush();
 		} catch (ClassNotFoundException | IOException e) {
-			logger.log(Level.FINE, "Problem registering device", e);
+			logger.log(Level.FINE,
+					CalculationFinishedRequestHandler.class.getName()
+							+ " Problem registering device", e);
 		}
 	}
 

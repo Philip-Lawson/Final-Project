@@ -10,9 +10,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 import uk.ac.qub.finalproject.persistencestubs.DeviceDetailsJDBCStub;
 import uk.ac.qub.finalproject.persistencestubs.UserDetailsManagerStub;
-import uk.ac.qub.finalproject.server.RegistrationPack;
 import uk.ac.qub.finalproject.serverstubs.ObservableStub;
 
 public class DeviceDetailsManagerTest {

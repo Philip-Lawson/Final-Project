@@ -10,8 +10,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import uk.ac.qub.finalproject.server.RegistrationPack;
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 
 /**
  * @author Phil
@@ -19,14 +21,17 @@ import uk.ac.qub.finalproject.server.RegistrationPack;
  */
 public class UserDetailsJDBC extends AbstractJDBC {
 
+	private Logger logger = LoggingUtils.getLogger(UserDetailsJDBC.class);
+
 	private static final String REGISTER_EMAIL = "INSERT INTO users VALUES (?, ?);";
 	private static final String GET_USER_DEVICES = "SELECT device_id FROM users WHERE email_address = ?";
 	private static final String GET_ALL_EMAILS = "SELECT email_address FROM users";
 	private static final String GET_VALID_RESULTS_COMPLETED = "SELECT SUM(valid_results) FROM devices WHERE device_id IN ("
 			+ GET_USER_DEVICES + ")";
 	private static final String CHANGE_EMAIL_ADDRESS = "UPDATE users SET email_address = ? WHERE email_address IN ("
-		        + "SELECT email_address FROM "
+			+ "SELECT email_address FROM "
 			+ "(SELECT email_address FROM users WHERE device_id = ?) AS temp_users) ;";
+	private static final String DELETE_EMAIL_ADDRESS = "DELETE email_address FROM users WHERE device_id = ?";
 
 	private Encryptor encryptor = getEncryptor();
 	private EmailValidationStrategy emailValidationStrategy = new EmailValidationStrategy();
@@ -39,7 +44,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
-		try {			
+		try {
 
 			if (emailValidationStrategy.emailIsValid(email)) {
 				connection = createConnection();
@@ -49,9 +54,11 @@ public class UserDetailsJDBC extends AbstractJDBC {
 				preparedStatement.executeUpdate();
 				return true;
 			}
-			
+
 			return false;
 		} catch (SQLException | PropertyVetoException SQLEx) {
+			logger.log(Level.WARNING, UserDetailsJDBC.class.getName()
+					+ " Could not register email");
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -76,7 +83,8 @@ public class UserDetailsJDBC extends AbstractJDBC {
 				devicesList.add(encryptor.decrypt(resultSet.getBytes(1)));
 			}
 		} catch (SQLException | PropertyVetoException SQLEx) {
-
+			logger.log(Level.WARNING, UserDetailsJDBC.class.getName()
+					+ " Could not get user devices");
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
 		}
@@ -100,6 +108,30 @@ public class UserDetailsJDBC extends AbstractJDBC {
 			preparedStatement.executeUpdate();
 			return true;
 		} catch (SQLException | PropertyVetoException SQLEx) {
+			logger.log(Level.WARNING, UserDetailsJDBC.class.getName()
+					+ " Could not change email address");
+			return false;
+		} finally {
+			closeConnection(connection, preparedStatement, null);
+		}
+	}
+
+	public boolean deleteEmailAddress(RegistrationPack registrationPack) {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		try {
+			byte[] deviceID = encryptor
+					.encrypt(registrationPack.getAndroidID());
+
+			connection = createConnection();
+			preparedStatement = connection
+					.prepareStatement(DELETE_EMAIL_ADDRESS);
+			preparedStatement.setBytes(1, deviceID);
+			preparedStatement.executeUpdate();
+			return true;
+		} catch (SQLException | PropertyVetoException SQLEx) {
+			logger.log(Level.WARNING, UserDetailsJDBC.class.getName()
+					+ " Could not delete email address");
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -125,7 +157,8 @@ public class UserDetailsJDBC extends AbstractJDBC {
 			}
 
 		} catch (SQLException | PropertyVetoException SQLEx) {
-
+			logger.log(Level.WARNING, UserDetailsJDBC.class.getName()
+					+ " Could not get valid results");
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
 		}
@@ -149,7 +182,8 @@ public class UserDetailsJDBC extends AbstractJDBC {
 				emailList.add(encryptor.decrypt(resultSet.getBytes(1)));
 			}
 		} catch (SQLException | PropertyVetoException SQLEx) {
-
+			logger.log(Level.WARNING, UserDetailsJDBC.class.getName()
+					+ " Could not get all emails");
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
 		}

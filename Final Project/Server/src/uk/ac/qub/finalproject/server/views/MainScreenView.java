@@ -3,6 +3,7 @@
  */
 package uk.ac.qub.finalproject.server.views;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -10,6 +11,7 @@ import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.WorkPacketDrawerImpl;
 import uk.ac.qub.finalproject.server.controller.BlacklistChangeListener;
 import uk.ac.qub.finalproject.server.controller.Command;
+import uk.ac.qub.finalproject.server.implementations.Implementations;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -19,6 +21,8 @@ import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -27,10 +31,14 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 /**
  * @author Phil
@@ -116,6 +124,15 @@ public class MainScreenView {
 	@FXML
 	private ProgressBar databaseProgressBar;
 
+	@FXML
+	private MenuItem quitMenuItem;
+
+	@FXML
+	private MenuItem aboutMenuItem;
+	
+	@FXML
+	private MenuItem closeMenuItem;
+
 	private Alert databaseAlert;
 	private NumberFormatter numberFormatter = new NumberFormatter();
 
@@ -133,6 +150,7 @@ public class MainScreenView {
 		setDuplicatesNumComboBox();
 		setActiveDeviceThresholdComboBox();
 		setupChart();
+		setupMenuItems();
 	}
 
 	public void setupButtons() {
@@ -187,12 +205,12 @@ public class MainScreenView {
 												State oldValue, State newValue) {
 											if (newValue == Worker.State.SUCCEEDED) {
 												stopProgressIndicator();
-												closeWaitMessage();												
+												closeWaitMessage();
 												showDatabaseConfirmation(
 														"Loading Complete",
 														"Packets Loaded",
 														"All new packets have been loaded to the system");
-																								
+
 												loadAdditionalPacketsButton
 														.setDisable(false);
 											}
@@ -221,7 +239,7 @@ public class MainScreenView {
 
 						@Override
 						protected Void call() throws Exception {
-							transferResultsCommand.execute();							
+							transferResultsCommand.execute();
 							return null;
 						}
 
@@ -307,6 +325,32 @@ public class MainScreenView {
 		xAxis.setTickLabelFormatter(numberFormatter);
 		yAxis.setTickLabelFormatter(numberFormatter);
 
+	}
+
+	public void setupMenuItems() {
+		quitMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				closeApplication();
+			}
+		});
+		
+		aboutMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				showAboutWindow();
+			}
+		});
+
+		closeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				closeApplication();
+			}
+		});
 	}
 
 	public void setBlacklistChangeListener(
@@ -462,8 +506,13 @@ public class MainScreenView {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-
+				Alert processingComplete = new Alert(AlertType.INFORMATION);
+				processingComplete.setTitle("Processing Complete");
+				processingComplete
+						.setHeaderText("All packets have been processed.");
+				processingComplete
+						.setContentText("Finish by transferring all results, or load more packets to continue processing.");
+				processingComplete.showAndWait();
 			}
 
 		});
@@ -497,34 +546,93 @@ public class MainScreenView {
 
 	private void showDatabaseConfirmation(String title, String headerText,
 			String contentText) {
-		Alert databaseAlert = new Alert(AlertType.INFORMATION);
-		databaseAlert.setTitle(title);
-		databaseAlert.setHeaderText(headerText);
-		databaseAlert.setContentText(contentText);
-		databaseAlert.showAndWait();
+		Platform.runLater(new Runnable() {
+
+			public void run() {
+				databaseAlert = new Alert(AlertType.INFORMATION);
+				databaseAlert.setTitle(title);
+				databaseAlert.setHeaderText(headerText);
+				databaseAlert.setContentText(contentText);
+				databaseAlert.showAndWait();
+			}
+
+		});
 
 	}
 
 	private void showWaitMessage(String title, String contentText) {
-		databaseAlert = new Alert(AlertType.WARNING);
-		databaseAlert.setTitle(title);
-		databaseAlert.setHeaderText("");
-		databaseAlert
-				.setContentText("Please try again when the database has finished "
-						+ contentText);
-		databaseAlert.showAndWait();
+		Platform.runLater(new Runnable() {
 
+			public void run() {
+				databaseAlert = new Alert(AlertType.WARNING);
+				databaseAlert.setTitle(title);
+				databaseAlert.setHeaderText("");
+				databaseAlert
+						.setContentText("Please try again when the database has finished "
+								+ contentText);
+				databaseAlert.showAndWait();
+			}
+
+		});
 	}
-	
-	private void closeWaitMessage(){
-		Platform.runLater(new Runnable(){
-			public void run(){
-				if (databaseAlert != null && databaseAlert.isShowing()){
+
+	private void closeWaitMessage() {
+		Platform.runLater(new Runnable() {
+
+			public void run() {
+				if (databaseAlert != null && databaseAlert.isShowing()) {
 					databaseAlert.close();
 				}
 			}
+
 		});
-		
+
+	}
+
+	public void closeApplication() {
+		Platform.exit();
+	}
+
+	public void showAboutWindow() {
+		Platform.runLater(new Runnable() {
+
+			public void run() {
+				try {
+					Stage newStage = new Stage();
+					newStage.setTitle("About "
+							+ Implementations.getServerScreenTitle());
+					newStage.initModality(Modality.APPLICATION_MODAL);
+
+					FXMLLoader loader = new FXMLLoader();
+					loader.setLocation(getClass()
+							.getResource(
+									"/uk/ac/qub/finalproject/server/views/AboutWindow.fxml"));
+
+					AnchorPane aboutView = (AnchorPane) loader.load();
+					AboutWindowView controller = loader.getController();
+					controller
+							.addCloseButtonListener(new EventHandler<ActionEvent>() {
+
+								@Override
+								public void handle(ActionEvent event) {
+									newStage.close();
+								}
+							});
+					controller.setProjectNameText(Implementations
+							.getServerScreenTitle());
+					controller.initialiseHyperLinkListener();
+
+					Scene scene = new Scene(aboutView);
+					newStage.setScene(scene);
+					newStage.setResizable(false);
+					newStage.show();
+				} catch (IOException e) {
+
+				}
+			}
+
+		});
+
 	}
 
 }

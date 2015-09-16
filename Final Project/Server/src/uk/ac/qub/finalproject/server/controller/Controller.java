@@ -11,6 +11,8 @@ import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -38,6 +40,7 @@ import uk.ac.qub.finalproject.persistence.ConnectionPool;
 import uk.ac.qub.finalproject.persistence.DatabaseCreator;
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
+import uk.ac.qub.finalproject.persistence.LoggingUtils;
 import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
 import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 import uk.ac.qub.finalproject.persistence.WorkPacketDrawerImpl;
@@ -58,6 +61,8 @@ import uk.ac.qub.finalproject.server.views.MainScreenView;
  *
  */
 public class Controller extends Application implements Observer {
+
+	private Logger logger = LoggingUtils.getLogger(Controller.class);
 
 	private AbstractWorkPacketDrawer workPacketDrawer;
 	private AbstractWorkPacketLoader workPacketLoader;
@@ -92,7 +97,7 @@ public class Controller extends Application implements Observer {
 	private TransferResultsCommand transferResultsCommand;
 
 	private Stage primaryStage;
-	private Stage mainStage;	
+	private Stage mainStage;
 	private LoadingScreenView loadingScreen;
 	private MainScreenView mainScreen;
 
@@ -106,7 +111,7 @@ public class Controller extends Application implements Observer {
 
 	public void setupPersistence() {
 		loadingScreen.updateProgress("Creating Database", 0);
-		
+
 		databaseCreator = new DatabaseCreator();
 		workPacketDrawer = new WorkPacketDrawerImpl();
 		workPacketLoader = Implementations
@@ -125,10 +130,10 @@ public class Controller extends Application implements Observer {
 
 		/*
 		 * loadingScreen.updateProgress("Loading Work Packets", 10);
-		 * workPacketLoader.loadWorkPackets();		 
+		 * workPacketLoader.loadWorkPackets();
 		 * loadingScreen.updateProgress("Loading Incomplete Work Packets", 30);
-		 * workPacketDrawer.reloadIncompletedWorkPackets();	
-		 * loadingScreen.updateProgress("Loading Devices", 50);	 
+		 * workPacketDrawer.reloadIncompletedWorkPackets();
+		 * loadingScreen.updateProgress("Loading Devices", 50);
 		 * deviceDetailsManager.loadDevices();
 		 * deviceVersionManager.loadDeviceVersions();
 		 * loadingScreen.updateProgress("Loading Results Packets", 70);
@@ -140,7 +145,7 @@ public class Controller extends Application implements Observer {
 		resultsPacketManager.addObserver(this);
 	}
 
-	public void setupValidation() {				
+	public void setupValidation() {
 		if (Implementations.groupValidationNeeded()) {
 			resultValidator = new GroupResultsValidator(resultsPacketManager,
 					deviceDetailsManager);
@@ -162,7 +167,7 @@ public class Controller extends Application implements Observer {
 
 	public void setupServer() {
 		loadingScreen.updateProgress("Setting up Server", 80);
-		
+
 		calculationFinishedRequestHandler = new CalculationFinishedRequestHandler(
 				deviceDetailsManager, deviceVersionManager, userDetailsManager);
 		catchAllRequestHandler = new CatchAllRequestHandler();
@@ -211,19 +216,19 @@ public class Controller extends Application implements Observer {
 				resultsTransferManager);
 
 	}
-	
-	private void loadingComplete(){
+
+	private void loadingComplete() {
 		loadingScreen.updateProgress("Complete", 100);
 	}
-	
+
 	public void showLoadingScreen() {
-		try {			
+		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource(
 					"/uk/ac/qub/finalproject/server/views/LoadingScreen.fxml"));
 			AnchorPane loadingView = (AnchorPane) loader.load();
-			loadingScreen = loader.getController();			
-			
+			loadingScreen = loader.getController();
+
 			Scene scene = new Scene(loadingView);
 			primaryStage.setScene(scene);
 
@@ -245,16 +250,16 @@ public class Controller extends Application implements Observer {
 		try {
 			mainStage = new Stage(StageStyle.DECORATED);
 			mainStage.setTitle(Implementations.getServerScreenTitle());
-			
+
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource(
 					"/uk/ac/qub/finalproject/server/views/MainScreen.fxml"));
 			AnchorPane mainView = (AnchorPane) loader.load();
 			mainScreen = loader.getController();
-			
+
 			Scene scene = new Scene(mainView);
 			mainStage.setScene(scene);
-			
+
 			mainScreen.setupWidgets();
 			mainScreen
 					.setActiveDeviceThresholdChangeListener(deviceThresholdChangeListener);
@@ -268,7 +273,7 @@ public class Controller extends Application implements Observer {
 			mainScreen.setStartServerCommand(startServerCommand);
 			mainScreen.setStopSendingPacketsCommand(stopSendingPacketsCommand);
 			mainScreen.setTransferResultsCommand(transferResultsCommand);
-						
+
 			mainStage.setHeight(600);
 			mainStage.setWidth(1200);
 			mainStage.setMaximized(true);
@@ -283,10 +288,10 @@ public class Controller extends Application implements Observer {
 
 			});
 
-			if (primaryStage.isShowing()){
+			if (primaryStage.isShowing()) {
 				primaryStage.close();
 			}
-			
+
 			mainStage.show();
 		} catch (IOException ioEx) {
 			ioEx.printStackTrace();
@@ -315,7 +320,8 @@ public class Controller extends Application implements Observer {
 		try {
 			ConnectionPool.getConnectionPool().closeConnectionPool();
 		} catch (PropertyVetoException e) {
-			// TODO logging
+			logger.log(Level.SEVERE, Controller.class.getName()
+					+ " Problem closing the connection pool.");
 		}
 
 		server.stopServer();
@@ -381,7 +387,7 @@ public class Controller extends Application implements Observer {
 	private void updateProcessingTimes(String minutes) {
 		mainScreen.addProcessingTime(Integer.parseInt(minutes));
 	}
-		
+
 	public static void main(String[] args) {
 		launch(args);
 
@@ -390,34 +396,37 @@ public class Controller extends Application implements Observer {
 	@Override
 	public void start(Stage arg0) throws Exception {
 		this.primaryStage = arg0;
-		Task<Void> backgroundLoading = new Task<Void>(){
+		Task<Void> backgroundLoading = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
 				setupSystem();
 				Thread.sleep(500);
-				loadingComplete();	
+				loadingComplete();
 				Thread.sleep(200);
 				return null;
 			}
-			
-		};
-		
-		backgroundLoading.stateProperty().addListener(new ChangeListener<Worker.State>(){
 
-			@Override
-			public void changed(ObservableValue<? extends State> observable,
-					State oldState, State newState) {
-				if (newState == Worker.State.SUCCEEDED){
-					showMainScreen();
-					// startActiveDeviceUpdates();
-				}				
-			}
-			
-		});		
-		
-		showLoadingScreen();	
+		};
+
+		backgroundLoading.stateProperty().addListener(
+				new ChangeListener<Worker.State>() {
+
+					@Override
+					public void changed(
+							ObservableValue<? extends State> observable,
+							State oldState, State newState) {
+						if (newState == Worker.State.SUCCEEDED) {
+							showMainScreen();
+							//TODO uncomment this
+							// startActiveDeviceUpdates();
+						}
+					}
+
+				});
+
+		showLoadingScreen();
 		new Thread(backgroundLoading).start();
 	}
-	
+
 }

@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  */
 public class DatabaseCreator extends AbstractJDBC {
 
-	private Logger logger = Logger.getLogger(DatabaseCreator.class.getName());
+	private Logger logger = LoggingUtils.getLogger(DatabaseCreator.class);
 
 	private static final String CREATE_DEVICES_TABLE = "CREATE TABLE IF NOT EXISTS devices "
 			+ "( device_id VARBINARY (255) NOT NULL,"
@@ -62,18 +62,19 @@ public class DatabaseCreator extends AbstractJDBC {
 		try {
 			connection = createConnection();
 			statement = connection.createStatement();
-			
+
 			for (String script : TABLE_CREATION_SCRIPTS) {
-				statement.addBatch(script);				
+				statement.addBatch(script);
 			}
-			
+
 			statement.executeBatch();
 		} catch (SQLException | PropertyVetoException e) {
-			logger.log(Level.SEVERE, "Problem setting up the database", e);
+			logger.log(Level.SEVERE, DatabaseCreator.class.getName()
+					+ " Problem setting up the database", e);
 		} finally {
 			closeConnection(connection, statement, null);
 		}
 
 	}
-	
+
 }

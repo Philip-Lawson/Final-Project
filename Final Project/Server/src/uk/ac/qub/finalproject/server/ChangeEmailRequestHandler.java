@@ -9,6 +9,8 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
+import uk.ac.qub.finalproject.persistence.LoggingUtils;
 import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 
 /**
@@ -16,8 +18,9 @@ import uk.ac.qub.finalproject.persistence.UserDetailsManager;
  *
  */
 public class ChangeEmailRequestHandler extends AbstractClientRequestHandler {
-	
-	private static Logger logger = Logger.getLogger(ChangeEmailRequestHandler.class.getName());
+
+	private Logger logger = LoggingUtils
+			.getLogger(ChangeEmailRequestHandler.class);
 
 	private UserDetailsManager userDetails;
 
@@ -37,7 +40,7 @@ public class ChangeEmailRequestHandler extends AbstractClientRequestHandler {
 	 * finalproject.poc.appserver.AbstractClientRequestHandler#getRequestNum()
 	 */
 	@Override
-	protected int getRequestNum() {		
+	protected int getRequestNum() {
 		return ClientRequest.CHANGE_EMAIL;
 	}
 
@@ -50,16 +53,18 @@ public class ChangeEmailRequestHandler extends AbstractClientRequestHandler {
 	 */
 	@Override
 	protected void handleHere(ObjectInputStream input, ObjectOutputStream output) {
-		
+
 		try {
 			RegistrationPack registrationPack = (RegistrationPack) input
 					.readObject();
-			
-			output.reset();			
-			output.writeBoolean(userDetails.changeEmailAddress(registrationPack));
-			output.flush();			
+
+			output.reset();
+			output.writeBoolean(userDetails
+					.changeEmailAddress(registrationPack));
+			output.flush();
 		} catch (ClassNotFoundException | IOException e) {
-			logger.log(Level.FINE, "Problem changing email address", e);
+			logger.log(Level.FINE, ChangeEmailRequestHandler.class.getName()
+					+ " Problem changing email address", e);
 		}
 
 	}

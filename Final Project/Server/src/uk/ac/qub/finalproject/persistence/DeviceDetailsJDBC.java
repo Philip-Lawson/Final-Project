@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import uk.ac.qub.finalproject.server.RegistrationPack;
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 
 /**
  * A DAO to store, write and update information in the database regarding device
@@ -25,8 +25,7 @@ import uk.ac.qub.finalproject.server.RegistrationPack;
  */
 public class DeviceDetailsJDBC extends AbstractJDBC {
 
-	private static Logger logger = Logger.getLogger(DeviceDetailsJDBC.class
-			.getName());
+	private Logger logger = LoggingUtils.getLogger(DeviceDetailsJDBC.class);
 
 	private static final String REGISTER_DEVICE = "INSERT INTO devices (device_id) VALUES (?);";
 
@@ -50,6 +49,8 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 
 			return true;
 		} catch (SQLException | PropertyVetoException e) {
+			logger.log(Level.FINE, DeviceDetailsJDBC.class.getName()
+					+ " Problem writing a valid result to the database");
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -67,8 +68,8 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			preparedStatement.executeUpdate();
 
 		} catch (SQLException | PropertyVetoException SQLEx) {
-			logger.log(Level.FINE,
-					"Problem writing a valid result to the database", SQLEx);
+			logger.log(Level.FINE, DeviceDetailsJDBC.class.getName()
+					+ " Problem writing a valid result to the database");
 		} finally {
 			closeConnection(connection, preparedStatement, null);
 		}
@@ -85,8 +86,8 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			preparedStatement.setBytes(1, encryptor.encrypt(deviceID));
 			preparedStatement.executeUpdate();
 		} catch (SQLException | PropertyVetoException SQLEx) {
-			logger.log(Level.FINE,
-					"Problem writing an invalid result to the database", SQLEx);
+			logger.log(Level.FINE, DeviceDetailsJDBC.class.getName()
+					+ " Problem writing an invalid result to the database");
 		} finally {
 			closeConnection(connection, preparedStatement, null);
 		}
@@ -106,6 +107,8 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			return true;
 
 		} catch (SQLException | PropertyVetoException SQLEx) {
+			logger.log(Level.FINE, DeviceDetailsJDBC.class.getName()
+					+ " Problem registering a device");
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
@@ -166,8 +169,8 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 			}
 
 		} catch (SQLException | PropertyVetoException e) {
-			logger.log(Level.FINE,
-					"Problem loading device attributes from the database", e);
+			logger.log(Level.FINE, DeviceDetailsJDBC.class.getName()
+					+ " Problem loading device attributes from the database");
 		} finally {
 			try {
 				if (null != deviceResultSet)

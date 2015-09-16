@@ -35,17 +35,16 @@ public class ResultProcessor extends Observable {
 	}
 
 	public void processResults(ResultsPacketList resultsList, String deviceID) {
-		
+
 		processIndividualPackets(resultsList, deviceID);
 
-		try {
-			// there is a risk that the result list may not have been
-			// timestamped the current implementation uses a Long Object to
-			// avoid getTimeStamp returning a default 0 value - causing the
-			// processing time data to go crazy
+		long timeStamp = resultsList.getTimeStamp();
+
+		// There is a risk that the result list may not have been
+		// timestamped. If that's the case, the timestamp will default to 0
+		// This would make skew the processing time data
+		if (timeStamp > 0) {
 			processTimeStamp(resultsList.getTimeStamp(), resultsList.size());
-		} catch (NullPointerException npEx) {
-			// TODO - log exception
 		}
 
 		checkProcessingComplete();

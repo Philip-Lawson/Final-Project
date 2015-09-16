@@ -9,16 +9,19 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
+import uk.ac.qub.finalproject.persistence.LoggingUtils;
 
 /**
  * @author Phil
  *
  */
 public class RegisterRequestHandler extends AbstractClientRequestHandler {
-	
-	private static Logger logger = Logger.getLogger(RegisterRequestHandler.class.getName());
+
+	private Logger logger = LoggingUtils
+			.getLogger(RegisterRequestHandler.class);
 
 	private DeviceDetailsManager deviceManager;
 	private DeviceVersionManager deviceVersionManager;
@@ -58,8 +61,10 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 			boolean successfulRegistration = true;
 
 			try {
-				RegistrationPack registrationPack = (RegistrationPack) input.readObject();
-				successfulRegistration = deviceManager.addDevice(registrationPack);
+				RegistrationPack registrationPack = (RegistrationPack) input
+						.readObject();
+				successfulRegistration = deviceManager
+						.addDevice(registrationPack);
 				deviceVersionManager.saveDeviceVersion(registrationPack);
 			} catch (ClassNotFoundException e) {
 
@@ -69,7 +74,8 @@ public class RegisterRequestHandler extends AbstractClientRequestHandler {
 			output.writeBoolean(successfulRegistration);
 			output.flush();
 		} catch (IOException ex) {
-			logger.log(Level.FINE, "Problem registering a device", ex);
+			logger.log(Level.FINE, RegisterRequestHandler.class.getName()
+					+ " Problem registering a device", ex);
 		}
 
 	}

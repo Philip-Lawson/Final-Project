@@ -13,6 +13,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
+import uk.ac.qub.finalproject.server.implementations.Implementations;
+
 /**
  * @author Phil
  *
@@ -33,7 +35,7 @@ public class Encryptor {
 
 	private Encryptor() {
 		try {
-			secretKey = new SecretKeySpec(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7,}, "AES");
+			secretKey = new SecretKeySpec(Implementations.getSecretKeySpec(), "AES");
 			cipher = Cipher.getInstance(ALGORITHM);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
 

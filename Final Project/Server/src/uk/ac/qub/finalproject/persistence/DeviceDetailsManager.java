@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import uk.ac.qub.finalproject.server.RegistrationPack;
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 
 /**
  * @author Phil

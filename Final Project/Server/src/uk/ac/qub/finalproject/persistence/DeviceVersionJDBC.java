@@ -22,8 +22,8 @@ import java.util.logging.Logger;
  */
 public class DeviceVersionJDBC extends AbstractJDBC {
 
-	private Logger logger = Logger.getLogger(DeviceVersionJDBC.class.getName());
-	
+	private Logger logger = LoggingUtils.getLogger(DeviceVersionJDBC.class);
+
 	private String SAVE_DEVICE_CODE = "UPDATE devices SET version_code = ? WHERE device_id = ?";
 	private String LOAD_DEVICE_VERSION_INFO = "SELECT version_code, device_id FROM devices ORDER BY version_code DESC";
 
@@ -40,7 +40,8 @@ public class DeviceVersionJDBC extends AbstractJDBC {
 
 			closeConnection(connection, preparedStatement, null);
 		} catch (SQLException | PropertyVetoException e) {
-			logger.log(Level.WARNING, "Problem saving device attributes to the database", e);
+			logger.log(Level.WARNING, DeviceVersionJDBC.class.getName()
+					+ " Problem saving device attributes to the database");
 		}
 
 	}
@@ -60,13 +61,15 @@ public class DeviceVersionJDBC extends AbstractJDBC {
 
 			while (resultSet.next()) {
 				Integer versionCode = resultSet.getInt("version_code");
-				String deviceID = encryptor.decrypt(resultSet.getBytes("device_id"));
+				String deviceID = encryptor.decrypt(resultSet
+						.getBytes("device_id"));
 				addResultToMap(versionMap, versionCode, deviceID);
 			}
-			
+
 			closeConnection(connection, statement, resultSet);
 		} catch (SQLException | PropertyVetoException e) {
-			logger.log(Level.WARNING, "Problem loading device attributes from the database", e);
+			logger.log(Level.WARNING, DeviceVersionJDBC.class.getName()
+					+ " Problem loading device attributes from the database");
 		}
 
 		return versionMap;

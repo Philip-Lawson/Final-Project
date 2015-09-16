@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 import uk.ac.qub.finalproject.persistence.Device;
 import uk.ac.qub.finalproject.persistence.DeviceDetailsJDBC;
-import uk.ac.qub.finalproject.server.RegistrationPack;
 
 /**
  * @author Phil

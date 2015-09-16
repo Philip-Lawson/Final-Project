@@ -16,14 +16,16 @@ import uk.ac.qub.finalproject.calculationclasses.WorkPacketList;
 import uk.ac.qub.finalproject.persistence.AbstractWorkPacketDrawer;
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
+import uk.ac.qub.finalproject.persistence.LoggingUtils;
 
 /**
  * @author Phil
  *
  */
 public class ProcessResultRequestHandler extends AbstractClientRequestHandler {
-	
-	private static Logger logger = Logger.getLogger(ProcessResultRequestHandler.class.getName());
+
+	private Logger logger = LoggingUtils
+			.getLogger(ProcessResultRequestHandler.class);
 
 	private static int MIN_VERSION_CODE = 1;
 
@@ -79,7 +81,8 @@ public class ProcessResultRequestHandler extends AbstractClientRequestHandler {
 			sendResponse(output, deviceID);
 
 		} catch (ClassNotFoundException | IOException e) {
-			logger.log(Level.FINE, "Problem processing result", e);
+			logger.log(Level.FINE, ProcessResultRequestHandler.class.getName()
+					+ " Problem processing result", e);
 		}
 
 	}

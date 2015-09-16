@@ -3,8 +3,8 @@
  */
 package uk.ac.qub.finalproject.persistencestubs;
 
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
-import uk.ac.qub.finalproject.server.RegistrationPack;
 
 /**
  * @author Phil

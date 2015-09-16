@@ -11,15 +11,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
-
 
 /**
  * @author Phil
  *
  */
 public class WorkPacketJDBC extends AbstractJDBC {
+
+	private Logger logger = LoggingUtils.getLogger(WorkPacketJDBC.class);
 
 	private static final String ADD_WORK_PACKET = "INSERT INTO work_packets VALUES (?, ?);";
 	private static final String GET_INCOMPLETE_WORK_PACKETS = "SELECT work_packet "
@@ -28,9 +31,9 @@ public class WorkPacketJDBC extends AbstractJDBC {
 	private static final String GET_INDIVIDUAL_WORK_PACKET = "SELECT work_packet FROM work_packets WHERE packet_id = ?";
 
 	public void addWorkPackets(Collection<IWorkPacket> workPackets) {
-		Connection connection  = null;
+		Connection connection = null;
 		PreparedStatement preparedStatement = null;
-		
+
 		try {
 			connection = createConnection();
 			preparedStatement = connection.prepareStatement(ADD_WORK_PACKET);
@@ -42,7 +45,8 @@ public class WorkPacketJDBC extends AbstractJDBC {
 			}
 
 		} catch (SQLException | PropertyVetoException SQLEx) {
-
+			logger.log(Level.WARNING, WorkPacketJDBC.class.getName()
+					+ " Could not add work packets");
 		} finally {
 			closeConnection(connection, preparedStatement, null);
 		}
@@ -51,7 +55,7 @@ public class WorkPacketJDBC extends AbstractJDBC {
 
 	public Collection<IWorkPacket> getIncompleteWorkPackets() {
 		List<IWorkPacket> workPackets = new ArrayList<IWorkPacket>(1000);
-		
+
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -66,22 +70,23 @@ public class WorkPacketJDBC extends AbstractJDBC {
 			}
 
 		} catch (SQLException | PropertyVetoException SQLEx) {
-
-		} finally {			
+			logger.log(Level.WARNING, WorkPacketJDBC.class.getName()
+					+ " Could not load incomplete work packets");
+		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
 		}
 
 		return workPackets;
 
 	}
-	
-	public IWorkPacket getIndividualWorkPacket(String packetID){
+
+	public IWorkPacket getIndividualWorkPacket(String packetID) {
 		IWorkPacket workPacket = null;
-		
+
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		
+
 		try {
 			connection = createConnection();
 			preparedStatement = connection
@@ -95,11 +100,12 @@ public class WorkPacketJDBC extends AbstractJDBC {
 			}
 
 		} catch (SQLException | PropertyVetoException SQLEx) {
-
-		} finally {							
+			logger.log(Level.WARNING, WorkPacketJDBC.class.getName()
+					+ " Could not get individual work packet");
+		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
 		}
 
-		return workPacket;		
+		return workPacket;
 	}
 }

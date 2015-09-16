@@ -6,8 +6,8 @@ package uk.ac.qub.finalproject.persistence;
 import java.util.Collection;
 import java.util.Observable;
 
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 import uk.ac.qub.finalproject.server.ClientAchievementEmailSender;
-import uk.ac.qub.finalproject.server.RegistrationPack;
 
 /**
  * @author Phil
@@ -64,8 +64,10 @@ public class UserDetailsManager extends Observable {
 		if (emailValidationStrategy.emailIsValid(registrationPack
 				.getEmailAddress())) {
 			return userDB.changeEmailAddress(registrationPack);
+		} else if (registrationPack.getEmailAddress().equals("")){
+			return userDB.deleteEmailAddress(registrationPack);
 		} else {
-			return false;
+			return true;
 		}
 	}
 

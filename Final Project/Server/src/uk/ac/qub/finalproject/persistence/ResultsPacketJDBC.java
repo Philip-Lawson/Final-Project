@@ -24,8 +24,8 @@ import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
  *
  */
 public class ResultsPacketJDBC extends AbstractJDBC {
-	
-	private static Logger logger = Logger.getLogger(ResultsPacketJDBC.class.getName());
+
+	private Logger logger = LoggingUtils.getLogger(ResultsPacketJDBC.class);
 
 	private static final String ADD_RESULTS_PACKET = "INSERT INTO results_packets VALUES (?, ?);";
 	private static final String GET_RESULTS_PACKETS = "SELECT results_packet FROM results_packets";
@@ -50,7 +50,8 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 			preparedStatement.setObject(2, resultsPacket);
 			preparedStatement.executeUpdate();
 		} catch (SQLException | PropertyVetoException SQLEx) {
-			logger.log(Level.WARNING, "Problem saving results packet to the database", SQLEx);
+			logger.log(Level.WARNING, ResultsPacketJDBC.class.getName()
+					+ " Problem saving results packet to the database");
 		} finally {
 			closeConnection(connection, preparedStatement, null);
 		}
@@ -81,7 +82,8 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 				resultsPackets.add((IResultsPacket) resultSet.getObject(1));
 			}
 		} catch (SQLException | PropertyVetoException SQLEx) {
-			logger.log(Level.WARNING, "Problem loading results packet from the database", SQLEx);
+			logger.log(Level.WARNING, ResultsPacketJDBC.class.getName()
+					+ " Problem loading results packet from the database");
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
 		}
@@ -90,7 +92,7 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 	}
 
 	public boolean allResultsComplete() {
-		boolean resultsComplete = false;		
+		boolean resultsComplete = false;
 		Connection connection = null;
 		Statement statement = null;
 		ResultSet resultSet = null;
@@ -100,14 +102,15 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(ALL_RESULTS_COMPLETE);
-			
-			if(resultSet.next()){
+
+			if (resultSet.next()) {
 				int unProcessedWorkPackets = resultSet.getInt(1);
 				resultsComplete = (unProcessedWorkPackets == 0);
 			}
-			
+
 		} catch (SQLException | PropertyVetoException SQLEx) {
-			logger.log(Level.WARNING, "Problem getting result statistics from the database", SQLEx);
+			logger.log(Level.WARNING, ResultsPacketJDBC.class.getName()
+					+ " Problem getting result statistics from the database");
 
 		} finally {
 			closeConnection(connection, statement, resultSet);

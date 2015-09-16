@@ -8,7 +8,7 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import uk.ac.qub.finalproject.server.RegistrationPack;
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 
 /**
  * @author Phil

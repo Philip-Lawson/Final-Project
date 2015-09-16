@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import uk.ac.qub.finalproject.persistence.LoggingUtils;
 
 /**
  * A server thread is created for each conneciton that is established with the
@@ -21,8 +22,8 @@ import java.util.logging.Logger;
  *
  */
 public class ServerThread implements Runnable {
-	
-	private static Logger logger = Logger.getLogger(ServerThread.class.getName());
+
+	private Logger logger = LoggingUtils.getLogger(ServerThread.class);
 
 	private Socket socket;
 	private ObjectOutputStream out;
@@ -37,12 +38,13 @@ public class ServerThread implements Runnable {
 
 	@Override
 	public void run() {
-		
+
 		try {
 			getStreams();
 			processConnection();
-		} catch (IOException e) {	
-			logger.log(Level.FINE, "Problem getting the streams", e);
+		} catch (IOException e) {
+			logger.log(Level.FINE, ServerThread.class.getName()
+					+ " Problem getting the streams", e);
 		} finally {
 			closeConnections();
 		}
@@ -50,9 +52,9 @@ public class ServerThread implements Runnable {
 	}
 
 	/**
-	 * Helper method retrieves the streams used and wraps them in buffered object
-	 * streams. This is necessary to allow the request handlers to read and
-	 * write objects to the streams.
+	 * Helper method retrieves the streams used and wraps them in buffered
+	 * object streams. This is necessary to allow the request handlers to read
+	 * and write objects to the streams.
 	 * 
 	 * @throws IOException
 	 *             if there is an issue with retrieving the socket's streams.
@@ -94,21 +96,24 @@ public class ServerThread implements Runnable {
 			if (out != null)
 				out.close();
 		} catch (IOException IOEx) {
-			logger.log(Level.FINE, "Problem closing the output stream", IOEx);
+			logger.log(Level.FINE,  ServerThread.class.getName()
+					+ " Problem closing the output stream", IOEx);
 		}
-		
+
 		try {
 			if (in != null)
 				in.close();
 		} catch (IOException IOEx) {
-			logger.log(Level.FINE, "Problem closing the input stream", IOEx);
+			logger.log(Level.FINE,  ServerThread.class.getName()
+					+ " Problem closing the input stream", IOEx);
 		}
-		
+
 		try {
 			if (socket != null)
 				socket.close();
 		} catch (IOException IOEx) {
-			logger.log(Level.FINE, "Problem closing the socket", IOEx);
+			logger.log(Level.FINE,  ServerThread.class.getName()
+					+ " Problem closing the socket", IOEx);
 		}
 	}
 

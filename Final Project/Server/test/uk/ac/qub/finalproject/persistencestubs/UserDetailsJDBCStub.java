@@ -6,8 +6,8 @@ package uk.ac.qub.finalproject.persistencestubs;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 import uk.ac.qub.finalproject.persistence.UserDetailsJDBC;
-import uk.ac.qub.finalproject.server.RegistrationPack;
 
 /**
  * @author Phil

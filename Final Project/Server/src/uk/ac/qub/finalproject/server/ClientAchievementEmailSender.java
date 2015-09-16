@@ -16,6 +16,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import uk.ac.qub.finalproject.persistence.Achievements;
+import uk.ac.qub.finalproject.persistence.LoggingUtils;
 import uk.ac.qub.finalproject.server.implementations.Implementations;
 
 /**
@@ -24,8 +25,8 @@ import uk.ac.qub.finalproject.server.implementations.Implementations;
  */
 public class ClientAchievementEmailSender {
 
-	private Logger logger = Logger.getLogger(ClientAchievementEmailSender.class
-			.getName());
+	private Logger logger = LoggingUtils
+			.getLogger(ClientAchievementEmailSender.class);
 
 	private static String SENDER_EMAIL = Implementations.getEmailAddress();
 	private static String EMAIL_PASSWORD = Implementations.getEmailPassword();
@@ -66,7 +67,8 @@ public class ClientAchievementEmailSender {
 			Transport.send(message);
 
 		} catch (MessagingException e) {
-			logger.log(Level.FINE, "Problem sending email to users", e);
+			logger.log(Level.FINE, ClientAchievementEmailSender.class.getName()
+					+ " Problem sending email to users", e);
 		}
 	}
 

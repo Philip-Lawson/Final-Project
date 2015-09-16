@@ -10,20 +10,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
+import uk.ac.qub.finalproject.persistence.LoggingUtils;
 
 /**
  * This is a ClientRequestHandler that handles client requests to delete an
- * account. It reads the client device's ID as a string, sends a request to
- * the device details manager to delete the account and sends a boolean value to
- * the client indicating if the delete was successful.
+ * account. It reads the client device's ID as a string, sends a request to the
+ * device details manager to delete the account and sends a boolean value to the
+ * client indicating if the delete was successful.
  * 
  * @author Phil
  *
  */
 public class DeleteAccountRequestHandler extends AbstractClientRequestHandler {
 
-	private static Logger logger = Logger
-			.getLogger(DeleteAccountRequestHandler.class.getName());
+	private Logger logger = LoggingUtils
+			.getLogger(DeleteAccountRequestHandler.class);
 
 	private DeviceDetailsManager deviceDetailsManager;
 
@@ -61,7 +62,8 @@ public class DeleteAccountRequestHandler extends AbstractClientRequestHandler {
 			output.writeBoolean(deviceDetailsManager.deregisterDevice(deviceID));
 			output.flush();
 		} catch (ClassNotFoundException | IOException e) {
-			logger.log(Level.FINE, "Problem deleting account", e);
+			logger.log(Level.FINE, DeleteAccountRequestHandler.class.getName()
+					+ " Problem deleting account", e);
 		}
 
 	}
