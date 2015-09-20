@@ -216,7 +216,7 @@ public class DeviceDetailsManager extends Observable {
 		// the device details should be kept in the blacklist
 		// in case they re-register
 		devicesMap.remove(deviceID);
-		return deviceDB.deregisterDevice(deviceID);
+		return deviceDB.deleteDevice(deviceID);
 	}
 
 	/**
@@ -240,6 +240,11 @@ public class DeviceDetailsManager extends Observable {
 		++NO_OF_BLACKLISTED_DEVICES;
 	}
 
+	/**
+	 * Returns the number of devices involved in the computation.
+	 * 
+	 * @return
+	 */
 	public synchronized int numberOfDevices() {
 		return devicesMap.size();
 	}
@@ -271,6 +276,13 @@ public class DeviceDetailsManager extends Observable {
 		return NO_OF_BLACKLISTED_DEVICES;
 	}
 
+	/**
+	 * Adds new data to the average processing time and adjusts the value as
+	 * appropriate.
+	 * 
+	 * @param listSize
+	 * @param timeSpentProcessing
+	 */
 	public synchronized void adjustAverage(int listSize,
 			long timeSpentProcessing) {
 		long difference = timeSpentProcessing - AVERAGE_PROCESSING_TIME;
@@ -278,6 +290,11 @@ public class DeviceDetailsManager extends Observable {
 		AVERAGE_PROCESSING_TIME += difference / PROCESSING_DIVISOR;
 	}
 
+	/**
+	 * Returns the average processing time, measured in milliseconds.
+	 * 
+	 * @return
+	 */
 	public synchronized long getAverageProcessingTime() {
 		return AVERAGE_PROCESSING_TIME;
 	}

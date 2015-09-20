@@ -13,8 +13,8 @@ import java.util.Date;
 
 import uk.ac.qub.finalproject.calculationclasses.WorkPacket;
 import uk.ac.qub.finalproject.calculationclasses.WorkPacketList;
-import uk.ac.qub.finalproject.server.ClientRequest;
-import uk.ac.qub.finalproject.server.ServerRequest;
+import uk.ac.qub.finalproject.server.networking.ClientRequest;
+import uk.ac.qub.finalproject.server.networking.ServerRequest;
 /**
  * This is a mock server used to test the running application. It provides stub
  * responses to registering, deleting, retrieving a work packet and next work

@@ -13,15 +13,19 @@ import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
 import uk.ac.qub.finalproject.calculationclasses.WorkPacketList;
 
 /**
+ * An implementation of the AbstractWorkPacketDrawer. This is the system's point
+ * of access to storing and retrieving work packets from the cache and the
+ * database.
+ * 
  * @author Phil
  *
  */
 public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 
 	public static final int DEFAULT_PACKETS_PER_LIST = 10;
-	public static final int DEFAULT_TIMES_TO_SEND_PACKET_LIST = 10;	
+	public static final int DEFAULT_TIMES_TO_SEND_PACKET_LIST = 10;
 	private static final int MIN_PACKETS_PER_LIST = 5;
-	
+
 	private int PACKETS_PER_LIST = DEFAULT_PACKETS_PER_LIST;
 	private int TIMES_TO_SEND_PACKET_LIST = DEFAULT_TIMES_TO_SEND_PACKET_LIST;
 	private int TIMES_PACKET_LIST_SENT = 0;
@@ -49,7 +53,8 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	@Override
 	public void addWorkPackets(Collection<IWorkPacket> workPackets) {
 
-		Collection<IWorkPacket> tempPacketList = new ArrayList<IWorkPacket>(workPackets.size());
+		Collection<IWorkPacket> tempPacketList = new ArrayList<IWorkPacket>(
+				workPackets.size());
 
 		for (IWorkPacket workPacket : workPackets) {
 			if (workPacketIsValid(workPacket)) {
@@ -98,7 +103,15 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 		} else {
 			++TIMES_PACKET_LIST_SENT;
 			return currentPacketList;
-		}		
+		}
+	}
+
+	@Override
+	public synchronized void addPacketsToProcessedList(
+			Collection<IWorkPacket> workPackets) {
+		for (IWorkPacket workPacket : workPackets) {
+			sentPacketsMap.putIfAbsent(workPacket.getPacketId(), workPacket);
+		}
 	}
 
 	/*
@@ -129,8 +142,28 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	@Override
 	public synchronized void setPacketsPerList(int packetsPerList) {
 		if (packetsPerList >= MIN_PACKETS_PER_LIST) {
+
+			if (packetsPerList > PACKETS_PER_LIST) {
+				// transfer more packets to the current list
+				// rather than discarding the list
+				synchronized (this) {					
+					int packetsToAdd = packetsPerList - currentPacketList.size();					
+					int count = 0;
+
+					Iterator<String> it = unprocessedWorkPacketMap.keySet().iterator();
+
+					while (count < packetsToAdd && it.hasNext()) {
+						IWorkPacket workPacket = unprocessedWorkPacketMap.remove(it.next());
+						currentPacketList.add(workPacket);
+						sentPacketsMap.putIfAbsent(workPacket.getPacketId(), workPacket);
+						count++;
+					}
+				}
+
+			}
+			
 			PACKETS_PER_LIST = packetsPerList;
-		}			
+		}
 	}
 
 	/*

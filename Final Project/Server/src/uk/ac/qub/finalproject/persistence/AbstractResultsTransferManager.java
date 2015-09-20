@@ -7,7 +7,6 @@ import java.util.Collection;
 
 import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 
-
 /**
  * This class encapsulates the logic for transferring results from the server
  * database to another persistence layer. To be used the implementor must
@@ -37,13 +36,27 @@ public abstract class AbstractResultsTransferManager {
 	 */
 	protected abstract Collection<?> convertResults(
 			Collection<IResultsPacket> resultsPackets);
-	
+
+	/**
+	 * Abstract method to connect to the user's database.
+	 */
 	protected abstract void connectToDatabase();
 
+	/**
+	 * Abstract method to write the converted results to the user's database.
+	 * 
+	 * @param convertedResults
+	 */
 	protected abstract void writeResults(Collection<?> convertedResults);
 
+	/**
+	 * Close the connection to the database.
+	 */
 	protected abstract void closeConnection();
 
+	/**
+	 * Transfers results to the user's database.
+	 */
 	public final void transferResults() {
 		Collection<?> convertedResults = convertResults(resultsDB
 				.getResultsPackets());

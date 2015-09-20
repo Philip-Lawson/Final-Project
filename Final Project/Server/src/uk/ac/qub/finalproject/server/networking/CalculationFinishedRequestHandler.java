@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,6 +16,12 @@ import uk.ac.qub.finalproject.persistence.LoggingUtils;
 import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 
 /**
+ * This request handler processes all client requests that relate to account
+ * changes and provides a become dormant response to clients sending messages
+ * about processing packets.<br>
+ * </br>This request handler should be used when processing is either paused or
+ * completed.
+ * 
  * @author Phil
  *
  */
@@ -46,7 +52,7 @@ public class CalculationFinishedRequestHandler extends
 	@Override
 	public void processRequest(int requestNum, ObjectInputStream input,
 			ObjectOutputStream output) {
-		readClientMessage(requestNum, input, output);
+		processClientMessage(requestNum, input, output);
 	}
 
 	/*
@@ -73,7 +79,14 @@ public class CalculationFinishedRequestHandler extends
 
 	}
 
-	private void readClientMessage(int requestNum, ObjectInputStream input,
+	/**
+	 * Processes a client's request.
+	 * 
+	 * @param requestNum
+	 * @param input
+	 * @param output
+	 */
+	private void processClientMessage(int requestNum, ObjectInputStream input,
 			ObjectOutputStream output) {
 		switch (requestNum) {
 		case ClientRequest.CHANGE_EMAIL:
@@ -93,6 +106,11 @@ public class CalculationFinishedRequestHandler extends
 		}
 	}
 
+	/**
+	 * Helper method for sending a become dormant message to a client device.
+	 * 
+	 * @param output
+	 */
 	private void sendBecomeDormantMessage(ObjectOutputStream output) {
 		try {
 			output.reset();
@@ -105,6 +123,12 @@ public class CalculationFinishedRequestHandler extends
 		}
 	}
 
+	/**
+	 * Responds to a client request to change their email.
+	 * 
+	 * @param input
+	 * @param output
+	 */
 	private void changeEmail(ObjectInputStream input, ObjectOutputStream output) {
 		RegistrationPack registrationPack;
 		try {
@@ -120,6 +144,12 @@ public class CalculationFinishedRequestHandler extends
 		}
 	}
 
+	/**
+	 * Responds to a client request to delete their account.
+	 * 
+	 * @param input
+	 * @param output
+	 */
 	private void deleteAccount(ObjectInputStream input,
 			ObjectOutputStream output) {
 		try {
@@ -135,6 +165,12 @@ public class CalculationFinishedRequestHandler extends
 		}
 	}
 
+	/**
+	 * Reads in a result and sends back a message to become dormant.
+	 * 
+	 * @param input
+	 * @param output
+	 */
 	private void processResult(ObjectInputStream input,
 			ObjectOutputStream output) {
 		try {
@@ -147,6 +183,12 @@ public class CalculationFinishedRequestHandler extends
 		}
 	}
 
+	/**
+	 * Registers a device in the system.
+	 * 
+	 * @param input
+	 * @param output
+	 */
 	private void registerDevice(ObjectInputStream input,
 			ObjectOutputStream output) {
 		RegistrationPack registrationPack;

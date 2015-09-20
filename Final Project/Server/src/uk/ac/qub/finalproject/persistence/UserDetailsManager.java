@@ -7,9 +7,14 @@ import java.util.Collection;
 import java.util.Observable;
 
 import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
-import uk.ac.qub.finalproject.server.ClientAchievementEmailSender;
+import uk.ac.qub.finalproject.server.networking.ClientAchievementEmailSender;
 
 /**
+ * This is the system's point of access to information about registered users.
+ * It allows the caller to change a user's email, register or deregister a user,
+ * check to see if a user has reached a processing milestone and retrieve all
+ * user emails.
+ * 
  * @author Phil
  *
  */
@@ -64,10 +69,10 @@ public class UserDetailsManager extends Observable {
 		if (emailValidationStrategy.emailIsValid(registrationPack
 				.getEmailAddress())) {
 			return userDB.changeEmailAddress(registrationPack);
-		} else if (registrationPack.getEmailAddress().equals("")){
+		} else if (registrationPack.getEmailAddress().equals("")) {
 			return userDB.deleteEmailAddress(registrationPack);
 		} else {
-			return true;
+			return false;
 		}
 	}
 

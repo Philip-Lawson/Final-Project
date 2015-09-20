@@ -1,9 +1,13 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.calculationclasses;
+package uk.ac.qub.finalproject.server.implementations;
 
 import java.util.Map;
+
+import uk.ac.qub.finalproject.calculationclasses.IGroupValidationStrategy;
+import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
+import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
 
 /**
  * @author Phil

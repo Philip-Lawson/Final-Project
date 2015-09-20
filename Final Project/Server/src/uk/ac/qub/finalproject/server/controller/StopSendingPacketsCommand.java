@@ -3,41 +3,30 @@
  */
 package uk.ac.qub.finalproject.server.controller;
 
-import uk.ac.qub.finalproject.server.AbstractClientRequestHandler;
-import uk.ac.qub.finalproject.server.Server;
+import uk.ac.qub.finalproject.server.networking.AbstractClientRequestHandler;
+import uk.ac.qub.finalproject.server.networking.Server;
 
 /**
+ * This command changes the request handlers used by the server to one that only
+ * responds fully to account requests. All processing requests will be ignored.
+ * 
  * @author Phil
  *
  */
 public class StopSendingPacketsCommand implements Command {
 	
 	private Server server;
-	
 	private AbstractClientRequestHandler pauseServiceRequestHandler;
-	
-	public StopSendingPacketsCommand(){
-		
-	}
-	
-	public StopSendingPacketsCommand(Server server){
-		setServer(server);
-	}
-	
-	public StopSendingPacketsCommand(Server server, AbstractClientRequestHandler pauseServiceRequestHandler){
-		setServer(server);
-		setRequestHandler(pauseServiceRequestHandler);
-	}
-	
-	public void setServer(Server server){
+
+	public StopSendingPacketsCommand(Server server,
+			AbstractClientRequestHandler pauseServiceRequestHandler) {
 		this.server = server;
-	}
-	
-	public void setRequestHandler(AbstractClientRequestHandler pauseServiceRequestHandler){
 		this.pauseServiceRequestHandler = pauseServiceRequestHandler;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see uk.ac.qub.finalproject.server.controller.Command#execute()
 	 */
 	@Override

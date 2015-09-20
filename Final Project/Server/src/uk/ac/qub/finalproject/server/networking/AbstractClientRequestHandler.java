@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

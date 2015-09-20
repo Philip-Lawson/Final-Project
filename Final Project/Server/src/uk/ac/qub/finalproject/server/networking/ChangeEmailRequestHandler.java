@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,6 +14,9 @@ import uk.ac.qub.finalproject.persistence.LoggingUtils;
 import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 
 /**
+ * This request handler processes client requests to change their email address.
+ * It sends back a boolean confirming the change.
+ * 
  * @author Phil
  *
  */

@@ -107,4 +107,10 @@ public class WorkPacketDrawerStub extends AbstractWorkPacketDrawer {
 		this.hasWorkPackets = hasWorkPackets;
 	}
 
+	@Override
+	public void addPacketsToProcessedList(Collection<IWorkPacket> workPackets) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -8,16 +8,15 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 /**
+ * This change listener updates the system when the user changes the number of
+ * duplicate packets needed.
+ * 
  * @author Phil
  *
  */
 public class DuplicatesNumChangeListener implements ChangeListener<Integer> {
 
 	private AbstractWorkPacketDrawer workPacketManager;
-
-	public DuplicatesNumChangeListener() {
-
-	}
 
 	public DuplicatesNumChangeListener(
 			AbstractWorkPacketDrawer workPacketManager) {
@@ -32,11 +31,11 @@ public class DuplicatesNumChangeListener implements ChangeListener<Integer> {
 	 * , java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public void changed(ObservableValue<? extends Integer> arg0, Integer oldValue,
-			Integer newValue) {
-		if (newValue > 0){
+	public void changed(ObservableValue<? extends Integer> arg0,
+			Integer oldValue, Integer newValue) {
+		if (newValue > 0) {
 			workPacketManager.setNumberOfCopies(newValue);
-		} 
+		}
 	}
 
 }

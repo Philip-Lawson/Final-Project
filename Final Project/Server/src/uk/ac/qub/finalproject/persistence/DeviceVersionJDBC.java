@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The DAO for performing CRUD operations regarding device version information.
+ * 
  * @author Phil
  *
  */
@@ -29,6 +31,12 @@ public class DeviceVersionJDBC extends AbstractJDBC {
 
 	private Encryptor encryptor = getEncryptor();
 
+	/**
+	 * Saves the device version information to the database.
+	 * 
+	 * @param version
+	 * @param deviceID
+	 */
 	public void saveDeviceVersion(Integer version, String deviceID) {
 		try {
 			Connection connection = createConnection();
@@ -46,10 +54,21 @@ public class DeviceVersionJDBC extends AbstractJDBC {
 
 	}
 
+	/**
+	 * Updates a device's version information in the database.
+	 * 
+	 * @param version
+	 * @param deviceID
+	 */
 	public void updateDeviceVersion(Integer version, String deviceID) {
 		saveDeviceVersion(version, deviceID);
 	}
 
+	/**
+	 * Retrieves all device version information from the database.
+	 * 
+	 * @return
+	 */
 	public Map<Integer, List<String>> getDeviceVersions() {
 		Map<Integer, List<String>> versionMap = new HashMap<Integer, List<String>>();
 
@@ -76,6 +95,13 @@ public class DeviceVersionJDBC extends AbstractJDBC {
 
 	}
 
+	/**
+	 * Adds the device version information to the referenced map.
+	 * 
+	 * @param versionMap
+	 * @param versionCode
+	 * @param deviceID
+	 */
 	private void addResultToMap(Map<Integer, List<String>> versionMap,
 			Integer versionCode, String deviceID) {
 		if (!versionMap.containsKey(versionCode)) {

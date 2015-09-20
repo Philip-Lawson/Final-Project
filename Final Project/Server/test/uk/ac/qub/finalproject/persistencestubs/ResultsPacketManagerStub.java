@@ -3,6 +3,8 @@
  */
 package uk.ac.qub.finalproject.persistencestubs;
 
+import java.util.Collection;
+
 import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
 
@@ -26,6 +28,13 @@ public class ResultsPacketManagerStub extends ResultsPacketManager {
 	public void writeResult(IResultsPacket resultsPacket){
 		resultWritten = true;
 		this.resultsPacket = resultsPacket;
+	}
+	
+	@Override
+	public void writeResultsList(Collection<IResultsPacket> packetList){
+		resultWritten = true;
+		if(packetList.size() > 0)
+		this.resultsPacket = packetList.iterator().next();
 	}
 	
 	@Override

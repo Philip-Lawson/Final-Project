@@ -3,6 +3,7 @@
  */
 package uk.ac.qub.finalproject.persistence;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Observable;
@@ -65,10 +66,36 @@ public class ResultsPacketManager extends Observable {
 		} else {
 			resultsCache.put(packetID, resultsPacket);
 			resultsDB.writeResult(resultsPacket);
+
 			setChanged();
 			notifyObservers();
 		}
 
+	}
+
+	/**
+	 * Writes each results packet to the cache, notifying observers as it goes.
+	 * Once all new results are added to the list it writes all of the new
+	 * results to the database in one batch process.
+	 * 
+	 * @param resultsPacketList
+	 */
+	public void writeResultsList(Collection<IResultsPacket> resultsPacketList) {
+		ArrayList<IResultsPacket> unsavedResultsList = new ArrayList<IResultsPacket>(
+				resultsPacketList.size());
+
+		for (IResultsPacket result : resultsPacketList) {
+			if (resultIsSaved(result.getPacketId())) {
+
+			} else {
+				resultsCache.putIfAbsent(result.getPacketId(), result);
+				unsavedResultsList.add(result);
+				setChanged();
+				notifyObservers();
+			}
+		}
+
+		resultsDB.writeResultList(unsavedResultsList);
 	}
 
 	/**
@@ -118,8 +145,13 @@ public class ResultsPacketManager extends Observable {
 					.putIfAbsent(resultsPacket.getPacketId(), resultsPacket);
 		}
 	}
-	
-	public boolean allResultsComplete(){
+
+	/**
+	 * Returns true if all work packets have been processed.
+	 * 
+	 * @return
+	 */
+	public boolean allResultsComplete() {
 		return resultsDB.allResultsComplete();
 	}
 

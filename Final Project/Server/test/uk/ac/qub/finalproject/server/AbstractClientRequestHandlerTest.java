@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.qub.finalproject.server.networking.AbstractClientRequestHandler;
 import uk.ac.qub.finalproject.serverstubs.FallThroughRequestHandler;
 import uk.ac.qub.finalproject.serverstubs.GenericClientRequestHandler;
 

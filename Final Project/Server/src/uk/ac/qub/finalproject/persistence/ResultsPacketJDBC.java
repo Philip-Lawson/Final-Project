@@ -4,6 +4,9 @@
 package uk.ac.qub.finalproject.persistence;
 
 import java.beans.PropertyVetoException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,8 +20,10 @@ import java.util.logging.Logger;
 import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 
 /**
- * This DAO encapsulates requests to write or read information regarding results
- * packets to and from the database.
+ * This DAO performs CRUD operations on the results packet table. It allows the
+ * user to add results packets to the database, retrieve results packets from
+ * the database and determine if all work packets have an associated results
+ * packet.
  * 
  * @author Phil
  *
@@ -58,6 +63,40 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 	}
 
 	/**
+	 * Writes a list of results packets to the database in one batch.
+	 * 
+	 * @param resultsPacketList
+	 */
+	public void writeResultList(Collection<IResultsPacket> resultsPacketList) {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			connection = createConnection();
+			preparedStatement = connection.prepareStatement(ADD_RESULTS_PACKET);
+
+			for (IResultsPacket resultsPacket : resultsPacketList) {
+				preparedStatement.setString(1, resultsPacket.getPacketId());
+				preparedStatement.setObject(2, resultsPacket);
+
+				try {
+					// allow the loop to continue if there
+					// is a problem with this particular update
+					preparedStatement.executeUpdate();
+				} catch (SQLException e) {
+
+				}
+			}
+
+		} catch (SQLException | PropertyVetoException SQLEx) {
+			logger.log(Level.WARNING, ResultsPacketJDBC.class.getName()
+					+ " Problem saving results packets to the database");
+		} finally {
+			closeConnection(connection, preparedStatement, null);
+		}
+	}
+
+	/**
 	 * Retrieves all the results that are currently stored in the database as a
 	 * collection.
 	 * 
@@ -65,11 +104,13 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 	 */
 	public Collection<IResultsPacket> getResultsPackets() {
 		ResultSet resultSet = null;
-		Collection<IResultsPacket> resultsPackets = new ArrayList<IResultsPacket>(
+		ArrayList<IResultsPacket> resultsPackets = new ArrayList<IResultsPacket>(
 				1000);
 
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
+		ByteArrayInputStream bytesIn = null;
+		ObjectInputStream input = null;
 
 		try {
 			connection = createConnection();
@@ -79,18 +120,47 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
-				resultsPackets.add((IResultsPacket) resultSet.getObject(1));
+				byte[] obj = (byte[]) resultSet.getObject("results_packet");
+				bytesIn = new ByteArrayInputStream(obj);
+				input = new ObjectInputStream(bytesIn);
+
+				IResultsPacket packet = (IResultsPacket) input.readObject();
+				resultsPackets.add(packet);
 			}
-		} catch (SQLException | PropertyVetoException SQLEx) {
+		} catch (SQLException | PropertyVetoException | IOException
+				| ClassNotFoundException SQLEx) {
 			logger.log(Level.WARNING, ResultsPacketJDBC.class.getName()
 					+ " Problem loading results packet from the database");
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
+
+			try {
+				if (input != null) {
+					input.close();
+				}
+			} catch (IOException e) {
+
+			}
+
+			try {
+				if (bytesIn != null) {
+					input.close();
+				}
+			} catch (IOException e) {
+
+			}
+
 		}
 
+		resultsPackets.trimToSize();
 		return resultsPackets;
 	}
 
+	/**
+	 * This queries the database to see if all work packets have been processed.
+	 * 
+	 * @return true if all work packets have been processed.
+	 */
 	public boolean allResultsComplete() {
 		boolean resultsComplete = false;
 		Connection connection = null;
@@ -106,6 +176,8 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 			if (resultSet.next()) {
 				int unProcessedWorkPackets = resultSet.getInt(1);
 				resultsComplete = (unProcessedWorkPackets == 0);
+				System.out.println(unProcessedWorkPackets
+						+ "unprocessed packets");
 			}
 
 		} catch (SQLException | PropertyVetoException SQLEx) {

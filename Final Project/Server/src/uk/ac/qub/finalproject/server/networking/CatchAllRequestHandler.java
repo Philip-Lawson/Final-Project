@@ -1,12 +1,15 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 /**
+ * This catch all request handler is used as the last request handler in a chain
+ * of request handlers.
+ * 
  * @author Phil
  *
  */

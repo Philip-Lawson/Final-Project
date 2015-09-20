@@ -3,10 +3,11 @@
  */
 package uk.ac.qub.finalproject.persistence;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
-
 
 /**
  * The AbstractWorkPacketLoader encapsulates the logic and work needed to create
@@ -34,6 +35,11 @@ public abstract class AbstractWorkPacketLoader {
 	private AbstractWorkPacketDrawer workPacketDrawer;
 
 	/**
+	 * The DAO that loads results packets from the database.
+	 */
+	private ResultsPacketJDBC resultsDB = new ResultsPacketJDBC();
+
+	/**
 	 * Constructs a work packet loader with a work packet drawer to load .
 	 * 
 	 * @param workPacketDrawer
@@ -45,12 +51,34 @@ public abstract class AbstractWorkPacketLoader {
 
 	/**
 	 * Loads work packets to the work packet drawer. This method should be used
-	 * when the session is started. <br>
+	 * when the session is started. Note that it will not load work packets that
+	 * have been successfully processed already. <br>
 	 * The retrieval of work packets from a persistence layer is left to
 	 * concrete implementations of retrieveWorkPackets().
 	 */
 	public final void loadWorkPackets() {
-		workPacketDrawer.addWorkPackets(retrieveInitialWorkPackets());
+		Collection<IWorkPacket> workPackets = new ArrayList<IWorkPacket>();
+		Collection<IResultsPacket> resultsPackets = resultsDB
+				.getResultsPackets();
+		Collection<IWorkPacket> processedWorkPackets = new ArrayList<IWorkPacket>(
+				resultsPackets.size());
+		Collection<String> resultsList = new ArrayList<String>(
+				resultsPackets.size());
+
+		for (IResultsPacket result : resultsPackets) {
+			resultsList.add(result.getPacketId());
+		}
+
+		for (IWorkPacket workPacket : retrieveInitialWorkPackets()) {
+			if (!resultsList.contains(workPacket.getPacketId())) {
+				workPackets.add(workPacket);
+			} else {
+				processedWorkPackets.add(workPacket);
+			}
+		}
+
+		workPacketDrawer.addWorkPackets(workPackets);
+		workPacketDrawer.addPacketsToProcessedList(processedWorkPackets);
 	}
 
 	/**

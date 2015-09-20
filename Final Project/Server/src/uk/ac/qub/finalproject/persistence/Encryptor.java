@@ -16,32 +16,48 @@ import javax.crypto.spec.SecretKeySpec;
 import uk.ac.qub.finalproject.server.implementations.Implementations;
 
 /**
+ * The Encryptor Singleton encapsulates the methods needed to encrypt and
+ * decrypt sensitive client information.
+ * 
  * @author Phil
  *
  */
 public class Encryptor {
 
-	private static final Encryptor uniqueInstance = new Encryptor();
+	private static Encryptor uniqueInstance;
 	private static final String ALGORITHM = "AES";
 
 	private Key secretKey;
 	private Cipher cipher;
 
-	
-
 	public static Encryptor getEncryptor() {
+		if (null == uniqueInstance) {
+			synchronized (Encryptor.class) {
+				if (null == uniqueInstance) {
+					uniqueInstance = new Encryptor();
+				}
+			}
+		}
+
 		return uniqueInstance;
 	}
 
 	private Encryptor() {
 		try {
-			secretKey = new SecretKeySpec(Implementations.getSecretKeySpec(), "AES");
+			secretKey = new SecretKeySpec(Implementations.getSecretKeySpec(),
+					"AES");
 			cipher = Cipher.getInstance(ALGORITHM);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
 
 		}
 	}
 
+	/**
+	 * Encrypts a string and returns a byte array of the encrypted string.
+	 * 
+	 * @param toEncrypt
+	 * @return
+	 */
 	public synchronized byte[] encrypt(String toEncrypt) {
 
 		try {
@@ -56,6 +72,12 @@ public class Encryptor {
 		return toEncrypt.getBytes();
 	}
 
+	/**
+	 * Decrypts the byte array and returns the original stirng.
+	 * 
+	 * @param toDecrypt
+	 * @return
+	 */
 	public synchronized String decrypt(byte[] toDecrypt) {
 
 		try {

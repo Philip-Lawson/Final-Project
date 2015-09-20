@@ -8,19 +8,19 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 /**
+ * This change listener updates the system when the user changes the time
+ * threshold for active devices.
+ * 
  * @author Phil
  *
  */
 public class ActiveDeviceThresholdChangeListener implements
 		ChangeListener<String> {
+
 	private static String FIND_NON_NUMBERS_REGEX = "[^1-9]";
 	private static String HOUR = "hour";
 
 	private DeviceDetailsManager deviceDetailsManager;
-
-	public ActiveDeviceThresholdChangeListener() {
-
-	}
 
 	public ActiveDeviceThresholdChangeListener(
 			DeviceDetailsManager deviceDetailsManager) {

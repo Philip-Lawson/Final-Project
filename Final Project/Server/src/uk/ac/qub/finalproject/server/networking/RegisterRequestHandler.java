@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,6 +15,9 @@ import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
 import uk.ac.qub.finalproject.persistence.LoggingUtils;
 
 /**
+ * This request handler responds to registration requests from client devices.
+ * It sends a boolean to confirm the success of registration.
+ * 
  * @author Phil
  *
  */

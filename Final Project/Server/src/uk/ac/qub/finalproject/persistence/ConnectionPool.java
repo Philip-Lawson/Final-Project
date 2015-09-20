@@ -7,6 +7,8 @@ import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import uk.ac.qub.finalproject.server.implementations.Implementations;
+
 import com.mchange.v2.c3p0.*;
 
 /**
@@ -19,9 +21,9 @@ import com.mchange.v2.c3p0.*;
 public class ConnectionPool {
 
 	private static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
-	private static final String DATABASE_URL = "jdbc:mysql://web2.eeecs.qub.ac.uk/40143289";
-	private static final String USER = "40143289";
-	private static final String PASSWORD = "FMA4237";
+	private static final String DATABASE_URL = Implementations.getDatabaseURL();
+	private static final String USER = Implementations.getDatabaseUser();
+	private static final String PASSWORD = Implementations.getDatabasePassword();
 
 	private static volatile ConnectionPool uniqueInstance;
 

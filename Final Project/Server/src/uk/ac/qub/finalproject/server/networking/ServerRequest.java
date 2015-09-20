@@ -1,4 +1,4 @@
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
 /**
  * THis is a utility class that stores all the constants that represent server

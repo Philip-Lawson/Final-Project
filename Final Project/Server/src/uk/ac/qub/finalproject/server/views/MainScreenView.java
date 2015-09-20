@@ -41,6 +41,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
+ * This is the controller class for the UI actions of the Main Screen. It must
+ * have a reference to commands and action listeners passed in before the UI can
+ * be opened.
+ * 
  * @author Phil
  *
  */
@@ -129,7 +133,7 @@ public class MainScreenView {
 
 	@FXML
 	private MenuItem aboutMenuItem;
-	
+
 	@FXML
 	private MenuItem closeMenuItem;
 
@@ -144,6 +148,9 @@ public class MainScreenView {
 	private ConcurrentMap<Number, Integer> processingTimesMap = new ConcurrentHashMap<Number, Integer>();
 	private int totalDevices;
 
+	/**
+	 * Sets up all the widgets on screen, including event listeners.
+	 */
 	public void setupWidgets() {
 		setupButtons();
 		setPacketsNumComboBox();
@@ -153,6 +160,10 @@ public class MainScreenView {
 		setupMenuItems();
 	}
 
+	/**
+	 * Sets up the buttons on screen and assigns them with appropriate event
+	 * handlers.
+	 */
 	public void setupButtons() {
 		startButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -162,6 +173,10 @@ public class MainScreenView {
 				stopButton.setDisable(false);
 			}
 		});
+
+		startButton.setAccessibleText("Start Button");
+		startButton
+				.setAccessibleHelp("Click this to start sending packets to be processed");
 
 		stopButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -173,6 +188,10 @@ public class MainScreenView {
 			}
 
 		});
+
+		stopButton.setAccessibleText("Stop Button");
+		stopButton
+				.setAccessibleHelp("Click this to stop sending packets to be processed");
 
 		loadAdditionalPacketsButton
 				.setOnAction(new EventHandler<ActionEvent>() {
@@ -225,6 +244,11 @@ public class MainScreenView {
 
 				});
 
+		loadAdditionalPacketsButton
+				.setAccessibleText("Load Work Packets Button");
+		loadAdditionalPacketsButton
+				.setAccessibleHelp("Use this button to load more work packets from the database");
+
 		transferResultsButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -273,6 +297,10 @@ public class MainScreenView {
 
 		});
 
+		transferResultsButton.setAccessibleText("Transfer Results Button");
+		transferResultsButton
+				.setAccessibleHelp("Use this to transfer results packets to your database");
+
 		fivePercentBlacklistRadioButton.setUserData("5");
 		tenPercentBlacklistRadioButton.setUserData("10");
 		twentyPercentBlacklistRadioButton.setUserData("20");
@@ -287,6 +315,9 @@ public class MainScreenView {
 
 	}
 
+	/**
+	 * Sets the packets number combo box with a list of options.
+	 */
 	public void setPacketsNumComboBox() {
 		packetsNumComboBox.getItems()
 				.addAll(2, 3, 5, 8, 10, 15, 20, 30, 40, 50);
@@ -294,15 +325,29 @@ public class MainScreenView {
 				.setValue(WorkPacketDrawerImpl.DEFAULT_PACKETS_PER_LIST);
 		packetsNumComboBox.setVisibleRowCount(4);
 
+		packetsNumComboBox.setAccessibleText("Packets per list Combobox");
+		packetsNumComboBox
+				.setAccessibleHelp("This changes the number of packets sent out in each work packet list");
+
 	}
 
+	/**
+	 * Sets the duplicates number combo box with a list of options.
+	 */
 	public void setDuplicatesNumComboBox() {
 		duplicatesNumComboBox.getItems().addAll(5, 8, 10, 15, 20);
 		duplicatesNumComboBox
 				.setValue(WorkPacketDrawerImpl.DEFAULT_TIMES_TO_SEND_PACKET_LIST);
 		duplicatesNumComboBox.setVisibleRowCount(4);
+
+		duplicatesNumComboBox.setAccessibleText("Duplicate packets Combobox");
+		duplicatesNumComboBox
+				.setAccessibleHelp("This sets the number of times each work packet is sent");
 	}
 
+	/**
+	 * Sets the active device threshold combo box with a list of options.
+	 */
 	public void setActiveDeviceThresholdComboBox() {
 		activeDeviceThresholdComboBox.getItems().addAll("5 mins", "10 mins",
 				"15 mins", "30 mins", "1 hour", "2 hours", "3 hours",
@@ -311,8 +356,16 @@ public class MainScreenView {
 				.setValue(DeviceDetailsManager.DEFAULT_ACTIVE_DEVICE_THRESHOLD
 						+ " mins");
 		activeDeviceThresholdComboBox.setVisibleRowCount(4);
+
+		activeDeviceThresholdComboBox
+				.setAccessibleText("Active Device Threshold Combobox");
+		activeDeviceThresholdComboBox
+				.setAccessibleHelp("Use this to set when a device becomes inactive");
 	}
 
+	/**
+	 * Sets up the line chart.
+	 */
 	public void setupChart() {
 		// add an initial time to the chart
 		// this ensures a continuous line from
@@ -327,6 +380,9 @@ public class MainScreenView {
 
 	}
 
+	/**
+	 * Sets up the menu items with appropriate event listeners.
+	 */
 	public void setupMenuItems() {
 		quitMenuItem.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -335,7 +391,7 @@ public class MainScreenView {
 				closeApplication();
 			}
 		});
-		
+
 		aboutMenuItem.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -353,61 +409,117 @@ public class MainScreenView {
 		});
 	}
 
+	/**
+	 * Sets the change listener for the blacklist.
+	 * 
+	 * @param changeListener
+	 */
 	public void setBlacklistChangeListener(
 			BlacklistChangeListener changeListener) {
 		blacklistPercent.selectedToggleProperty().addListener(changeListener);
 	}
 
+	/**
+	 * Sets the change listener for changes to the packets number combo box.
+	 * 
+	 * @param changeListener
+	 */
 	public void setPacketsNumChangeListener(
 			ChangeListener<Integer> changeListener) {
 		packetsNumComboBox.valueProperty().addListener(changeListener);
 	}
 
+	/**
+	 * Sets the change listener for changes to the duplicates number combo box.
+	 * 
+	 * @param changeListener
+	 */
 	public void setDuplicatesNumChangeListener(
 			ChangeListener<Integer> changeListener) {
 		duplicatesNumComboBox.valueProperty().addListener(changeListener);
 	}
 
+	/**
+	 * Sets the change listener for changes to the active device threshold combo
+	 * box.
+	 * 
+	 * @param changeListener
+	 */
 	public void setActiveDeviceThresholdChangeListener(
 			ChangeListener<String> changeListener) {
 		activeDeviceThresholdComboBox.valueProperty().addListener(
 				changeListener);
 	}
 
+	/**
+	 * Sets the command to load additional work packets.
+	 * 
+	 * @param command
+	 */
 	public void setLoadAdditionalWorkPacketsCommand(Command command) {
 		this.loadAdditionalWorkPacketsCommand = command;
 	}
 
+	/**
+	 * Sets the start server command to the appropriate command.
+	 * 
+	 * @param command
+	 */
 	public void setStartServerCommand(Command command) {
 		this.startCommand = command;
 	}
 
+	/**
+	 * Sets the stop sending packetscommand to the appropriate command.
+	 * 
+	 * @param command
+	 */
 	public void setStopSendingPacketsCommand(Command command) {
 		this.stopSendingPacketsCommand = command;
 	}
 
+	/**
+	 * Sets the transfer results command to the appropriate command.
+	 * 
+	 * @param command
+	 */
 	public void setTransferResultsCommand(Command command) {
 		this.transferResultsCommand = command;
 	}
 
+	/**
+	 * Updates the progress of the computation on screen.
+	 * 
+	 * @param packetsComplete
+	 * @param totalPackets
+	 */
 	public void updateProgress(long packetsComplete, long totalPackets) {
 
 		Platform.runLater(new Runnable() {
 
 			@Override
 			public void run() {
-				double progress = packetsComplete / totalPackets;
-				int percentComplete = (int) progress * 100;
+				double progress = packetsComplete / (double) totalPackets;
+				int percentComplete = (int) (progress * 100);
 
 				processingProgressBar.setProgress(progress);
 				packetProgressLabel.setText(packetsComplete + "/"
 						+ totalPackets);
+				packetProgressLabel.setAccessibleText(packetsComplete + " of "
+						+ totalPackets + " completed");
 				percentPacketsCompleteLabel.setText(percentComplete + " %");
+				percentPacketsCompleteLabel.setAccessibleText(percentComplete
+						+ " percent complete");
 			}
 
 		});
 	}
 
+	/**
+	 * Adds another processing time value to the line chart.
+	 * 
+	 * @param minutes
+	 */
 	public void addProcessingTime(int minutes) {
 
 		if (processingTimesMap.containsKey(minutes)) {
@@ -434,17 +546,31 @@ public class MainScreenView {
 
 	}
 
+	/**
+	 * Updates the average processing time on screen.
+	 * 
+	 * @param averageTime
+	 */
 	public void updateAverageProcessingTime(String averageTime) {
 		Platform.runLater(new Runnable() {
 
 			@Override
 			public void run() {
 				averageTimeLabel.setText(averageTime);
+				averageTimeLabel
+						.setAccessibleText("The average processing time is "
+								+ averageTime);
 			}
 
 		});
 	}
 
+	/**
+	 * Updates the packet statistics on screen.
+	 * 
+	 * @param validPackets
+	 * @param invalidPackets
+	 */
 	public void updatePacketStats(long validPackets, long invalidPackets) {
 		Platform.runLater(new Runnable() {
 
@@ -455,6 +581,8 @@ public class MainScreenView {
 							/ (validPackets + invalidPackets);
 					int percent = (int) (percentBadPackets * 100);
 					percentBadPacketsLabel.setText(percent + " %");
+					percentBadPacketsLabel.setAccessibleText(percent
+							+ " percent bad packets");
 				} catch (ArithmeticException Ex) {
 
 				}
@@ -463,14 +591,24 @@ public class MainScreenView {
 		});
 	}
 
+	/**
+	 * Updates the data on active devices on screen.
+	 * 
+	 * @param activeDevices
+	 */
 	public void updateActiveDevices(int activeDevices) {
 		Platform.runLater(new Runnable() {
 
 			@Override
 			public void run() {
 				activeDevicesLabel.setText(activeDevices + "");
+				activeDevicesLabel.setAccessibleText(activeDevices
+						+ " active devices");
 				inactiveDevicesLabel.setText((totalDevices - activeDevices)
 						+ "");
+				inactiveDevicesLabel
+						.setAccessibleText((totalDevices - activeDevices)
+								+ " inactive devices");
 			}
 
 		});
@@ -485,22 +623,36 @@ public class MainScreenView {
 				int activeDevices = Integer.parseInt(activeDevicesLabel
 						.getText());
 				inactiveDevicesLabel.setText((devices - activeDevices) + "");
+				inactiveDevicesLabel
+						.setAccessibleText((devices - activeDevices)
+								+ " inactive devices");
 			}
 
 		});
 	}
 
+	/**
+	 * Updates the data on blacklisted devices on screen.
+	 * 
+	 * @param blacklistedDevices
+	 */
 	public void updateBlacklistedDevices(int blacklistedDevices) {
 		Platform.runLater(new Runnable() {
 
 			@Override
 			public void run() {
 				blacklistedDevicesLabel.setText(blacklistedDevices + "");
+				blacklistedDevicesLabel.setAccessibleText(blacklistedDevices
+						+ " blacklisted devices");
 			}
 
 		});
 	}
 
+	/**
+	 * Shows an alert to the user when processing is complete. This allows them
+	 * to decide on the next action to take.
+	 */
 	public void processingComplete() {
 		Platform.runLater(new Runnable() {
 
@@ -518,12 +670,18 @@ public class MainScreenView {
 		});
 	}
 
+	/**
+	 * Helper method starts the progress indicator in the corner.
+	 * 
+	 * @param progressMessage
+	 */
 	private void startProgressIndicator(String progressMessage) {
 		Platform.runLater(new Runnable() {
 
 			@Override
 			public void run() {
 				databaseProgressLabel.setText(progressMessage);
+				databaseProgressLabel.setAccessibleText(progressMessage);
 				databaseProgressBar.setVisible(true);
 				databaseProcessingPane.setVisible(true);
 			}
@@ -531,6 +689,9 @@ public class MainScreenView {
 		});
 	}
 
+	/**
+	 * Helper method stops the progress indicator.
+	 */
 	private void stopProgressIndicator() {
 		Platform.runLater(new Runnable() {
 
@@ -544,6 +705,14 @@ public class MainScreenView {
 		});
 	}
 
+	/**
+	 * Helper method shows confirmation of success once the database action has
+	 * completed.
+	 * 
+	 * @param title
+	 * @param headerText
+	 * @param contentText
+	 */
 	private void showDatabaseConfirmation(String title, String headerText,
 			String contentText) {
 		Platform.runLater(new Runnable() {
@@ -560,6 +729,13 @@ public class MainScreenView {
 
 	}
 
+	/**
+	 * Shows a wait message to the user if they try to trigger a second database
+	 * action while the first action is completing.
+	 * 
+	 * @param title
+	 * @param contentText
+	 */
 	private void showWaitMessage(String title, String contentText) {
 		Platform.runLater(new Runnable() {
 
@@ -576,6 +752,9 @@ public class MainScreenView {
 		});
 	}
 
+	/**
+	 * Helper method closes the wait message when a database action completes.
+	 */
 	private void closeWaitMessage() {
 		Platform.runLater(new Runnable() {
 
@@ -589,10 +768,16 @@ public class MainScreenView {
 
 	}
 
+	/**
+	 * Helper method to close the application.
+	 */
 	public void closeApplication() {
 		Platform.exit();
 	}
 
+	/**
+	 * Shows the about window to the user.
+	 */
 	public void showAboutWindow() {
 		Platform.runLater(new Runnable() {
 

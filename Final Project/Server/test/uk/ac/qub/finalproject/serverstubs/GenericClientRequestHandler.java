@@ -6,7 +6,7 @@ package uk.ac.qub.finalproject.serverstubs;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import uk.ac.qub.finalproject.server.AbstractClientRequestHandler;
+import uk.ac.qub.finalproject.server.networking.AbstractClientRequestHandler;
 
 /**
  * Mock client request handler used to test that the

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -33,6 +33,7 @@ public class DeleteAccountRequestHandler extends AbstractClientRequestHandler {
 	}
 
 	public DeleteAccountRequestHandler(DeviceDetailsManager deviceDetailsManager) {
+		this();
 		this.deviceDetailsManager = deviceDetailsManager;
 	}
 

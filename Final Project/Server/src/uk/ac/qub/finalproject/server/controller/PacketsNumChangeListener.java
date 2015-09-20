@@ -8,14 +8,17 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 /**
+ * This change listener updates the system when user changes the number of
+ * packets per list.
+ * 
  * @author Phil
  *
  */
 public class PacketsNumChangeListener implements ChangeListener<Integer> {
 
 	private AbstractWorkPacketDrawer workPacketsManager;
-	
-	public PacketsNumChangeListener(AbstractWorkPacketDrawer workPacketsManager){
+
+	public PacketsNumChangeListener(AbstractWorkPacketDrawer workPacketsManager) {
 		this.workPacketsManager = workPacketsManager;
 	}
 

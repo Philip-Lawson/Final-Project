@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,6 +17,11 @@ import uk.ac.qub.finalproject.persistence.DeviceVersionManager;
 import uk.ac.qub.finalproject.persistence.LoggingUtils;
 
 /**
+ * This request handler responds to client requests for work packet lists. It
+ * will send a work packet list to the client if there are packets available and
+ * the client is not considered fraudulent. Otherwise it sends the client a
+ * message to become dormant.
+ * 
  * @author Phil
  *
  */
@@ -80,6 +85,13 @@ public class WorkPacketRequestHandler extends AbstractClientRequestHandler {
 
 	}
 
+	/**
+	 * Helper method checks to see if it is appropriate to send work packets to
+	 * this device.
+	 * 
+	 * @param deviceID
+	 * @return
+	 */
 	private boolean canSendPackets(String deviceID) {
 		return workPacketDrawer.hasWorkPackets()
 				&& deviceVersionManager.deviceIsVersionOrAbove(

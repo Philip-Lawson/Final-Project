@@ -4,6 +4,9 @@
 package uk.ac.qub.finalproject.persistence;
 
 import java.beans.PropertyVetoException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +20,8 @@ import java.util.logging.Logger;
 import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
 
 /**
+ * The DAO used for work packet CRUD actions.
+ * 
  * @author Phil
  *
  */
@@ -30,6 +35,11 @@ public class WorkPacketJDBC extends AbstractJDBC {
 			+ "(SELECT packet_id FROM results_packets);";
 	private static final String GET_INDIVIDUAL_WORK_PACKET = "SELECT work_packet FROM work_packets WHERE packet_id = ?";
 
+	/**
+	 * Adds a collection of work packets to the database.
+	 * 
+	 * @param workPackets
+	 */
 	public void addWorkPackets(Collection<IWorkPacket> workPackets) {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -41,7 +51,19 @@ public class WorkPacketJDBC extends AbstractJDBC {
 			for (IWorkPacket workPacket : workPackets) {
 				preparedStatement.setString(1, workPacket.getPacketId());
 				preparedStatement.setObject(2, workPacket);
-				preparedStatement.executeUpdate();
+
+				try {
+					// if this update fails due to an attempt
+					// to insert the same packet twice, the loop
+					// should continue
+					preparedStatement.executeUpdate();
+				} catch (SQLException SQLEx) {
+					logger.log(Level.WARNING,
+							WorkPacketJDBC.class.getName()
+									+ " Could not add work packet "
+									+ workPacket.getPacketId());
+				}
+
 			}
 
 		} catch (SQLException | PropertyVetoException SQLEx) {
@@ -53,12 +75,20 @@ public class WorkPacketJDBC extends AbstractJDBC {
 
 	}
 
+	/**
+	 * Returns a list of incomplete work packets from the database.
+	 * 
+	 * @return
+	 */
 	public Collection<IWorkPacket> getIncompleteWorkPackets() {
 		List<IWorkPacket> workPackets = new ArrayList<IWorkPacket>(1000);
 
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		ByteArrayInputStream bytesIn = null;
+		ObjectInputStream input = null;
+
 		try {
 			connection = createConnection();
 			preparedStatement = connection
@@ -66,26 +96,57 @@ public class WorkPacketJDBC extends AbstractJDBC {
 			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
-				workPackets.add((IWorkPacket) resultSet.getObject(1));
+				byte[] bytes = (byte[]) resultSet.getObject(1);
+				bytesIn = new ByteArrayInputStream(bytes);
+				input = new ObjectInputStream(bytesIn);
+
+				IWorkPacket workPacket = (IWorkPacket) input.readObject();
+				workPackets.add(workPacket);
 			}
 
-		} catch (SQLException | PropertyVetoException SQLEx) {
+		} catch (SQLException | PropertyVetoException | IOException
+				| ClassNotFoundException SQLEx) {
 			logger.log(Level.WARNING, WorkPacketJDBC.class.getName()
-					+ " Could not load incomplete work packets");
+					+ " Could not load incomplete work packets", SQLEx);
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
+
+			try {
+				if (input != null) {
+					input.close();
+				}
+			} catch (IOException e) {
+
+			}
+
+			try {
+				if (bytesIn != null) {
+					input.close();
+				}
+			} catch (IOException e) {
+
+			}
 		}
 
 		return workPackets;
 
 	}
 
+	/**
+	 * Returns a specific work packet from the database.
+	 * 
+	 * @param packetID
+	 *            the ID of the work packet.
+	 * @return
+	 */
 	public IWorkPacket getIndividualWorkPacket(String packetID) {
 		IWorkPacket workPacket = null;
 
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		ByteArrayInputStream bytesIn = null;
+		ObjectInputStream input = null;
 
 		try {
 			connection = createConnection();
@@ -96,16 +157,93 @@ public class WorkPacketJDBC extends AbstractJDBC {
 			resultSet = preparedStatement.executeQuery();
 
 			if (resultSet.next()) {
-				workPacket = (IWorkPacket) resultSet.getObject(1);
+				byte[] bytes = (byte[]) resultSet.getObject(1);
+				bytesIn = new ByteArrayInputStream(bytes);
+				input = new ObjectInputStream(bytesIn);
+				workPacket = (IWorkPacket) input.readObject();
 			}
 
-		} catch (SQLException | PropertyVetoException SQLEx) {
+		} catch (SQLException | PropertyVetoException | ClassNotFoundException
+				| IOException SQLEx) {
 			logger.log(Level.WARNING, WorkPacketJDBC.class.getName()
 					+ " Could not get individual work packet");
 		} finally {
 			closeConnection(connection, preparedStatement, resultSet);
+
+			try {
+				if (input != null) {
+					input.close();
+				}
+			} catch (IOException e) {
+
+			}
+
+			try {
+				if (bytesIn != null) {
+					input.close();
+				}
+			} catch (IOException e) {
+
+			}
 		}
 
 		return workPacket;
+	}
+
+	/**
+	 * Reads all the work packets from the database.
+	 * 
+	 * @return
+	 */
+	public Collection<IWorkPacket> getWorkPackets() {
+		List<IWorkPacket> workPackets = new ArrayList<IWorkPacket>(1000);
+
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		ByteArrayInputStream bytesIn = null;
+		ObjectInputStream input = null;
+
+		try {
+			connection = createConnection();
+			preparedStatement = connection
+					.prepareStatement("SELECT work_packet FROM work_packets");
+			resultSet = preparedStatement.executeQuery();
+
+			while (resultSet.next()) {
+				byte[] bytes = (byte[]) resultSet.getObject(1);
+				bytesIn = new ByteArrayInputStream(bytes);
+				input = new ObjectInputStream(bytesIn);
+
+				IWorkPacket workPacket = (IWorkPacket) input.readObject();
+				workPackets.add(workPacket);
+			}
+
+		} catch (SQLException | PropertyVetoException | IOException
+				| ClassNotFoundException SQLEx) {
+			logger.log(Level.WARNING, WorkPacketJDBC.class.getName()
+					+ " Could not load incomplete work packets");
+		} finally {
+			closeConnection(connection, preparedStatement, resultSet);
+
+			try {
+				if (input != null) {
+					input.close();
+				}
+			} catch (IOException e) {
+
+			}
+
+			try {
+				if (bytesIn != null) {
+					input.close();
+				}
+			} catch (IOException e) {
+
+			}
+		}
+
+		return workPackets;
+
 	}
 }

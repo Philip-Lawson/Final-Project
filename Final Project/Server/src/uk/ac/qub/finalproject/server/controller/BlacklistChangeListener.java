@@ -9,6 +9,9 @@ import javafx.scene.control.Toggle;
 import uk.ac.qub.finalproject.persistence.DeviceDetailsManager;
 
 /**
+ * Responds to changes in the blacklist threshold options on screen by changing
+ * the blacklisting threshold in the underlying system.
+ * 
  * @author Phil
  *
  */
@@ -16,10 +19,6 @@ public class BlacklistChangeListener implements ChangeListener<Toggle> {
 
 	private static String FIND_NON_NUMBERS_REGEX = "[^0-9]";
 	private DeviceDetailsManager deviceDetailsManager;
-
-	public BlacklistChangeListener() {
-
-	}
 
 	public BlacklistChangeListener(DeviceDetailsManager deviceDetailsManager) {
 		this.deviceDetailsManager = deviceDetailsManager;

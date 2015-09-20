@@ -47,6 +47,14 @@ public abstract class AbstractWorkPacketDrawer extends Observable {
 	public abstract WorkPacketList getNextWorkPacket();
 
 	/**
+	 * Adds previously processed work packets to the list of processed packets.
+	 * 
+	 * @param workPackets
+	 */
+	public abstract void addPacketsToProcessedList(
+			Collection<IWorkPacket> workPackets);
+
+	/**
 	 * Sets the number of copies of each work packet to be sent out. This can be
 	 * used to change the number of copies to be sent out dynamically as well as
 	 * initially.

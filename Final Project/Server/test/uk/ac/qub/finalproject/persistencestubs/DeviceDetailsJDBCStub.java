@@ -25,7 +25,7 @@ public class DeviceDetailsJDBCStub extends DeviceDetailsJDBC {
 	private ConcurrentMap<String, Device> deviceMap;
 	
 	@Override
-	public boolean deregisterDevice(String deviceID){
+	public boolean deleteDevice(String deviceID){
 		return deviceDeregistered;
 	}
 	

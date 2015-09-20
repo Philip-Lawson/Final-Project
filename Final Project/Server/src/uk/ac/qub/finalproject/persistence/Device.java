@@ -18,7 +18,7 @@ public class Device {
 	 * The unique device ID represented as a Hex string.
 	 */
 	private String deviceID;
-	
+
 	/**
 	 * An optional email address.
 	 */
@@ -128,14 +128,24 @@ public class Device {
 		++invalidResults;
 	}
 
+	/**
+	 * Returns the email associated with this device.
+	 * 
+	 * @return
+	 */
 	public String getEmailAddress() {
 		return emailAddress;
 	}
 
+	/**
+	 * Sets the email address associated with this device.
+	 * 
+	 * @param emailAddress
+	 */
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
-	
+
 	/**
 	 * The last time in milliseconds that this device was active.
 	 * 

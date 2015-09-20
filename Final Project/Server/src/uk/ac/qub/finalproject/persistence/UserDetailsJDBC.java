@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 import uk.ac.qub.finalproject.calculationclasses.RegistrationPack;
 
 /**
+ * The DAO used to perform CRUD operations associated with registered users.
+ * 
  * @author Phil
  *
  */
@@ -36,6 +38,13 @@ public class UserDetailsJDBC extends AbstractJDBC {
 	private Encryptor encryptor = getEncryptor();
 	private EmailValidationStrategy emailValidationStrategy = new EmailValidationStrategy();
 
+	/**
+	 * Saves a user's email to the database. This method will only work if the
+	 * user has not already registered.
+	 * 
+	 * @param registrationPack
+	 * @return
+	 */
 	public boolean registerEmail(RegistrationPack registrationPack) {
 
 		String email = registrationPack.getEmailAddress();
@@ -65,6 +74,13 @@ public class UserDetailsJDBC extends AbstractJDBC {
 		}
 	}
 
+	/**
+	 * Retrieves a list of all devices associated with a registered user.
+	 * 
+	 * @param emailAddress
+	 *            the user's email address.
+	 * @return
+	 */
 	public Collection<String> getUserDevices(String emailAddress) {
 		Collection<String> devicesList = new ArrayList<String>();
 
@@ -92,6 +108,12 @@ public class UserDetailsJDBC extends AbstractJDBC {
 		return devicesList;
 	}
 
+	/**
+	 * Changes a user's email address.
+	 * 
+	 * @param registrationPack
+	 * @return
+	 */
 	public boolean changeEmailAddress(RegistrationPack registrationPack) {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -116,6 +138,12 @@ public class UserDetailsJDBC extends AbstractJDBC {
 		}
 	}
 
+	/**
+	 * Deletes a user's email address from the database.
+	 * 
+	 * @param registrationPack
+	 * @return
+	 */
 	public boolean deleteEmailAddress(RegistrationPack registrationPack) {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -138,6 +166,13 @@ public class UserDetailsJDBC extends AbstractJDBC {
 		}
 	}
 
+	/**
+	 * Returns the number of calid results associated with a registered user.
+	 * 
+	 * @param emailAddress
+	 *            the user's email address.
+	 * @return
+	 */
 	public int getUserValidResults(String emailAddress) {
 		int validResults = 0;
 
@@ -166,6 +201,11 @@ public class UserDetailsJDBC extends AbstractJDBC {
 		return validResults;
 	}
 
+	/**
+	 * Retrieves all user emails from the database.
+	 * 
+	 * @return
+	 */
 	public Collection<String> getAllUserEmails() {
 		Collection<String> emailList = new ArrayList<String>();
 

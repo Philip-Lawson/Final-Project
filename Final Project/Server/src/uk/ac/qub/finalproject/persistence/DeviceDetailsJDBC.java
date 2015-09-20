@@ -28,22 +28,30 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 	private Logger logger = LoggingUtils.getLogger(DeviceDetailsJDBC.class);
 
 	private static final String REGISTER_DEVICE = "INSERT INTO devices (device_id) VALUES (?);";
-
-	private static final String DEREGISTER_DEVICE = "DELETE FROM devices WHERE device_id = ?;";
+	private static final String DELETE_DEVICE = "DELETE FROM devices WHERE device_id = ?;";
 	private static final String VALID_RESULT_SENT = "UPDATE devices SET valid_results = valid_results + 1 WHERE device_id = ?;";
 	private static final String INVALID_RESULT_SENT = "UPDATE devices SET invalid_results = invalid_results + 1 WHERE device_id = ?;";
 	private static final String LOAD_DEVICES = "SELECT * FROM devices";
 	private static final String LOAD_EMAIL_LIST = "SELECT device_id, email_address FROM users";
 
+	/**
+	 * The encryptor used to encrypt and decrypt device details.
+	 */
 	private Encryptor encryptor = getEncryptor();
 
-	public boolean deregisterDevice(String deviceID) {
+	/**
+	 * Deletes a device from the database.
+	 * 
+	 * @param deviceID
+	 * @return
+	 */
+	public boolean deleteDevice(String deviceID) {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		try {
 			connection = createConnection();
 
-			preparedStatement = connection.prepareStatement(DEREGISTER_DEVICE);
+			preparedStatement = connection.prepareStatement(DELETE_DEVICE);
 			preparedStatement.setBytes(1, encryptor.encrypt(deviceID));
 			preparedStatement.executeUpdate();
 
@@ -57,6 +65,11 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 		}
 	}
 
+	/**
+	 * Add another valid result mark to the associated device.
+	 * 
+	 * @param deviceID
+	 */
 	public void writeValidResultSent(String deviceID) {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -75,6 +88,11 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 		}
 	}
 
+	/**
+	 * Add another invalid result to the associated device.
+	 * 
+	 * @param deviceID
+	 */
 	public void writeInvalidResultSent(String deviceID) {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -93,6 +111,12 @@ public class DeviceDetailsJDBC extends AbstractJDBC {
 		}
 	}
 
+	/**
+	 * Writes a new device to the database. The device's details are encrypted.
+	 * 
+	 * @param registrationPack
+	 * @return
+	 */
 	public boolean registerDevice(RegistrationPack registrationPack) {
 		byte[] deviceID = encryptor.encrypt(registrationPack.getAndroidID());
 

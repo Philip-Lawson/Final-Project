@@ -6,6 +6,9 @@ package uk.ac.qub.finalproject.server.views;
 import javafx.util.StringConverter;
 
 /**
+ * This number formatter is used to format the numbers on the line chart to
+ * avoid showing floating points when natural numbers are used exclusively.
+ * 
  * @author Phil
  *
  */

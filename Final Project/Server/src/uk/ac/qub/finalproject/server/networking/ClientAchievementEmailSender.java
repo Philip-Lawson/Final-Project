@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
 import java.util.Properties;
 import java.util.logging.Level;
@@ -20,6 +20,10 @@ import uk.ac.qub.finalproject.persistence.LoggingUtils;
 import uk.ac.qub.finalproject.server.implementations.Implementations;
 
 /**
+ * This class encapsulates the work needed to send an email to registered
+ * clients. It uses a domain specific implementation of the client email factory
+ * to send to correct email.
+ * 
  * @author Phil
  *
  */

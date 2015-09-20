@@ -1,4 +1,4 @@
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,13 +9,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import uk.ac.qub.finalproject.persistence.LoggingUtils;
+import uk.ac.qub.finalproject.server.implementations.Implementations;
 
+/**
+ * The server is the main point of access for the client. It listens out for
+ * client connections and spawns a server thread for each new connection with a
+ * reference to its chain of request handlers. Note that the server has no
+ * knowledge of the underlying system.
+ * 
+ * @author Phil
+ *
+ */
 public class Server implements Runnable {
 
 	private Logger logger = LoggingUtils.getLogger(Server.class);
 
 	private static final int THREAD_POOL_SIZE = 200;
-	private static final int PORT = 12346;
+	private static final int PORT = Implementations.getServerPort();
 
 	private ExecutorService threadPool;
 	private AbstractClientRequestHandler requestHandler;
@@ -52,6 +62,12 @@ public class Server implements Runnable {
 		}
 	}
 
+	/**
+	 * Sets the chain of request handlers used by the server. Used to
+	 * dynamically change the server's response to certain client requests.
+	 * 
+	 * @param requestHandler
+	 */
 	public void setRequestHandlers(AbstractClientRequestHandler requestHandler) {
 		this.requestHandler = requestHandler;
 	}

@@ -20,10 +20,22 @@ public enum Achievements {
 		this.awardThreshold = awardThreshold;
 	}
 
+	/**
+	 * Returns the number of contributions needed to send a user a
+	 * congratulatory email.
+	 * 
+	 * @return
+	 */
 	public int getAwardThreshold() {
 		return awardThreshold;
 	}
 
+	/**
+	 * Allows the user to change the number of contributions needed to send a
+	 * user a congratulatory email.
+	 * 
+	 * @param awardThreshold
+	 */
 	public void setAwardThreshold(int awardThreshold) {
 		this.awardThreshold = awardThreshold;
 	}

@@ -54,8 +54,9 @@ public abstract class AbstractJDBC {
 		}
 
 		try {
-			connection.commit();
-			connection.close();
+			if (null != connection) {
+				connection.close();
+			}
 		} catch (SQLException e) {
 
 		}

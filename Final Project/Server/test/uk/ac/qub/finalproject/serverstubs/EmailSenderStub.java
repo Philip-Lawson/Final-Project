@@ -4,7 +4,7 @@
 package uk.ac.qub.finalproject.serverstubs;
 
 import uk.ac.qub.finalproject.persistence.Achievements;
-import uk.ac.qub.finalproject.server.ClientAchievementEmailSender;
+import uk.ac.qub.finalproject.server.networking.ClientAchievementEmailSender;
 
 /**
  * @author Phil

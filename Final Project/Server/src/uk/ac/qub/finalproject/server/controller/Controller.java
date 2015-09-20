@@ -44,19 +44,23 @@ import uk.ac.qub.finalproject.persistence.LoggingUtils;
 import uk.ac.qub.finalproject.persistence.ResultsPacketManager;
 import uk.ac.qub.finalproject.persistence.UserDetailsManager;
 import uk.ac.qub.finalproject.persistence.WorkPacketDrawerImpl;
-import uk.ac.qub.finalproject.server.CalculationFinishedRequestHandler;
-import uk.ac.qub.finalproject.server.CatchAllRequestHandler;
-import uk.ac.qub.finalproject.server.ChangeEmailRequestHandler;
-import uk.ac.qub.finalproject.server.DeleteAccountRequestHandler;
-import uk.ac.qub.finalproject.server.ProcessResultRequestHandler;
-import uk.ac.qub.finalproject.server.RegisterRequestHandler;
-import uk.ac.qub.finalproject.server.Server;
-import uk.ac.qub.finalproject.server.WorkPacketRequestHandler;
 import uk.ac.qub.finalproject.server.implementations.Implementations;
+import uk.ac.qub.finalproject.server.networking.CalculationFinishedRequestHandler;
+import uk.ac.qub.finalproject.server.networking.CatchAllRequestHandler;
+import uk.ac.qub.finalproject.server.networking.ChangeEmailRequestHandler;
+import uk.ac.qub.finalproject.server.networking.DeleteAccountRequestHandler;
+import uk.ac.qub.finalproject.server.networking.ProcessResultRequestHandler;
+import uk.ac.qub.finalproject.server.networking.RegisterRequestHandler;
+import uk.ac.qub.finalproject.server.networking.Server;
+import uk.ac.qub.finalproject.server.networking.WorkPacketRequestHandler;
 import uk.ac.qub.finalproject.server.views.LoadingScreenView;
 import uk.ac.qub.finalproject.server.views.MainScreenView;
 
 /**
+ * This is the starting point of the application, and the class that controls
+ * all interaction between the views and the domain. It also controls the setup
+ * of the system.
+ * 
  * @author Phil
  *
  */
@@ -64,6 +68,9 @@ public class Controller extends Application implements Observer {
 
 	private Logger logger = LoggingUtils.getLogger(Controller.class);
 
+	/*
+	 * The persistence objects.
+	 */
 	private AbstractWorkPacketDrawer workPacketDrawer;
 	private AbstractWorkPacketLoader workPacketLoader;
 	private AbstractResultsTransferManager resultsTransferManager;
@@ -73,6 +80,9 @@ public class Controller extends Application implements Observer {
 	private ResultsPacketManager resultsPacketManager;
 	private UserDetailsManager userDetailsManager;
 
+	/*
+	 * Request handlers and the server.
+	 */
 	private CalculationFinishedRequestHandler calculationFinishedRequestHandler;
 	private CatchAllRequestHandler catchAllRequestHandler;
 	private ChangeEmailRequestHandler changeEmailRequestHandler;
@@ -82,11 +92,17 @@ public class Controller extends Application implements Observer {
 	private WorkPacketRequestHandler workPacketRequestHandler;
 	private Server server;
 
+	/*
+	 * Validation and result processing objects.
+	 */
 	private IResultValidator resultValidator;
 	private IValidationStrategy validationStrategy;
 	private IGroupValidationStrategy groupValidationStrategy;
 	private ResultProcessor resultProcessor;
 
+	/*
+	 * Event listeners and commands for the UI.
+	 */
 	private ActiveDeviceThresholdChangeListener deviceThresholdChangeListener;
 	private BlacklistChangeListener blacklistChangeListener;
 	private DuplicatesNumChangeListener duplicatesNumChangeListener;
@@ -96,11 +112,23 @@ public class Controller extends Application implements Observer {
 	private StopSendingPacketsCommand stopSendingPacketsCommand;
 	private TransferResultsCommand transferResultsCommand;
 
+	/*
+	 * Stages and views for the UI.
+	 */
 	private Stage primaryStage;
 	private Stage mainStage;
 	private LoadingScreenView loadingScreen;
 	private MainScreenView mainScreen;
 
+	/**
+	 * The executor service that controls the active device update thread.
+	 */
+	private final ScheduledExecutorService runner = Executors
+			.newScheduledThreadPool(1);
+
+	/**
+	 * Helper method to set up the system. This should be called on startup.
+	 */
 	public void setupSystem() {
 		setupPersistence();
 		setupValidation();
@@ -109,6 +137,9 @@ public class Controller extends Application implements Observer {
 		setupCommands();
 	}
 
+	/**
+	 * Sets up the persistence layer.
+	 */
 	public void setupPersistence() {
 		loadingScreen.updateProgress("Creating Database", 0);
 
@@ -128,23 +159,24 @@ public class Controller extends Application implements Observer {
 
 		databaseCreator.setupDatabase();
 
-		/*
-		 * loadingScreen.updateProgress("Loading Work Packets", 10);
-		 * workPacketLoader.loadWorkPackets();
-		 * loadingScreen.updateProgress("Loading Incomplete Work Packets", 30);
-		 * workPacketDrawer.reloadIncompletedWorkPackets();
-		 * loadingScreen.updateProgress("Loading Devices", 50);
-		 * deviceDetailsManager.loadDevices();
-		 * deviceVersionManager.loadDeviceVersions();
-		 * loadingScreen.updateProgress("Loading Results Packets", 70);
-		 * resultsPacketManager.loadResultsPackets();
-		 */
+		loadingScreen.updateProgress("Loading Work Packets", 10);
+		workPacketLoader.loadWorkPackets();
+		loadingScreen.updateProgress("Loading Incomplete Work Packets", 30);
+		workPacketDrawer.reloadIncompletedWorkPackets();
+		loadingScreen.updateProgress("Loading Devices", 50);
+		deviceDetailsManager.loadDevices();
+		deviceVersionManager.loadDeviceVersions();
+		loadingScreen.updateProgress("Loading Results Packets", 70);
+		resultsPacketManager.loadResultsPackets();
 
 		workPacketDrawer.addObserver(this);
 		deviceDetailsManager.addObserver(this);
 		resultsPacketManager.addObserver(this);
 	}
 
+	/**
+	 * Sets up the validation and processing objects.
+	 */
 	public void setupValidation() {
 		if (Implementations.groupValidationNeeded()) {
 			resultValidator = new GroupResultsValidator(resultsPacketManager,
@@ -165,6 +197,9 @@ public class Controller extends Application implements Observer {
 		resultProcessor.addObserver(this);
 	}
 
+	/**
+	 * Sets up all networking objects.
+	 */
 	public void setupServer() {
 		loadingScreen.updateProgress("Setting up Server", 80);
 
@@ -176,7 +211,8 @@ public class Controller extends Application implements Observer {
 		deleteAccountRequestHandler = new DeleteAccountRequestHandler(
 				deviceDetailsManager);
 		processResultRequestHandler = new ProcessResultRequestHandler(
-				deviceDetailsManager, workPacketDrawer, resultProcessor);
+				deviceDetailsManager, deviceVersionManager, workPacketDrawer,
+				resultProcessor);
 		registerRequestHandler = new RegisterRequestHandler(
 				deviceDetailsManager, deviceVersionManager);
 		workPacketRequestHandler = new WorkPacketRequestHandler(
@@ -195,6 +231,9 @@ public class Controller extends Application implements Observer {
 
 	}
 
+	/**
+	 * Sets up the UI listeners.
+	 */
 	public void setupListeners() {
 		deviceThresholdChangeListener = new ActiveDeviceThresholdChangeListener(
 				deviceDetailsManager);
@@ -206,10 +245,14 @@ public class Controller extends Application implements Observer {
 				workPacketDrawer);
 	}
 
+	/**
+	 * Sets up the UI commands.
+	 */
 	public void setupCommands() {
 		loadWorkPacketsCommand = new LoadAdditionalWorkPacketsCommand(
 				workPacketLoader);
-		startServerCommand = new StartServerCommand(server);
+		startServerCommand = new StartServerCommand(server,
+				changeEmailRequestHandler);
 		stopSendingPacketsCommand = new StopSendingPacketsCommand(server,
 				calculationFinishedRequestHandler);
 		transferResultsCommand = new TransferResultsCommand(
@@ -217,10 +260,9 @@ public class Controller extends Application implements Observer {
 
 	}
 
-	private void loadingComplete() {
-		loadingScreen.updateProgress("Complete", 100);
-	}
-
+	/**
+	 * Sets up the loading screen and shows it to the user.
+	 */
 	public void showLoadingScreen() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -246,6 +288,16 @@ public class Controller extends Application implements Observer {
 
 	}
 
+	/**
+	 * Helper method to update the loading screen when loading is complete.
+	 */
+	private void loadingComplete() {
+		loadingScreen.updateProgress("Complete", 100);
+	}
+
+	/**
+	 * Sets up the main screen and shows it to the user.
+	 */
 	public void showMainScreen() {
 		try {
 			mainStage = new Stage(StageStyle.DECORATED);
@@ -293,17 +345,20 @@ public class Controller extends Application implements Observer {
 			}
 
 			mainStage.show();
+
+			// make sure the main screen is up to date
+			resultsPacketUpdate();
+			deviceDetailsUpdate();
 		} catch (IOException ioEx) {
 			ioEx.printStackTrace();
 		}
 	}
 
+	/**
+	 * start the timer to update the active devices view every minute on a
+	 * separate thread
+	 */
 	public void startActiveDeviceUpdates() {
-		final ScheduledExecutorService runner = Executors
-				.newScheduledThreadPool(1);
-
-		// start the timer to update the active devices view every minute on
-		// their own thread
 		runner.scheduleAtFixedRate(new TimerTask() {
 
 			@Override
@@ -316,6 +371,9 @@ public class Controller extends Application implements Observer {
 		}, 0, 1000 * 60, TimeUnit.MILLISECONDS);
 	}
 
+	/**
+	 * Cleans up resources just before the application closes.
+	 */
 	private void cleanupBeforeClose() {
 		try {
 			ConnectionPool.getConnectionPool().closeConnectionPool();
@@ -345,6 +403,11 @@ public class Controller extends Application implements Observer {
 
 	}
 
+	/**
+	 * Updates the view based on information from the processor.
+	 * 
+	 * @param request
+	 */
 	private void processorUpdate(String request) {
 		if (request.equals(ResultProcessor.LOAD_MORE_WORK_PACKETS)) {
 			workPacketDrawer.reloadIncompletedWorkPackets();
@@ -356,6 +419,9 @@ public class Controller extends Application implements Observer {
 		}
 	}
 
+	/**
+	 * Updates the device information on the UI.
+	 */
 	private void deviceDetailsUpdate() {
 		long validResults = deviceDetailsManager.numberOfValidResults();
 		long invalidResults = deviceDetailsManager.numberOfInvalidResults();
@@ -372,6 +438,9 @@ public class Controller extends Application implements Observer {
 		mainScreen.updateAverageProcessingTime(time);
 	}
 
+	/**
+	 * Updates results packet information on the UI.
+	 */
 	private void resultsPacketUpdate() {
 		int resultsCompleted = resultsPacketManager
 				.getNumberOfPacketsProcessed();
@@ -379,15 +448,27 @@ public class Controller extends Application implements Observer {
 		mainScreen.updateProgress(resultsCompleted, totalPackets);
 	}
 
+	/**
+	 * Updates the view when processing is complete.
+	 */
 	private void updateViewProcessingComplete() {
-		// show server infographic?
 		mainScreen.processingComplete();
 	}
 
+	/**
+	 * Updates the processing times on the UI.
+	 * 
+	 * @param minutes
+	 */
 	private void updateProcessingTimes(String minutes) {
 		mainScreen.addProcessingTime(Integer.parseInt(minutes));
 	}
 
+	/**
+	 * The starting point of the application.
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		launch(args);
 
@@ -396,7 +477,7 @@ public class Controller extends Application implements Observer {
 	@Override
 	public void start(Stage arg0) throws Exception {
 		this.primaryStage = arg0;
-		Task<Void> backgroundLoading = new Task<Void>() {
+		Task<Void> backgroundLoadingTask = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
@@ -409,7 +490,7 @@ public class Controller extends Application implements Observer {
 
 		};
 
-		backgroundLoading.stateProperty().addListener(
+		backgroundLoadingTask.stateProperty().addListener(
 				new ChangeListener<Worker.State>() {
 
 					@Override
@@ -418,15 +499,14 @@ public class Controller extends Application implements Observer {
 							State oldState, State newState) {
 						if (newState == Worker.State.SUCCEEDED) {
 							showMainScreen();
-							//TODO uncomment this
-							// startActiveDeviceUpdates();
+							startActiveDeviceUpdates();
 						}
 					}
 
 				});
 
 		showLoadingScreen();
-		new Thread(backgroundLoading).start();
+		new Thread(backgroundLoadingTask).start();
 	}
 
 }

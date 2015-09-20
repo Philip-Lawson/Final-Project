@@ -1,7 +1,5 @@
-package uk.ac.qub.finalproject.server;
+package uk.ac.qub.finalproject.server.networking;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -60,12 +58,10 @@ public class ServerThread implements Runnable {
 	 *             if there is an issue with retrieving the socket's streams.
 	 */
 	private void getStreams() throws IOException {
-		out = new ObjectOutputStream(new BufferedOutputStream(
-				socket.getOutputStream()));
+		out = new ObjectOutputStream(socket.getOutputStream());
 		out.flush();
 
-		in = new ObjectInputStream(new BufferedInputStream(
-				socket.getInputStream()));
+		in = new ObjectInputStream(socket.getInputStream());
 	}
 
 	/**
@@ -77,6 +73,7 @@ public class ServerThread implements Runnable {
 		while (true) {
 			try {
 				int requestNum = in.readInt();
+				System.out.println("processing request " + requestNum);
 				requestHandler.processRequest(requestNum, in, out);
 			} catch (IOException e) {
 				// this will usually occur when the client has closed its
@@ -96,7 +93,7 @@ public class ServerThread implements Runnable {
 			if (out != null)
 				out.close();
 		} catch (IOException IOEx) {
-			logger.log(Level.FINE,  ServerThread.class.getName()
+			logger.log(Level.FINE, ServerThread.class.getName()
 					+ " Problem closing the output stream", IOEx);
 		}
 
@@ -104,7 +101,7 @@ public class ServerThread implements Runnable {
 			if (in != null)
 				in.close();
 		} catch (IOException IOEx) {
-			logger.log(Level.FINE,  ServerThread.class.getName()
+			logger.log(Level.FINE, ServerThread.class.getName()
 					+ " Problem closing the input stream", IOEx);
 		}
 
@@ -112,7 +109,7 @@ public class ServerThread implements Runnable {
 			if (socket != null)
 				socket.close();
 		} catch (IOException IOEx) {
-			logger.log(Level.FINE,  ServerThread.class.getName()
+			logger.log(Level.FINE, ServerThread.class.getName()
 					+ " Problem closing the socket", IOEx);
 		}
 	}
