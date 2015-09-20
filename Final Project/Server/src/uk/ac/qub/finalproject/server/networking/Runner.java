@@ -29,20 +29,29 @@ public class Runner {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		try {
+		ConnectionPool pool = ConnectionPool.getConnectionPool();
+		
+			Connection connection = pool.getConnection();
+			Statement statement = connection.createStatement();
+			statement.addBatch("DELETE FROM results_packets");
+			statement.addBatch("DELETE FROM work_packets");
+			statement.addBatch("DELETE FROM users");
+			statement.addBatch("DELETE FROM devices");
+			
+			statement.executeBatch();
+			
+			statement.close();
+			connection.close();
+			
+			pool.closeConnectionPool();
+		} catch (PropertyVetoException| SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		ResultsPacketJDBC test = new ResultsPacketJDBC();
-		WorkPacketJDBC work = new WorkPacketJDBC();
-		DeviceDetailsJDBC devices = new DeviceDetailsJDBC();
-		Map<String, Device> map = devices.loadDevices();
-		
-		
-			System.out.println(work.getWorkPackets().size());
-			System.out.println(test.getResultsPackets().size());
-			
-			
-			
-			for (String deviceID: map.keySet()){
-				System.out.println(map.get(deviceID).getValidResults());
-			}
+		System.out.println(test.getResultsPackets().size());
 	
 		
 	}

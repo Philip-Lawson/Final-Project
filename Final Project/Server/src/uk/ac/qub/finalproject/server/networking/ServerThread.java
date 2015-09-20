@@ -60,7 +60,6 @@ public class ServerThread implements Runnable {
 	private void getStreams() throws IOException {
 		out = new ObjectOutputStream(socket.getOutputStream());
 		out.flush();
-
 		in = new ObjectInputStream(socket.getInputStream());
 	}
 
@@ -73,7 +72,6 @@ public class ServerThread implements Runnable {
 		while (true) {
 			try {
 				int requestNum = in.readInt();
-				System.out.println("processing request " + requestNum);
 				requestHandler.processRequest(requestNum, in, out);
 			} catch (IOException e) {
 				// this will usually occur when the client has closed its

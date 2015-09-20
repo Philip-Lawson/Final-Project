@@ -376,7 +376,9 @@ public class MainScreenView {
 		NumberAxis xAxis = (NumberAxis) processingTimeLineChart.getXAxis();
 		NumberAxis yAxis = (NumberAxis) processingTimeLineChart.getYAxis();
 		xAxis.setTickLabelFormatter(numberFormatter);
+		xAxis.setLowerBound(10);
 		yAxis.setTickLabelFormatter(numberFormatter);
+		yAxis.setLowerBound(10);
 
 	}
 

@@ -146,23 +146,30 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 			if (packetsPerList > PACKETS_PER_LIST) {
 				// transfer more packets to the current list
 				// rather than discarding the list
-				synchronized (this) {					
-					int packetsToAdd = packetsPerList - currentPacketList.size();					
+				synchronized (this) {
+					int packetsToAdd = packetsPerList
+							- currentPacketList.size();
 					int count = 0;
 
-					Iterator<String> it = unprocessedWorkPacketMap.keySet().iterator();
+					Iterator<String> it = unprocessedWorkPacketMap.keySet()
+							.iterator();
 
 					while (count < packetsToAdd && it.hasNext()) {
-						IWorkPacket workPacket = unprocessedWorkPacketMap.remove(it.next());
-						currentPacketList.add(workPacket);
-						sentPacketsMap.putIfAbsent(workPacket.getPacketId(), workPacket);
-						count++;
+						IWorkPacket workPacket = unprocessedWorkPacketMap
+								.get(it.next());
+						if (!currentPacketList.contains(workPacket)) {
+							currentPacketList.add(workPacket);
+							sentPacketsMap.putIfAbsent(
+									workPacket.getPacketId(), workPacket);
+							unprocessedWorkPacketMap.remove(workPacket.getPacketId());
+							count++;
+						}
 					}
 				}
 
 			}
-			
-			PACKETS_PER_LIST = packetsPerList;
+
+			PACKETS_PER_LIST = packetsPerList;			
 		}
 	}
 
@@ -236,6 +243,7 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 			sentPacketsMap.putIfAbsent(workPacket.getPacketId(), workPacket);
 			count++;
 		}
+
 	}
 
 	@Override

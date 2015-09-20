@@ -33,7 +33,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 	private static final String CHANGE_EMAIL_ADDRESS = "UPDATE users SET email_address = ? WHERE email_address IN ("
 			+ "SELECT email_address FROM "
 			+ "(SELECT email_address FROM users WHERE device_id = ?) AS temp_users) ;";
-	private static final String DELETE_EMAIL_ADDRESS = "DELETE email_address FROM users WHERE device_id = ?";
+	private static final String DELETE_EMAIL_ADDRESS = "DELETE FROM users WHERE device_id = ?";
 
 	private Encryptor encryptor = getEncryptor();
 	private EmailValidationStrategy emailValidationStrategy = new EmailValidationStrategy();
@@ -159,7 +159,7 @@ public class UserDetailsJDBC extends AbstractJDBC {
 			return true;
 		} catch (SQLException | PropertyVetoException SQLEx) {
 			logger.log(Level.WARNING, UserDetailsJDBC.class.getName()
-					+ " Could not delete email address");
+					+ " Could not delete email address", SQLEx);
 			return false;
 		} finally {
 			closeConnection(connection, preparedStatement, null);
