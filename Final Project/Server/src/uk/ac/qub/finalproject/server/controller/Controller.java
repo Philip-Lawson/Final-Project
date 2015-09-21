@@ -23,6 +23,7 @@ import javafx.concurrent.Worker.State;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -280,6 +281,9 @@ public class Controller extends Application implements Observer {
 			primaryStage.setResizable(false);
 			primaryStage.centerOnScreen();
 			primaryStage.initStyle(StageStyle.UNDECORATED);
+			primaryStage.getIcons()
+			.add(new Image(getClass().getResourceAsStream(
+					"/uk/ac/qub/finalproject/server/views/ic_launcher.png")));
 
 			primaryStage.show();
 		} catch (IOException e) {
@@ -330,6 +334,9 @@ public class Controller extends Application implements Observer {
 			mainStage.setWidth(1200);
 			mainStage.setMaximized(true);
 			mainStage.setResizable(true);
+			mainStage.getIcons()
+					.add(new Image(getClass().getResourceAsStream(
+							"/uk/ac/qub/finalproject/server/views/ic_launcher.png")));
 
 			mainStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 

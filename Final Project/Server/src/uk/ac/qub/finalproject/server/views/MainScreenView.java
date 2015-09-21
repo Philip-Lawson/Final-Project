@@ -35,6 +35,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
@@ -812,6 +813,11 @@ public class MainScreenView {
 					Scene scene = new Scene(aboutView);
 					newStage.setScene(scene);
 					newStage.setResizable(false);
+					newStage.getIcons()
+							.add(new Image(
+									getClass()
+											.getResourceAsStream(
+													"/uk/ac/qub/finalproject/server/views/ic_launcher.png")));
 					newStage.show();
 				} catch (IOException e) {
 

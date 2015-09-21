@@ -176,8 +176,6 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 			if (resultSet.next()) {
 				int unProcessedWorkPackets = resultSet.getInt(1);
 				resultsComplete = (unProcessedWorkPackets == 0);
-				System.out.println(unProcessedWorkPackets
-						+ "unprocessed packets");
 			}
 
 		} catch (SQLException | PropertyVetoException SQLEx) {

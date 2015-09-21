@@ -28,7 +28,7 @@
                </GridPane.margin>
                <children>
                   <Text fx:id="aboutProjectNameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Placeholder Name " />
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="is a distributed computing system that uses the downtime on volunteer Android devices to process data.   " wrappingWidth="242.361328125" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text=" is a distributed computing system that uses the downtime on volunteer Android devices to process data.   " wrappingWidth="242.361328125" />
                </children>
             </TextFlow>
             <TextFlow prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">

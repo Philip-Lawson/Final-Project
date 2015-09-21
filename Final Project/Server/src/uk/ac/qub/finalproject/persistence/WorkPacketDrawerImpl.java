@@ -232,17 +232,25 @@ public class WorkPacketDrawerImpl extends AbstractWorkPacketDrawer {
 	 * within a synchronized method or with a thread-safe collection.
 	 */
 	public void transferWorkPackets() {
-		currentPacketList.clear();
+		ArrayList<IWorkPacket> tempList = new ArrayList<IWorkPacket>(PACKETS_PER_LIST);
 		int count = 0;
 
 		Iterator<String> it = unprocessedWorkPacketMap.keySet().iterator();
 
 		while (count < PACKETS_PER_LIST && it.hasNext()) {
-			IWorkPacket workPacket = unprocessedWorkPacketMap.remove(it.next());
-			currentPacketList.add(workPacket);
-			sentPacketsMap.putIfAbsent(workPacket.getPacketId(), workPacket);
-			count++;
+			IWorkPacket workPacket = unprocessedWorkPacketMap
+					.get(it.next());
+			if (!currentPacketList.contains(workPacket)) {
+				tempList.add(workPacket);
+				sentPacketsMap.putIfAbsent(
+						workPacket.getPacketId(), workPacket);
+				unprocessedWorkPacketMap.remove(workPacket.getPacketId());
+				count++;
+			}
 		}
+		
+		currentPacketList.clear();
+		currentPacketList.addAll(tempList);
 
 	}
 
