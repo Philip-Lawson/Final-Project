@@ -11,6 +11,10 @@ import uk.ac.qub.finalproject.persistence.AbstractWorkPacketLoader;
 import uk.ac.qub.finalproject.server.networking.AbstractClientAchievementEmailFactory;
 
 /**
+ * This is the virtual configuration file of the server. All domain
+ * implementation classes, server details and database details are accessed from
+ * here.
+ * 
  * @author Phil
  *
  */
@@ -40,29 +44,29 @@ public class Implementations {
 	public static AbstractClientAchievementEmailFactory getEmailFactory() {
 		return new ClientAchievementEmailFactory();
 	}
-	
-	public static int getServerPort(){
+
+	public static int getServerPort() {
 		return 12346;
 	}
-	
-	public static String getDatabaseURL(){
+
+	public static String getDatabaseURL() {
 		return "jdbc:mysql://web2.eeecs.qub.ac.uk/40143289";
 	}
-	
-	public static String getDatabaseUser(){
+
+	public static String getDatabaseUser() {
 		return "40143289";
 	}
-	
-	public static String getDatabasePassword(){
+
+	public static String getDatabasePassword() {
 		return "FMA4237";
 	}
 
 	public static String getEmailAddress() {
-		return null;
+		return "citizensciencedemo@gmail.com";
 	}
 
 	public static String getEmailPassword() {
-		return null;
+		return "demoapplicat10n";
 	}
 
 	public static String getServerScreenTitle() {
@@ -71,7 +75,7 @@ public class Implementations {
 
 	/**
 	 * This must be changed before use. Otherwise files stored in the database
-	 * will not be secure.
+	 * will not be secure. Ensure that it contains 16 bytes.
 	 * 
 	 * @return
 	 */

@@ -139,7 +139,6 @@ public class MainScreenView {
 	private MenuItem closeMenuItem;
 
 	private Alert databaseAlert;
-	private NumberFormatter numberFormatter = new NumberFormatter();
 
 	private Command startCommand;
 	private Command loadAdditionalWorkPacketsCommand;
@@ -376,10 +375,8 @@ public class MainScreenView {
 		processingTimeLineChart.getData().add(processingTimeSeries);
 		NumberAxis xAxis = (NumberAxis) processingTimeLineChart.getXAxis();
 		NumberAxis yAxis = (NumberAxis) processingTimeLineChart.getYAxis();
-		xAxis.setTickLabelFormatter(numberFormatter);
-		xAxis.setLowerBound(10);
-		yAxis.setTickLabelFormatter(numberFormatter);
-		yAxis.setLowerBound(10);
+		xAxis.setMinorTickCount(0);
+		yAxis.setMinorTickCount(0);
 
 	}
 

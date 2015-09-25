@@ -296,7 +296,7 @@
             </TabPane>
             <TabPane prefHeight="200.0" prefWidth="200.0" stylesheets="@tab_header_area_style.css" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <tabs>
-                  <Tab closable="false" style=" -fx-focus-color:#D6D6D6; -fx-font-size:14; -fx-faint-focus-color:#D6D6D6; -fx-background-color:#D6D6D6; -fx-background-radius:5 5 0 0;" text="Devices">
+                  <Tab closable="false" style=" -fx-focus-color:#D6D6D6; -fx-font-size:14; -fx-faint-focus-color:#D6D6D6; -fx-background-color:#D6D6D6; -fx-background-radius:5 5 0 0;" text="Processing">
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style=" -fx-border-color:#D6D6D6; -fx-background-color:#D6D6D6; -fx-border-width: 3; -fx-border-style: solid; -fx-border-radius: 0 10 10 10; -fx-background-radius: 10 10 10 10;">
                            <children>
@@ -305,7 +305,7 @@
                                     <NumberAxis label="Minutes per Packet" side="BOTTOM" tickLabelGap="0.0" />
                                  </xAxis>
                                  <yAxis>
-                                    <NumberAxis label="Devices" side="LEFT" tickLabelGap="0.0" />
+                                    <NumberAxis label="Computations" side="LEFT" tickLabelGap="0.0" />
                                  </yAxis>
                                  <padding>
                                     <Insets right="15.0" top="15.0" />
@@ -436,7 +436,7 @@
                   <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
                </GridPane.margin>
             </GridPane>
-            <MenuBar prefHeight="28.0" prefWidth="1200.0" GridPane.columnSpan="3" GridPane.valignment="CENTER">
+            <MenuBar prefHeight="30.0" prefWidth="1200.0" GridPane.columnSpan="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>

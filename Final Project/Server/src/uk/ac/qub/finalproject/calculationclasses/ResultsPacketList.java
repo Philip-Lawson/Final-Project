@@ -6,6 +6,9 @@ package uk.ac.qub.finalproject.calculationclasses;
 import java.util.ArrayList;
 
 /**
+ * A custom array list used to store results packets and send them between the
+ * client and the server.
+ * 
  * @author Phil
  *
  */
@@ -15,16 +18,16 @@ public class ResultsPacketList extends ArrayList<IResultsPacket> {
 	 * 
 	 */
 	private static final long serialVersionUID = 806447377441322468L;
-	
+
 	private String deviceID;
-	
+
 	private long timeStamp;
-	
-	public ResultsPacketList(){
+
+	public ResultsPacketList() {
 		super();
 	}
-	
-	public ResultsPacketList(String deviceID){
+
+	public ResultsPacketList(String deviceID) {
 		super();
 		this.deviceID = deviceID;
 	}

@@ -1,7 +1,7 @@
 package uk.ac.qub.finalproject.server.networking;
 
 /**
- * THis is a utility class that stores all the constants that represent client
+ * This is a utility class that stores all the constants that represent client
  * requests to the server. It is written as a class rather than an enum to
  * maintain consistency between the client request class in the android client
  * system. It is considered bad practice to use enums in android development due

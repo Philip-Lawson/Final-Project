@@ -37,6 +37,7 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 	private static final String ALL_RESULTS_COMPLETE = "SELECT COUNT(packet_id) "
 			+ " FROM work_packets WHERE packet_id NOT IN "
 			+ "(SELECT packet_id FROM results_packets)";
+	private static final String GET_ALL_RESULTS_PACKETS_ID = "SELECT packet_id FROM results_packets";
 
 	/**
 	 * Writes a result to the database.
@@ -187,5 +188,38 @@ public class ResultsPacketJDBC extends AbstractJDBC {
 		}
 
 		return resultsComplete;
+	}
+
+	/**
+	 * Returns a collection containing the ID of all results packets stored in
+	 * the database.
+	 * 
+	 * @return
+	 */
+	public Collection<String> getAllResultsPacketID() {
+		ArrayList<String> packetIDList = new ArrayList<String>(1000);
+		ResultSet resultSet = null;
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			connection = createConnection();
+			preparedStatement = connection
+					.prepareStatement(GET_ALL_RESULTS_PACKETS_ID);
+			resultSet = preparedStatement.executeQuery();
+
+			while (resultSet.next()) {
+				packetIDList.add(resultSet.getString("packet_id"));
+			}
+
+		} catch (SQLException | PropertyVetoException SQLEx) {
+			logger.log(Level.WARNING, ResultsPacketJDBC.class.getName()
+					+ " Problem loading results packet IDs from the database");
+		} finally {
+			closeConnection(connection, preparedStatement, resultSet);
+		}
+
+		packetIDList.trimToSize();
+		return packetIDList;
 	}
 }

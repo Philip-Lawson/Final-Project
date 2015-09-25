@@ -70,7 +70,7 @@ public class MockServer implements Runnable {
 	private static WorkPacketList generateList(){
 		WorkPacketList list = new WorkPacketList();
 		
-		for (int count=0; count<10; count++){
+		for (int count=0; count<20; count++){
 			list.add(new WorkPacket(count + "", Integer.valueOf(count)));
 		}
 		

@@ -6,7 +6,6 @@ package uk.ac.qub.finalproject.persistence;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
 
 /**
@@ -58,16 +57,10 @@ public abstract class AbstractWorkPacketLoader {
 	 */
 	public final void loadWorkPackets() {
 		Collection<IWorkPacket> workPackets = new ArrayList<IWorkPacket>();
-		Collection<IResultsPacket> resultsPackets = resultsDB
-				.getResultsPackets();
+		Collection<String> resultsList = resultsDB.getAllResultsPacketID();
 		Collection<IWorkPacket> processedWorkPackets = new ArrayList<IWorkPacket>(
-				resultsPackets.size());
-		Collection<String> resultsList = new ArrayList<String>(
-				resultsPackets.size());
-
-		for (IResultsPacket result : resultsPackets) {
-			resultsList.add(result.getPacketId());
-		}
+				resultsList.size());
+		
 
 		for (IWorkPacket workPacket : retrieveInitialWorkPackets()) {
 			if (!resultsList.contains(workPacket.getPacketId())) {

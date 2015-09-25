@@ -8,6 +8,9 @@ import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 import uk.ac.qub.finalproject.calculationclasses.IWorkPacket;
 
 /**
+ * A dummy validation strategy. This makes sure that all integers have been
+ * multiplied by two.
+ * 
  * @author Phil
  *
  */

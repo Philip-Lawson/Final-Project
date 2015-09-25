@@ -11,6 +11,9 @@ import uk.ac.qub.finalproject.calculationclasses.IResultsPacket;
 import uk.ac.qub.finalproject.persistence.AbstractResultsTransferManager;
 
 /**
+ * A dummy implementation of the results transfer manager class. This just
+ * prints the results to the console.
+ * 
  * @author Phil
  *
  */
