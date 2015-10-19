@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Final Project/.metadata/.plugins/org.eclipse.jdt.core/.org.eclipse.jdt.core.external.folders/.org.eclipse.jdt.core.external.folders.iml" filepath="$PROJECT_DIR$/Final Project/.metadata/.plugins/org.eclipse.jdt.core/.org.eclipse.jdt.core.external.folders/.org.eclipse.jdt.core.external.folders.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Final Project/Server/Server.iml" filepath="$PROJECT_DIR$/Final Project/Server/Server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Final Project/appcompat_v7/android-support-v7-appcompat.iml" filepath="$PROJECT_DIR$/Final Project/appcompat_v7/android-support-v7-appcompat.iml" />
+    </modules>
+  </component>
+</project>
