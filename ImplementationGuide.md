@@ -53,6 +53,7 @@ To load work packets into the system, you need to extend the AbstractWorkPacketL
 
 ## Transferring Work Packets
 
+To transfer work packets you will need to implement a method to convert the Results Packets into data that you want to store. This can be done 
 ```Java
         private Connection connection; 
 
@@ -64,7 +65,7 @@ To load work packets into the system, you need to extend the AbstractWorkPacketL
 	 *            the collection of results packets.
 	 * @return a collection of the desired object e.g. Numbers, Files etc.
 	 */
-	protected Collection<T> convertResults(
+	protected Collection<?> convertResults(
 			Collection<IResultsPacket> resultsPackets){
 	   Collection<DataBean> data = new ArrayList<DataBean>(resultsPackets.size());
 	   
@@ -85,9 +86,12 @@ To load work packets into the system, you need to extend the AbstractWorkPacketL
 	 * 
 	 * @param convertedResults
 	 */
-	protected void writeResults(Collection<T> convertedResults){
-		for (T data: convertedResults){
-		   writeResult(connection, data);
+	protected void writeResults(Collection<?> convertedResults){
+		for (Object data: convertedResults){
+		   // cast the data to the appropriate type
+		   // exception handling omitted for brevity
+		   Integer dataToAdd = (Integer) data; 
+		   writeResult(connection, dataToAdd);
 		}
 	}
 	
@@ -107,4 +111,45 @@ To load work packets into the system, you need to extend the AbstractWorkPacketL
 
 ## Validating Packets
 
+You will need to validate the results that are returned by the client. 
+
+```Java
+         /**
+	 * Checks that a results packet is valid. All implementations should return
+	 * true if the results packet is valid.
+	 * 
+	 * @param workPacket
+	 *            the initial work packet that was processed
+	 * @param resultsPacket
+	 *            the result of the processed data
+	 * @return true if the result is valid
+	 */
+	public boolean validateNewResult(IWorkPacket workPacket,
+			IResultsPacket resultsPacket) {
+	   Integer data = (Integer) workPacket.getInitialData();
+	   Integer result = (Integer) resultsPacket.getResult();
+	   
+	   return result.equals(data * 2);
+	}
+	
+	/**
+	 * Checks that a results packet is identical to a previously processed
+	 * duplicate. Since the system only needs one valid result from each work
+	 * packet, this method is used to verify that a client is sending valid
+	 * results. <br></br>The simplest implementation of this method is a bitwise
+	 * comparison.
+	 * 
+	 * @param resultsPacket
+	 * @param savedResult
+	 * @return
+	 */
+	public boolean compareWithSavedResult(IResultsPacket resultsPacket,
+			IResultsPacket savedResult) {
+	   Integer newResult = (Integer) resultsPacket.getResult();		
+	   Integer oldResult = (Integer) savedResult.getResult();
+	   
+	   return newResult.equals(oldResult);
+	}
+
+```
 ## Group Validation
