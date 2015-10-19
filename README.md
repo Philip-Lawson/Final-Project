@@ -43,7 +43,7 @@ Before you use the Coordinator you must
 * If you're using group processing, implement the GroupValidationStrategy and set the group validation setting to true in the Implementations class.
 
 The Implementations class is found in /src/uk/ac/qub/finalproject/server/implementations folder.
+See the [implementation guide]() for more information on implementing the classes needed.
 
 Build the project and you're ready to go!
 
-See the [implementation guide]() for implementation examples.
