@@ -153,3 +153,58 @@ You will need to validate the results that are returned by the client.
 
 ```
 ## Group Validation
+
+For some problems it may be necessary to use some form of fuzzy analysis.
+If this is the case, you'll need to implement a method to get the most accurate result and a method to get device statistics after a group computation has finished.
+
+```Java
+	/**
+	 * Compares a list of pending results and returns the most accurate result.
+	 * 
+	 * @param pendingResults
+	 * @param initalData
+	 * @return
+	 */
+	public IResultsPacket compareGroupResults(
+			Map<String, IResultsPacket> pendingResults, IWorkPacket initalData){
+	   // using a square root problem as an example
+	   Double originalNum = (Double) initialData.getInitialData();
+	   
+	   Integer closestResult = 0;
+	   for (String packetID : pendingResults.keySet()) {
+	      Double nextResult = (Double) pendingResults.get(packetID);
+	      
+	      if (originalNum - (nextResult*nextResult) < originalNum - (closestResult*closestResult){
+	         closestResult = nextResult;
+	      }
+	   }
+	   
+	   return closestResult;
+	}
+
+	/**
+	 * Called straight after compareGroupResults.
+	 * Returns a key value pair of device ID and a boolean representing whether
+	 * a device's result was valid or not.
+	 * 
+	 * @param pendingResults
+	 * @param exemplar
+	 * @return
+	 */
+	public Map<String, Boolean> getDeviceStatistics(
+			Map<String, IResultsPacket> pendingResults, IResultsPacket exemplar) {
+	   Map<String, Boolean> stats = new HashMap<String, Boolean>();
+	   
+	   for (String deviceID: pendingResults.keySet()) {
+	      boolean goodEnough = isGoodEnough(pendingResults.get(deviceID, exemplar); 
+	      stats.put(deviceID, goodEnough); 
+	   }
+	   
+	   return stats;
+	}
+	
+	private boolean isGoodEnough(IResultsPacket pending, IResultsPacket exemplar) {
+	   // see if the result is acceptably close to the exemplar
+	}
+
+```
