@@ -1,5 +1,3 @@
-# Implementation Guide
-
 ## Work Packets
 
 ## Loading Work Packets
