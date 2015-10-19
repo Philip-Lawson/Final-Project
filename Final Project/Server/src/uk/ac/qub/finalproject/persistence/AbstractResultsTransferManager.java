@@ -34,7 +34,7 @@ public abstract class AbstractResultsTransferManager {
 	 *            the collection of results packets.
 	 * @return a collection of the desired object e.g. Numbers, Files etc.
 	 */
-	protected abstract Collection<T> convertResults(
+	protected abstract Collection<?> convertResults(
 			Collection<IResultsPacket> resultsPackets);
 
 	/**
@@ -47,7 +47,7 @@ public abstract class AbstractResultsTransferManager {
 	 * 
 	 * @param convertedResults
 	 */
-	protected abstract void writeResults(Collection<T> convertedResults);
+	protected abstract void writeResults(Collection<?> convertedResults);
 
 	/**
 	 * Close the connection to the database.
@@ -58,7 +58,7 @@ public abstract class AbstractResultsTransferManager {
 	 * Transfers results to the user's database.
 	 */
 	public final void transferResults() {
-		Collection<T> convertedResults = convertResults(resultsDB
+		Collection<?> convertedResults = convertResults(resultsDB
 				.getResultsPackets());
 		connectToDatabase();
 		writeResults(convertedResults);
