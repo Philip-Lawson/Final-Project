@@ -1,3 +1,11 @@
 # Implementation Guide
 
-## TODO
+## Work Packets
+
+## Loading Work Packets
+
+## Transferring Work Packets
+
+## Validating Packets
+
+## Group Validation
