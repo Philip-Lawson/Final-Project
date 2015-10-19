@@ -196,6 +196,10 @@ If this is the case, you'll need to implement a method to get the most accurate 
 	   Map<String, Boolean> stats = new HashMap<String, Boolean>();
 	   
 	   for (String deviceID: pendingResults.keySet()) {
+	   
+	      // check to see if the result from this device is good enough
+	      // if it's not, they will receive a strike against them
+	      // if they get enough strikes against them they will be blacklisted
 	      boolean goodEnough = isGoodEnough(pendingResults.get(deviceID, exemplar); 
 	      stats.put(deviceID, goodEnough); 
 	   }
