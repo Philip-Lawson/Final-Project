@@ -114,7 +114,7 @@ To transfer work packets you will need to implement a method to convert the Resu
 You will need to validate the results that are returned by the client. 
 
 ```Java
-         /**
+        /**
 	 * Checks that a results packet is valid. All implementations should return
 	 * true if the results packet is valid.
 	 * 
