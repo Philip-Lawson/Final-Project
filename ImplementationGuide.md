@@ -1,5 +1,3 @@
-## Work Packets
-
 ## Loading Work Packets
 
 To load work packets into the system, you need to extend the AbstractWorkPacketLoader and implement the two abstract methods.
@@ -54,6 +52,58 @@ To load work packets into the system, you need to extend the AbstractWorkPacketL
 ```
 
 ## Transferring Work Packets
+
+```Java
+        private Connection connection; 
+
+	/**
+	 * Abstract method to convert a collection of results packets to a
+	 * collection of the desired type.
+	 * 
+	 * @param resultsPackets
+	 *            the collection of results packets.
+	 * @return a collection of the desired object e.g. Numbers, Files etc.
+	 */
+	protected Collection<T> convertResults(
+			Collection<IResultsPacket> resultsPackets){
+	   Collection<DataBean> data = new ArrayList<DataBean>(resultsPackets.size());
+	   
+	   for (IResultsPacket packet: resultsPackets) {
+	   	data.add(new DataBean(packet.getPacketId(), packet.getResult()));
+	   }
+	   
+	   return data;
+	}
+
+	/**
+	 * Abstract method to connect to the user's database.
+	 */
+	protected abstract void connectToDatabase();
+
+	/**
+	 * Abstract method to write the converted results to the user's database.
+	 * 
+	 * @param convertedResults
+	 */
+	protected void writeResults(Collection<T> convertedResults){
+		for (T data: convertedResults){
+		   writeResult(connection, data);
+		}
+	}
+	
+	// example method
+	private void writeResult(Connection con, DataBean data){
+	   // write to the database
+	}
+
+	/**
+	 * Close the connection to the database.
+	 */
+	protected void closeConnection(){
+	   // close your connection
+	}
+
+```
 
 ## Validating Packets
 
